@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ChatSphere - Chat</title>
   <style>
+    /* Basic reset and font settings */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -13,15 +14,112 @@
     }
 
     body {
-      background-color: #f0f0f0;
+      background-color: #f0f2f5; /* Lighter background for the entire page */
       color: #333;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0 16px 32px;
-      min-height: 100vh;
+      display: flex; /* Use flexbox for main layout (sidebar + main content) */
+      min-height: 100vh; /* Ensure full viewport height */
     }
 
+    /* --- Sidebar Styling --- */
+    .sidebar {
+      width: 250px; /* Fixed width for the sidebar */
+      background-color: #1a1a1a; /* Dark background for sidebar */
+      color: #f8f8f8; /* Light text color */
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+      z-index: 100; /* Ensure it's above other elements if needed */
+      position: sticky; /* Make it sticky if content scrolls */
+      top: 0; /* Align to the top */
+      height: 100vh; /* Full height */
+    }
+
+    .sidebar-header {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 30px;
+      text-align: center;
+      color: #4a90e2; /* Accent color for logo/title */
+    }
+
+    .sidebar nav ul {
+      list-style: none; /* Remove bullet points */
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar nav li {
+      margin-bottom: 15px; /* Space between nav items */
+    }
+
+    .sidebar nav a {
+      display: block; /* Make the whole area clickable */
+      color: #f8f8f8;
+      text-decoration: none;
+      padding: 12px 15px;
+      border-radius: 8px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px; /* Space between icon and text */
+    }
+
+    .sidebar nav a:hover {
+      background-color: #333; /* Darker background on hover */
+      color: #fff;
+    }
+
+    .sidebar nav a.active {
+      background-color: #4a90e2; /* Active link styling */
+      color: white;
+      font-weight: bold;
+    }
+
+    /* Icons (using a simple placeholder, consider Font Awesome or similar) */
+    .sidebar nav a::before {
+      content: ' '; /* Placeholder for icon */
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      background-color: #f8f8f8; /* Default icon color */
+      mask-size: cover; /* For SVG masks */
+      -webkit-mask-size: cover;
+    }
+
+    .sidebar nav a[href="#chat-section"]::before {
+      background-color: white;
+      mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 6H6v-2h8v2zm4-8H6V5h12v2z"/></svg>');
+      -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 6H6v-2h8v2zm4-8H6V5h12v2z"/></svg>');
+    }
+    .sidebar nav a[href="#services-section"]::before {
+      background-color: white;
+      mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M11 17h2v-6h-2v6zm2-8V7h-2v2h2zm4 10H7V5h10v14zm0-16c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2H7c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h10z"/></svg>');
+      -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M11 17h2v-6h-2v6zm2-8V7h-2v2h2zm4 10H7V5h10v14zm0-16c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2H7c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h10z"/></svg>');
+    }
+    .sidebar nav a[href="#about-section"]::before {
+      background-color: white;
+      mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.38 0 2.5 1.12 2.5 2.5S13.38 10 12 10 9.5 8.88 9.5 7.5 10.62 5 12 5zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z"/></svg>');
+      -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.38 0 2.5 1.12 2.5 2.5S13.38 10 12 10 9.5 8.88 9.5 7.5 10.62 5 12 5zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z"/></svg>');
+    }
+    .sidebar nav a[href="#contact-section"]::before {
+      background-color: white;
+      mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>');
+      -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>');
+    }
+
+
+    /* --- Main Content Area Styling --- */
+    .main-content {
+      flex-grow: 1; /* Takes up remaining space */
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* Center content horizontally within main area */
+      padding: 0 16px 32px; /* Padding for the main content */
+    }
+
+    /* Chat header styling (adjusted for new layout) */
     header {
       background-color: #1e1e1e;
       color: white;
@@ -34,13 +132,16 @@
       letter-spacing: 1px;
       border-radius: 10px 10px 0 0;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin-top: 20px; /* Add some top margin to separate from sidebar if needed */
     }
 
+    /* Chat messages container (adjusted for new layout) */
     #chat {
       background-color: white;
       width: 100%;
       max-width: 600px;
-      height: 70vh;
+      height: 70vh; /* Takes 70% of viewport height */
+      min-height: 400px; /* Ensure a minimum height */
       padding: 20px;
       overflow-y: auto;
       display: flex;
@@ -51,6 +152,7 @@
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     }
 
+    /* Message bubbles */
     .message {
       max-width: 75%;
       padding: 14px 18px;
@@ -62,7 +164,7 @@
     }
 
     .user {
-      background-color: #1e1e1e;
+      background-color: #007bff; /* Primary blue for user messages */
       color: white;
       align-self: flex-end;
       border-bottom-right-radius: 5px;
@@ -75,12 +177,7 @@
       border-bottom-left-radius: 5px;
     }
 
-    .timestamp {
-      font-size: 0.75rem;
-      color: #888;
-      margin-top: 4px;
-    }
-
+    /* Input form */
     #inputForm {
       margin-top: 20px;
       width: 100%;
@@ -105,7 +202,7 @@
     }
 
     #sendBtn {
-      background-color: #1e1e1e;
+      background-color: #007bff; /* Primary blue for send button */
       color: white;
       border: none;
       padding: 12px 24px;
@@ -116,10 +213,46 @@
     }
 
     #sendBtn:hover {
-      background-color: #444;
+      background-color: #0056b3;
     }
 
-    @media (max-width: 640px) {
+    /* --- Responsive Adjustments --- */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column; /* Stack sidebar and main content vertically */
+      }
+      .sidebar {
+        width: 100%; /* Full width sidebar on small screens */
+        height: auto; /* Auto height */
+        position: relative; /* Not sticky anymore */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Shadow below */
+        border-radius: 0 0 10px 10px;
+        padding-bottom: 0; /* Remove padding if you put toggler here */
+      }
+      .sidebar nav ul {
+        display: flex; /* Make nav items horizontal */
+        flex-wrap: wrap; /* Wrap if too many */
+        justify-content: center;
+        gap: 10px; /* Space between horizontal items */
+        padding-bottom: 15px;
+      }
+      .sidebar nav li {
+        margin-bottom: 0; /* Remove vertical margin */
+      }
+      .sidebar nav a {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+        gap: 5px;
+      }
+      .sidebar-header {
+        margin-bottom: 15px;
+      }
+      .main-content {
+        margin-top: 20px; /* Space between sidebar and main content */
+      }
+    }
+
+    @media (max-width: 480px) {
       header {
         font-size: 1.4rem;
         padding: 16px;
@@ -143,15 +276,73 @@
 </head>
 <body>
 
-  <header>Chat Sphere</header>
+  <aside class="sidebar">
+    <div class="sidebar-header">ChatSphere</div>
+    <nav>
+      <ul>
+        <li><a href="#chat-section" class="active">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12zM6 9h12v2H6zm8 3H6v-2h8v2zm4-5H6V5h12v2z"/></svg>
+            Chat
+        </a></li>
+        <li><a href="services.html" id="services-link">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM9 13H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg>
+            Our Services
+        </a></li>
+        <li><a href="about.html" id="about-link">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.38 0 2.5 1.12 2.5 2.5S13.38 10 12 10 9.5 8.88 9.5 7.5 10.62 5 12 5zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+            About Us
+        </a></li>
+        <li><a href="contact.html" id="contact-link">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            Contact Us
+        </a></li>
+      </ul>
+    </nav>
+  </aside>
 
-  <div id="chat"></div>
+  <main class="main-content">
+    <header>Chat Sphere</header>
 
-  <form id="inputForm" autocomplete="off">
-    <input id="userInput" type="text" placeholder="Type a message..." required />
-    <button type="submit" id="sendBtn">Send</button>
-  </form>
+    <div id="chat"></div>
+
+    <form id="inputForm" autocomplete="off">
+      <input id="userInput" type="text" placeholder="Type a message..." required />
+      <button type="submit" id="sendBtn">Send</button>
+    </form>
+  </main>
 
   <script src="chat.js"></script>
+  <script>
+    // Simple logic to set active link in sidebar (client-side only for this page)
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentPath = window.location.pathname;
+      const navLinks = document.querySelectorAll('.sidebar nav a');
+
+      navLinks.forEach(link => {
+        // Example: if currentPath is /chat.html, and href is #chat-section, it's active
+        // Or, if link.href matches the current page path exactly
+        if (link.getAttribute('href') === '#chat-section' || link.href === window.location.href) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+
+        // For internal page navigation (if you decide to use sections within chat.html)
+        link.addEventListener('click', function(event) {
+          if (this.getAttribute('href').startsWith('#')) {
+            event.preventDefault(); // Prevent default scroll for now
+            // You can add smooth scrolling logic here if you have actual sections
+            navLinks.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+            // For now, if it's the chat-section, scroll to top of chat
+            if (this.getAttribute('href') === '#chat-section') {
+                const chatDiv = document.getElementById('chat');
+                if (chatDiv) chatDiv.scrollTop = chatDiv.scrollHeight; // Scroll to bottom of chat
+            }
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html>
