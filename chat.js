@@ -124,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add a <br> before single asterisks not at the start of the string or preceded by a space/newline.
     formattedText = formattedText.replace(/\*/g, '<br>');
+    formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
 
     return formattedText;
