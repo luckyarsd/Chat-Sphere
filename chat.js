@@ -117,15 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function formatMessageText(text) {
     let formattedText = text;
-
-    // 1. Add newlines before *, **, or number.
-    // This is more complex because we want to ensure we don't double-break
-    // if there's already a newline, and we want to preserve the markdown itself.
-
     // Add a <br> before single asterisks not at the start of the string or preceded by a space/newline.
     formattedText = formattedText.replace(/\*/g, '<br>');
-    formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-
 
     return formattedText;
 }
