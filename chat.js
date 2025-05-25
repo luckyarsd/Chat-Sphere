@@ -1,3 +1,11 @@
+// chat.js
+
+// --- 1. Import marked.js at the top ---
+import { marked } from 'marked'; // Ensure you've run 'npm install marked' in your frontend project
+                               // OR included it via CDN in your chat.html:
+                               // <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+// --- END Import ---
+
 document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('sidebar');
     const hamburgerButton = document.getElementById('hamburgerButton');
@@ -177,32 +185,53 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {string} sender - 'user' or 'ai'.
      * @param {Object} [infoData=null] - Optional: Data object for creator info (for AI messages).
      */
-    // --- MODIFIED: appendMessage function to accept infoData ---
     function appendMessage(text, sender, infoData = null) {
         const messageElement = document.createElement('div');
         messageElement.classList.add('message', sender);
 
-        let contentHTML = `<span>${text}</span>`; // Default text content
-
-        if (sender === 'ai' && infoData) {
-            // If it's an AI message AND infoData is provided, add the special layout
-            contentHTML = `
-                <div class="ai-response-content">
-                    <span>${text}</span>
-                    <div class="creator-info-card">
-                        <img src="${infoData.image}" alt="${infoData.name}" class="creator-logo">
-                        <div class="creator-details">
-                            <h4>${infoData.name}</h4>
-                            <p>${infoData.role}</p>
-                            <p class="creator-bio">${infoData.bio}</p>
+        // --- MODIFIED: Markdown rendering for AI messages ---
+        let contentHTML;
+        if (sender === 'ai') {
+            // Apply markdown parsing for AI messages
+            contentHTML = marked.parse(text); // marked.parse will convert **text** to <strong>text</strong>
+            
+            if (infoData) {
+                // If it's an AI message AND infoData is provided, wrap the markdown content
+                contentHTML = `
+                    <div class="ai-response-content">
+                        <div class="ai-text-output">${contentHTML}</div>
+                        <div class="creator-info-card">
+                            <img src="${infoData.image}" alt="${infoData.name}" class="creator-logo">
+                            <div class="creator-details">
+                                <h4>${infoData.name}</h4>
+                                <p>${infoData.role}</p>
+                                <p class="creator-bio">${infoData.bio}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
+            } else {
+                // If no infoData, just wrap the markdown content in a simple div
+                contentHTML = `<div class="ai-text-output">${contentHTML}</div>`;
+            }
+
+        } else { // For user messages
+            // User messages are plain text, no markdown parsing needed
+            contentHTML = `<span>${text}</span>`;
         }
 
         messageElement.innerHTML = contentHTML;
         chatMessages.appendChild(messageElement);
+
+        // --- NEW: Apply white-space: pre-wrap to the actual text output element ---
+        // This ensures line breaks are correctly displayed for both user and AI messages.
+        // For AI, marked.js might generate <p> tags, which also respect newlines.
+        // For user, it's a plain span.
+        const textOutputElement = messageElement.querySelector('.ai-text-output') || messageElement.querySelector('span');
+        if (textOutputElement) {
+            textOutputElement.style.whiteSpace = 'pre-wrap';
+        }
+        // --- END NEW ---
 
         messageElement.classList.add('message-pop-in');
         messageElement.addEventListener('animationend', () => {
@@ -211,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
-    // --- END MODIFIED ---
+    // --- END MODIFIED appendMessage ---
 
     /**
      * Clears the chat display.
@@ -307,13 +336,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Render loaded history
         chatHistory.forEach(msg => {
-            // --- MODIFIED: Ensure infoData is handled if present in historical messages ---
-            // Note: If you want creator info to reappear when loading history,
-            // your saved history messages need to store this info.
-            // For now, we assume history only stores 'content' and 'role'.
-            // The backend will resend 'displayInfo' if the user asks again.
-            appendMessage(msg.content, msg.role);
-            // --- END MODIFIED ---
+            // When loading history, we assume no infoData is stored with the message itself.
+            // If you want creator info to reappear for historical messages,
+            // your chatHistory objects would need to store that 'infoData'.
+            appendMessage(msg.content, msg.role); // Pass null for infoData when loading history
         });
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
@@ -409,13 +435,18 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteButton.classList.add('delete-chat-button');
             deleteButton.textContent = '🗑️'; // Or 'Delete', or '🗑️' (emoji)
             deleteButton.title = `Delete "${chat.title}"`;
-            // <--- REMOVE THESE INLINE STYLES. Move to style.css for better practice ---
-            // deleteButton.style.backgroundColor = 'transparent';
-            // deleteButton.style.border = 'none';
-            // deleteButton.style.color = 'red';
-            // deleteButton.style.cursor = 'pointer';
-            // deleteButton.style.marginLeft = '5px'; // Adjust spacing
-            // --- END REMOVAL ---
+            // Styles for deleteButton should be in your CSS file, not inline.
+            // Example:
+            /*
+            .delete-chat-button {
+                background-color: transparent;
+                border: none;
+                color: red;
+                cursor: pointer;
+                margin-left: 5px;
+                font-size: 1em; // Adjust as needed
+            }
+            */
             deleteButton.addEventListener('click', (event) => {
                 event.stopPropagation();
                 deleteChat(chat.id, chat.title);
@@ -481,9 +512,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentChatId = mostRecentChatId;
                 chatHistory = history;
                 chatHistory.forEach(msg => {
-                    // --- MODIFIED: Pass null for infoData when loading general history ---
-                    appendMessage(msg.content, msg.role, null);
-                    // --- END MODIFIED ---
+                    // When loading history, we assume no infoData is stored with the message itself.
+                    // If you want creator info to reappear for historical messages,
+                    // your chatHistory objects would need to store that 'infoData'.
+                    appendMessage(msg.content, msg.role); // Pass null for infoData when loading history
                 });
                 currentChatNavLink.textContent = mostRecentChatTitle;
                 console.log(`Loaded existing chat: ${mostRecentChatId}`); // DEBUG
