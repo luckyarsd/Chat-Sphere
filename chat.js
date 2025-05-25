@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const PROXY_API_ENDPOINT = '/api/ask';
 
     // chatHistory will be used for displaying messages, but not sent to api/ask.js
-    // because your current backend doesn't support it.
+    // because your current backend doesn't support it for conversational memory.
     const chatHistory = [];
 
     // --- Theme Toggle Elements ---
@@ -116,13 +116,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const messageText = messageInput.value.trim();
         if (messageText === '') return;
 
+        // Add bounce animation to send button
+        sendMessageButton.classList.add('send-button-bounce');
+        sendMessageButton.addEventListener('animationend', () => {
+            sendMessageButton.classList.remove('send-button-bounce');
+        }, { once: true }); // Remove listener after one animation cycle
+
         appendMessage(messageText, 'user');
         chatHistory.push({ role: "user", content: messageText }); // Track for local display if needed
         messageInput.value = '';
 
         const typingIndicator = document.createElement('div');
         typingIndicator.classList.add('typing-indicator');
-        typingIndicator.textContent = 'ChatSphere AI is typing...';
+        // Add animated dots for typing indicator
+        typingIndicator.innerHTML = 'ChatSphere AI is typing<span>.</span><span>.</span><span>.</span>';
         chatMessages.appendChild(typingIndicator);
         chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
 
@@ -163,6 +170,14 @@ document.addEventListener('DOMContentLoaded', () => {
         messageElement.classList.add('message', sender);
         messageElement.innerHTML = `<span>${text}</span>`;
         chatMessages.appendChild(messageElement);
+
+        // Add message pop-in animation
+        messageElement.classList.add('message-pop-in');
+        // Optional: remove the class after animation to avoid re-triggering on scroll or other events
+        messageElement.addEventListener('animationend', () => {
+            messageElement.classList.remove('message-pop-in');
+        }, { once: true });
+
         chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll to the latest message
     }
 
