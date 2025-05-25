@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ChatSphere AI — The Nexus of Intelligence</title>
+    <title>ChatSphere AI — Precision Intelligence</title>
     <link rel="icon" href="https://assets-global.website-files.com/64070a27ac02766324ef2898/6474b786ef78efed18255018_favicon.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -73,6 +73,11 @@
             animation: fadeInUp 1.8s cubic-bezier(0.23, 1, 0.32, 1) forwards; /* Smoother, impactful fade-in */
         }
 
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(50px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
         /* --- Glowing Border/Frame Effect (Optional, on hero section) --- */
         .hero-section::before {
             content: '';
@@ -96,11 +101,11 @@
 
         /* --- Typography --- */
         h1 {
-            font-size: 7.5rem; /* Massive, commanding size */
-            margin-bottom: 1rem;
+            font-size: 7rem; /* Adjusted for better fit */
+            margin-bottom: 0.8rem; /* Reduced space to paragraph */
             font-weight: 800; /* Extra bold */
-            letter-spacing: -0.1em; /* Aggressively tight */
-            line-height: 0.9; /* Tighter line height for large text */
+            letter-spacing: -0.08em; /* Adjusted for readability */
+            line-height: 1; /* Tighter line height for large text */
             text-shadow: 0 15px 50px rgba(0, 0, 0, 0.9); /* Deep, impactful shadow */
             /* Intense Shimmer Effect */
             background: linear-gradient(90deg, #b0e0ff, #e0f2ff, #b0e0ff); /* More vibrant blue-white */
@@ -109,30 +114,37 @@
             -webkit-text-fill-color: transparent;
             animation: shimmer 5s infinite cubic-bezier(0.4, 0, 0.6, 1); /* Faster, more dynamic shimmer */
             position: relative; /* For subtle glow */
+            padding-bottom: 10px; /* Add padding to prevent line glow from overlapping text */
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
 
         h1::after {
             content: '';
             position: absolute;
-            left: 0;
-            bottom: -5px;
-            width: 100%;
-            height: 5px;
+            left: 50%; /* Center the line */
+            transform: translateX(-50%); /* Center the line */
+            bottom: 0px; /* Position below padding */
+            width: 80%; /* Shorter line for elegance */
+            height: 4px; /* Slightly thinner */
             background: linear-gradient(to right, transparent, rgba(74, 144, 226, 0.7), transparent);
-            filter: blur(5px);
-            opacity: 0.7;
+            filter: blur(4px); /* Slightly less blur */
+            opacity: 0.6; /* Softer glow */
             animation: line-glow 3s infinite alternate ease-in-out;
         }
 
         @keyframes line-glow {
-            0% { transform: scaleX(0.8); opacity: 0.7; }
-            100% { transform: scaleX(1); opacity: 1; }
+            0% { transform: translateX(-50%) scaleX(0.7); opacity: 0.6; }
+            100% { transform: translateX(-50%) scaleX(1); opacity: 0.8; }
         }
 
         p {
-            font-size: 2.2rem; /* Very prominent tagline */
-            margin-bottom: 5rem; /* More breathing room before buttons */
-            max-width: 950px; /* Wider for full impact */
+            font-size: 2rem; /* Adjusted for better fit */
+            margin-bottom: 4rem; /* More breathing room before buttons */
+            max-width: 800px; /* Optimized width for readability */
             line-height: 1.4;
             text-shadow: 0 5px 25px rgba(0, 0, 0, 0.8);
             font-weight: 300;
@@ -149,8 +161,8 @@
             background: linear-gradient(135deg, #3a7bd5, #2c6ebd); /* Deeper blue gradient */
             border: 2px solid rgba(255, 255, 255, 0.1); /* Subtle light border */
             border-radius: 70px; /* More extreme rounding */
-            padding: 26px 80px; /* Even more generous padding */
-            font-size: 1.7rem; /* Larger font */
+            padding: 24px 75px; /* Adjusted padding */
+            font-size: 1.6rem; /* Consistent font size */
             font-weight: 600;
             color: white;
             cursor: pointer;
@@ -206,9 +218,9 @@
             background: transparent;
             border: 2px solid rgba(74, 144, 226, 0.5); /* Blue glowing border */
             color: #a0d0ff; /* Lighter blue text */
-            padding: 22px 70px;
-            font-size: 1.5rem;
-            margin-top: 40px;
+            padding: 20px 65px; /* Adjusted padding */
+            font-size: 1.4rem; /* Consistent font size */
+            margin-top: 35px; /* Reduced space */
             box-shadow: 0 0 20px rgba(74, 144, 226, 0.2); /* Subtle glow */
             letter-spacing: 0.03em;
             transition: all 0.4s ease;
@@ -223,12 +235,12 @@
 
         /* --- Visitor Counter (Dynamic & Engaging) --- */
         .visitor-counter {
-            font-size: 1.4rem;
+            font-size: 1.3rem; /* Adjusted for better fit */
             font-weight: 400;
             color: rgba(255, 255, 255, 0.7);
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
-            margin-top: 6rem; /* Significant separation */
-            letter-spacing: 0.12em; /* Wide spacing for modern look */
+            margin-top: 5rem; /* Adjusted separation */
+            letter-spacing: 0.1em; /* Wide spacing for modern look */
             opacity: 0.9;
             animation: fadeIn 3s ease-out forwards; /* Slower, graceful fade in */
         }
@@ -236,7 +248,7 @@
         /* --- Footer --- */
         footer {
             position: fixed;
-            bottom: 40px; /* Higher, more prominent */
+            bottom: 35px; /* Adjusted for better fit */
             width: 100%;
             text-align: center;
             color: rgba(255, 255, 255, 0.5);
@@ -249,33 +261,33 @@
         /* --- Responsive Design --- */
         @media (max-width: 1200px) {
             h1 { font-size: 6rem; }
-            p { font-size: 2rem; max-width: 850px; }
+            p { font-size: 1.8rem; max-width: 750px; } /* Adjusted max-width */
         }
 
         @media (max-width: 992px) {
-            h1 { font-size: 4.8rem; letter-spacing: -0.09em; }
-            p { font-size: 1.8rem; max-width: 90%; }
-            .btn { padding: 22px 70px; font-size: 1.5rem; }
-            .btn-secondary { padding: 18px 60px; font-size: 1.3rem; }
-            .visitor-counter { font-size: 1.3rem; }
+            h1 { font-size: 4.8rem; letter-spacing: -0.07em; } /* Slightly less aggressive spacing */
+            p { font-size: 1.6rem; max-width: 90%; margin-bottom: 3.5rem; } /* Adjusted spacing and width */
+            .btn { padding: 20px 60px; font-size: 1.4rem; }
+            .btn-secondary { padding: 16px 50px; font-size: 1.2rem; }
+            .visitor-counter { font-size: 1.2rem; margin-top: 4rem; }
         }
 
         @media (max-width: 768px) {
-            h1 { font-size: 3.5rem; letter-spacing: -0.07em; }
-            p { font-size: 1.4rem; max-width: 90%; margin-bottom: 3.5rem; }
-            .btn { padding: 18px 50px; font-size: 1.25rem; }
-            .btn-secondary { padding: 14px 45px; font-size: 1.1rem; margin-top: 25px; }
-            .visitor-counter { font-size: 1.1rem; margin-top: 5rem; }
-            footer { font-size: 0.8rem; bottom: 30px; }
+            h1 { font-size: 3.5rem; letter-spacing: -0.06em; } /* Tweak spacing */
+            p { font-size: 1.25rem; max-width: 90%; margin-bottom: 2.5rem; } /* Smaller font, less margin */
+            .btn { padding: 16px 45px; font-size: 1.15rem; }
+            .btn-secondary { padding: 12px 40px; font-size: 1rem; margin-top: 20px; }
+            .visitor-counter { font-size: 1rem; margin-top: 3.5rem; }
+            footer { font-size: 0.75rem; bottom: 25px; }
         }
 
         @media (max-width: 480px) {
-            h1 { font-size: 2.5rem; letter-spacing: -0.05em; margin-bottom: 0.5rem;}
-            p { font-size: 1rem; max-width: 90vw; margin-bottom: 2.5rem;}
-            .btn { width: 90%; padding: 16px 0; font-size: 1.1rem; }
-            .btn-secondary { width: 90%; padding: 12px 0; font-size: 0.95rem; margin-top: 15px;}
-            .visitor-counter { font-size: 0.9rem; margin-top: 3.5rem; }
-            footer { font-size: 0.75rem; bottom: 20px; }
+            h1 { font-size: 2.5rem; letter-spacing: -0.04em; margin-bottom: 0.2rem;} /* Tighter for small screens */
+            p { font-size: 0.95rem; max-width: 90vw; margin-bottom: 2rem;} /* Smaller font, less margin */
+            .btn { width: 90%; padding: 14px 0; font-size: 1rem; }
+            .btn-secondary { width: 90%; padding: 10px 0; font-size: 0.85rem; margin-top: 15px;}
+            .visitor-counter { font-size: 0.85rem; margin-top: 3rem; }
+            footer { font-size: 0.7rem; bottom: 15px; }
         }
     </style>
 </head>
@@ -286,7 +298,7 @@
 
     <main class="hero-section">
         <h1>ChatSphere AI</h1>
-        <p>The **nexus of intelligence**. Engage with a **revolutionary AI companion** for unparalleled insights and transformative growth.</p>
+        <p>The <strong>nexus of intelligence</strong>. Engage with a <strong>revolutionary AI companion</strong> for unparalleled insights and transformative growth.</p>
         <a href="chat.html" class="btn" id="startChatBtn">Initiate Nexus</a>
         <a href="services.html" class="btn btn-secondary">Explore Advanced Features</a>
         <div class="visitor-counter">Active Connections: <span id="visitorCount">0</span></div>
