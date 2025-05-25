@@ -118,34 +118,36 @@ document.addEventListener('DOMContentLoaded', () => {
     function formatMessageText(text) {
     let formattedText = text;
 
-    // First, convert any existing explicit newlines (\n) to <br> tags.
-    // This is important so we don't accidentally add another <br> later if one already exists.
-    formattedText = formattedText.replace(/\n/g, '<br>');
+    // 1. Add newlines before *, **, or number.
+    // This is more complex because we want to ensure we don't double-break
+    // if there's already a newline, and we want to preserve the markdown itself.
 
-    // Add a <br> before single asterisks if they are not at the very beginning of the string
-    // and not immediately preceded by a <br>. This ensures a new line *before* the asterisk.
-    formattedText = formattedText.replace(/([^<]|^)\*(?!\*)/g, '$1<br>*');
+    // Add a <br> before single asterisks not at the start of the string or preceded by a space/newline.
+    formattedText = formattedText.replace(/(?<!^)(?<![\s\n])\*/g, '<br>*');
 
-    // Add a <br> before double asterisks if they are not at the very beginning of the string
-    // and not immediately preceded by a <br>.
-    formattedText = formattedText.replace(/([^<]|^)\*\*/g, '$1<br>**');
+    // Add a <br> before double asterisks not at the start of the string or preceded by a space/newline.
+    formattedText = formattedText.replace(/(?<!^)(?<![\s\n])\*\*/g, '<br>**');
 
-    // Add a <br> before a number followed by a period and space (e.g., '1. ', '2. ')
-    // if it's not at the very beginning of the string and not immediately preceded by a <br>.
-    formattedText = formattedText.replace(/([^<]|^)(\d+\.\s)/g, '$1<br>$2');
+    // Add a <br> before a number followed by a period and space (for lists),
+    // if it's not at the start of the string or already preceded by a newline.
+    formattedText = formattedText.replace(/(?<!^)(?<![\n])(\d+\.\s)/g, '<br>$1');
 
-    // Clean up any double <br> tags that might result from overlapping matches or existing line breaks.
-    // This compresses multiple newlines into a single one to avoid excessive spacing.
-    formattedText = formattedText.replace(/(<br>){2,}/g, '<br>');
+    // Remove any accidental double <br><br> created by the above rules
+    formattedText = formattedText.replace(/<br><br>/g, '<br>');
 
-    // After adding newlines, now apply the bolding for ** and *
+    // 2. Convert bold (both **text** and *text*) - keep this after adding newlines
+    // to ensure bolding still works after <br> insertions.
     formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     formattedText = formattedText.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
 
+
+    // 3. Convert explicit newlines \n to <br> tags (important for existing newlines)
+    formattedText = formattedText.replace(/\n/g, '<br>');
+
+
     return formattedText;
 }
-    /**
-     * Appends a message to the chat display.
+     /* Appends a message to the chat display.
      * @param {string} text - The message content.
      * @param {string} sender - 'user' or 'ai'.
      * @param {Object} [infoData=null] - Optional: Data object for creator info (for AI messages).
