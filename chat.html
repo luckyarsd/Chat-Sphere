@@ -313,8 +313,6 @@
       word-wrap: break-word; /* Break long words */
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
       line-height: 1.4;
-      /* Message Pop-in Fix: .message no longer starts hidden by default */
-      /* The animation itself will handle initial opacity and transform */
     }
 
     .message.user {
@@ -384,9 +382,10 @@
       background-color: var(--main-content-bg);
       gap: 10px;
       transition: background-color 0.3s ease, border-color 0.3s ease;
+      align-items: flex-end; /* Align items to the bottom, useful for resizing textarea */
     }
 
-    .chat-input input[type="text"] {
+    .chat-input textarea { /* Changed from input[type="text"] to textarea */
       flex-grow: 1;
       padding: 12px 15px;
       border: 1px solid var(--chat-input-border);
@@ -395,13 +394,18 @@
       background-color: var(--chat-input-bg);
       color: var(--text-color);
       transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+      resize: none; /* Prevent manual resizing by user */
+      min-height: 45px; /* Match button height for alignment */
+      max-height: 150px; /* Limit auto-resizing height to prevent overwhelming screen */
+      overflow-y: auto; /* Enable scrollbar if text exceeds max-height */
+      line-height: 1.4;
     }
 
-    .chat-input input[type="text"]::placeholder {
+    .chat-input textarea::placeholder { /* Changed from input[type="text"] to textarea */
       color: var(--placeholder-color);
     }
 
-    .chat-input input[type="text"]:focus {
+    .chat-input textarea:focus { /* Changed from input[type="text"] to textarea */
       outline: none;
       border-color: var(--sidebar-active-bg);
       box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.3);
@@ -700,8 +704,9 @@
       .chat-input {
         padding: 10px 15px;
       }
-      .chat-input input[type="text"] {
+      .chat-input textarea { /* Changed from input[type="text"] to textarea */
         padding: 10px 12px;
+        min-height: 40px; /* Adjust for smaller button size */
       }
       .chat-input button {
         width: 40px;
@@ -720,7 +725,7 @@
       .sidebar {
         width: 200px;
       }
-      .chat-input input[type="text"] {
+      .chat-input textarea { /* Changed from input[type="text"] to textarea */
         font-size: 0.9rem;
       }
       header h1 {
@@ -732,14 +737,12 @@
     }
   </style>
 </head>
-<body>
-
-  <aside class="sidebar" id="sidebar">
+<body class="light-theme"> <aside class="sidebar" id="sidebar">
     <a href="index.html" class="sidebar-header">ChatSphere</a>
     <nav>
       <ul>
         <li>
-            <a href="#" id="newChatButton">
+            <a href="#" id="newChatButton" role="button" aria-label="Start a new chat">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 New Chat
             </a>
@@ -779,33 +782,34 @@
 
   <main class="main-content">
     <header>
-      <button class="hamburger-button" id="hamburgerButton">
+      <button class="hamburger-button" id="hamburgerButton" aria-label="Open sidebar menu">
           <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
       </button>
       <h1>ChatSphere AI</h1>
       <div class="top-right-controls">
         <span class="theme-label">Theme</span>
-        <button class="theme-toggle" id="themeToggle">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle light and dark theme">
           <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="var(--icon-color)"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.34 2.42-3.92 2.76-2.5.56-4.92-1.39-5.48-3.89-.56-2.5 1.39-4.92 3.89-5.48 1.34-.3 2.75-.11 4.03.36C16.94 4.14 14.58 3 12 3zm-2.83 2.6c.5-.07 1-.1 1.5-.1 3.87 0 7 3.13 7 7 0 .5-.03 1-.09 1.5-.47-2.12-2.19-3.79-4.38-4.38-2.6-1.12-5.44.89-6.56 3.49-.64 1.46-.86 3.01-.68 4.54-2.13-1.66-3.57-4.27-3.57-7.25 0-3.87 3.13-7 7-7z"/></svg>
         </button>
       </div>
     </header>
 
     <div class="chat-container">
-      <div class="chat-messages" id="chatMessages">
+      <div class="chat-messages" id="chatMessages" role="log" aria-live="polite">
         </div>
       <div class="chat-input">
-        <input type="text" id="messageInput" placeholder="Type your message..." />
-        <button id="sendMessageButton">
+        <label for="messageInput" class="sr-only">Type your message</label>
+        <textarea id="messageInput" placeholder="Type your message..." rows="1" aria-label="Chat input field"></textarea>
+        <button id="sendMessageButton" aria-label="Send message">
           <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M2.01 21.01L23 12 2.01 3 2 10l15 2-15 2 .01 7z"/></svg>
         </button>
       </div>
     </div>
 
-    <div id="welcomeModal" class="modal">
+    <div id="welcomeModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="welcomeModalTitle">
       <div class="modal-content">
-        <span class="close-button" id="closeModalButton">&times;</span>
-        <h2>Welcome to ChatSphere AI!</h2>
+        <span class="close-button" id="closeModalButton" aria-label="Close welcome message">&times;</span>
+        <h2 id="welcomeModalTitle">Welcome to ChatSphere AI!</h2>
         <p>I am your AI assistant. Feel free to ask me anything! I can help with information, creative writing, explanations, and more.</p>
         <p>Remember, I'm here to assist and provide insights.</p>
       </div>
