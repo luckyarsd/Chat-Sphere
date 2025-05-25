@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChatSphere - Our Services</title>
+  <style>
+    /* Basic reset and font settings (Copy from chat.html) */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f0f2f5;
+      color: #333;
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* --- Sidebar Styling (Copy from chat.html) --- */
+    .sidebar {
+      width: 250px;
+      background-color: #1a1a1a;
+      color: #f8f8f8;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+      z-index: 100;
+      flex-shrink: 0;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .sidebar-header {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 30px;
+      text-align: center;
+      color: #4a90e2;
+    }
+
+    .sidebar nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar nav li {
+      margin-bottom: 15px;
+    }
+
+    .sidebar nav a {
+      display: block;
+      color: #f8f8f8;
+      text-decoration: none;
+      padding: 12px 15px;
+      border-radius: 8px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sidebar nav a:hover {
+      background-color: #333;
+      color: #fff;
+    }
+
+    .sidebar nav a.active {
+      background-color: #4a90e2;
+      color: white;
+      font-weight: bold;
+    }
+
+    .sidebar nav a svg {
+        fill: currentColor;
+        width: 24px;
+        height: 24px;
+    }
+
+    .sidebar-footer {
+        margin-top: auto;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        text-align: center;
+        color: #bbb;
+        font-size: 0.9rem;
+    }
+    .sidebar-footer .logo-text {
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: #4a90e2;
+        margin-bottom: 5px;
+        display: block;
+    }
+    .sidebar-footer .suggested-name {
+        font-style: italic;
+        color: #888;
+        margin-top: 5px;
+    }
+
+    /* --- Main Content Area Styling (Copy from chat.html, adjust for generic content) --- */
+    .main-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 16px 32px;
+      overflow-y: auto;
+    }
+
+    header {
+      background-color: #1e1e1e;
+      color: white;
+      width: 100%;
+      max-width: 550px;
+      text-align: center;
+      padding: 18px;
+      font-size: 1.6rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      border-radius: 10px 10px 0 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+      position: relative;
+    }
+
+    .hamburger-button {
+        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 10px;
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+    }
+    .hamburger-button svg {
+        fill: white;
+        width: 30px;
+        height: 30px;
+    }
+
+    /* --- Page Specific Content Styling (New for services.html) --- */
+    .page-content {
+      background-color: white;
+      width: 100%;
+      max-width: 550px;
+      min-height: 450px; /* Ensure content area has a min height */
+      padding: 25px 30px;
+      border-radius: 0 0 10px 10px;
+      border: 1px solid #ccc;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      line-height: 1.6;
+      color: #444;
+    }
+
+    .page-content h2 {
+        font-size: 1.8rem;
+        color: #1a1a1a;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .page-content ul {
+        list-style: none; /* Remove default list style */
+        padding: 0;
+        margin: 20px 0;
+    }
+
+    .page-content li {
+        background-color: #f9f9f9;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 15px 20px;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column; /* Stack title and description */
+        gap: 5px;
+    }
+
+    .page-content li strong {
+        color: #007bff;
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+    }
+
+    .page-content li a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.3s ease;
+    }
+
+    .page-content li a:hover {
+        color: #0056b3;
+        text-decoration: underline;
+    }
+
+    /* --- Mobile Responsiveness (Copy from chat.html) --- */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        transform: translateX(-100%);
+        box-shadow: none;
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .hamburger-button {
+        display: block;
+      }
+
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 90;
+      }
+      .overlay.active {
+        display: block;
+      }
+
+      .main-content {
+        width: 100%;
+        margin-left: 0;
+        padding-top: 0;
+        flex-grow: 1;
+      }
+
+      header {
+        margin-top: 0;
+        border-radius: 0;
+        padding: 12px 10px;
+        font-size: 1.4rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        max-width: 100%;
+      }
+      header h1 {
+        margin: 0;
+      }
+
+      .page-content { /* Adjust for page content on mobile */
+        max-width: 100%;
+        border-radius: 0;
+        padding: 15px;
+      }
+
+      .page-content h2 {
+          font-size: 1.6rem;
+      }
+
+      .page-content li {
+          font-size: 1rem;
+          padding: 12px 15px;
+      }
+      .page-content li strong {
+          font-size: 1.1rem;
+      }
+    }
+
+    @media (max-width: 400px) {
+      header {
+        font-size: 1.2rem;
+      }
+      .hamburger-button svg {
+        width: 25px;
+        height: 25px;
+      }
+      .sidebar {
+        width: 200px;
+      }
+    }
+
+    /* --- Modal (NOT needed on these new pages, but keeping for reference/copy-paste) --- */
+    .modal { display: none; } /* Ensure it's hidden */
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">ChatSphere</div>
+    <nav>
+      <ul>
+        <li><a href="chat.html">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12zM6 9h12v2H6zm8 3H6v-2h8v2zm4-5H6V5h12v2z"/></svg>
+            Chat
+        </a></li>
+        <li><a href="services.html" class="active">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM9 13H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg>
+            Our Services
+        </a></li>
+        <li><a href="about.html">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.38 0 2.5 1.12 2.5 2.5S13.38 10 12 10 9.5 8.88 9.5 7.5 10.62 5 12 5zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+            About Us
+        </a></li>
+        <li><a href="contact.html">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            Contact Us
+        </a></li>
+      </ul>
+    </nav>
+    <div class="sidebar-footer">
+        <span class="logo-text">ChatSphere AI</span>
+        <p>Powered by <span class="suggested-name" id="aiSuggestedName">Aura</span></p>
+    </div>
+  </aside>
+
+  <div class="overlay" id="overlay"></div>
+
+  <main class="main-content">
+    <header>
+      <button class="hamburger-button" id="hamburgerButton">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+      </button>
+      <h1>Our Services</h1>
+    </header>
+
+    <div class="page-content">
+      <h2>Discover How We Can Help You</h2>
+      <p>At ChatSphere, we are dedicated to providing innovative and supportive solutions tailored to your spiritual and personal growth needs. Our services blend technology with traditional wisdom to offer unique experiences.</p>
+
+      <ul>
+        <li>
+          <strong>Virtual Darshan Platform</strong>
+          <p>Experience spiritual solace and connect with divine spaces from anywhere in the world. Our high-definition Virtual Darshan service brings sacred temples and shrines directly to your device.</p>
+          <a href="https://example.com/virtual-darshan" target="_blank">Visit Virtual Darshan Portal</a>
+        </li>
+        <li>
+          <strong>Personalized Spiritual Guidance</strong>
+          <p>Receive tailored advice and insights from our AI, drawing from vast spiritual texts and traditions. Whether you seek guidance on meditation, mindfulness, or life's challenges, our AI is here to assist.</p>
+        </li>
+        <li>
+          <strong>Community Support Programs</strong>
+          <p>Join a vibrant online community focused on shared values and mutual support. Participate in guided discussions, virtual events, and connect with like-minded individuals on your spiritual journey.</p>
+        </li>
+      </ul>
+
+      <p>We are constantly evolving our offerings to serve you better. Stay tuned for more enriching services coming soon!</p>
+    </div>
+
+  </main>
+
+  <script src="chat.js"></script>
+  <script>
+    // --- Sidebar / Hamburger Menu JS (Copy from chat.html, active link adjusted) ---
+    const sidebar = document.getElementById('sidebar');
+    const hamburgerButton = document.getElementById('hamburgerButton');
+    const overlay = document.getElementById('overlay');
+    const navLinks = document.querySelectorAll('.sidebar nav a');
+
+    function openSidebar() {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSidebar() {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    hamburgerButton.addEventListener('click', openSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    navLinks.forEach(link => {
+      link.addEventListener('click', (event) => {
+        // Handle active class for navigation
+        navLinks.forEach(l => l.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+
+        // Close sidebar only if it's an internal link or on mobile
+        if (window.innerWidth <= 768) {
+            closeSidebar();
+        }
+      });
+    });
+
+    // --- Active Link Highlight (Copy from chat.html, adjusted for this page) ---
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentPath = window.location.pathname.split('/').pop();
+      const aiSuggestedNameSpan = document.getElementById('aiSuggestedName');
+      if (aiSuggestedNameSpan) {
+        aiSuggestedNameSpan.textContent = "Aura"; // Set AI name for sidebar footer
+      }
+
+      navLinks.forEach(link => {
+        const linkHref = link.getAttribute('href');
+        if (linkHref.endsWith(currentPath) || (currentPath === '' && linkHref === 'chat.html')) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
