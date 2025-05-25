@@ -25,22 +25,38 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { message } = req.body;
+    const { message } = req.body; // 'message' is the user's raw query
 
     // Validate incoming message
     if (!message) {
       return res.status(400).json({ error: 'Bad Request - No message content provided.' });
     }
 
+    // --- START OF UPDATE ---
+
+    // 1. Define your formatting instructions
+    // You can customize this string to be more specific (e.g., "numbered list", "table", "short paragraphs").
+    // The key is to be explicit.
+    const formattingInstruction = `
+        Please provide your response in a clear, systematic manner.
+        Use bullet points for key information, and bold any important terms.
+        Keep each point concise and easy to read.
+    `.trim(); // .trim() helps clean up extra whitespace from the multiline string
+
+    // 2. Combine the user's message with the formatting instruction
+    const formattedMessage = `${message}\n\n${formattingInstruction}`;
+
+    // --- END OF UPDATE ---
+
     // Prepare the payload for the Groq API
     const groqPayload = {
       model: "llama3-8b-8192", // You can choose other Groq models: 'llama3-70b-8192', 'mixtral-8x7b-32768', 'gemma-7b-it'
       messages: [
-        { role: "system", content: "You are a helpful AI assistant." },
-        { role: "user", content: message }
+        { role: "system", content: "You are a helpful AI assistant. Always strive for clarity and conciseness." }, // Added a system role instruction for general behavior
+        { role: "user", content: formattedMessage } // <-- Now sending the combined, formatted message
       ],
       temperature: 0.7, // Creativity level (0.0 to 1.0)
-      max_tokens: 1024, // Max tokens in the response
+      max_tokens: 1024, // Max tokens in the response. Consider increasing if structured output gets cut off.
     };
 
     // Make the direct fetch call to the Groq API
