@@ -84,9 +84,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     navLinks.forEach(link => {
         link.addEventListener('click', (event) => {
-            // Keep specific active class for nav links that are not chat links
-            // This is primarily for "Our Services", "About Us", "Contact Us"
-            if (!event.currentTarget.id.includes('newChatButton') && !event.currentTarget.id.includes('currentChatNavLink') && !event.currentTarget.closest('.recent-chats-list')) {
+            // Only remove 'active' from other nav links if not a chat-related link
+            if (event.currentTarget.id !== 'newChatButton' && event.currentTarget.id !== 'currentChatNavLink' && !event.currentTarget.closest('.recent-chats-list')) {
                 navLinks.forEach(l => l.classList.remove('active'));
                 event.currentTarget.classList.add('active');
             }
@@ -104,8 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Chat History Management Functions ---
 
     /**
-     * Gets the list of chat IDs from localStorage.
-     * @returns {string[]} An array of chat IDs.
+     * Gets the list of chat IDs and their titles from localStorage.
+     * @returns {Array<Object>} An array of chat objects { id: string, title: string }.
      */
     function getChatList() {
         try {
@@ -113,14 +112,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return Array.isArray(list) ? list : [];
         } catch (e) {
             console.error("Error parsing chat list from localStorage:", e);
-            localStorage.removeItem(CHAT_LIST_KEY);
+            localStorage.removeItem(CHAT_LIST_KEY); // Clear corrupt data
             return [];
         }
     }
 
     /**
-     * Saves the list of chat IDs to localStorage.
-     * @param {string[]} list - The array of chat IDs to save.
+     * Saves the list of chat IDs and titles to localStorage.
+     * @param {Array<Object>} list - The array of chat objects to save.
      */
     function saveChatList(list) {
         localStorage.setItem(CHAT_LIST_KEY, JSON.stringify(list));
@@ -139,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return Array.isArray(parsedHistory) ? parsedHistory : [];
         } catch (e) {
             console.error(`Error parsing chat history for ID ${chatId}:`, e);
-            localStorage.removeItem(CHAT_STORAGE_PREFIX + chatId);
+            localStorage.removeItem(CHAT_STORAGE_PREFIX + chatId); // Clear corrupt data
             return [];
         }
     }
@@ -194,17 +193,39 @@ document.addEventListener('DOMContentLoaded', () => {
      * Starts a new chat session.
      */
     function startNewChat() {
-        currentChatId = Date.now().toString(); // Simple timestamp as unique ID
-        chatHistory = [];
+        // Save the current chat before starting a new one, but only if it's not truly empty.
+        // A chat is considered "not truly empty" if it has more than just the initial AI welcome.
+        if (currentChatId && chatHistory.length > 1) { // If there's more than just the initial AI message
+            saveCurrentChatHistory();
+        } else if (currentChatId && chatHistory.length === 1 && chatHistory[0].role === 'ai') {
+            // If it's a "New Chat" with only the AI welcome, and user clicks "New Chat" again,
+            // we should not save this empty chat to the recent list.
+            // Instead, we just replace it with a fresh "New Chat".
+            const chatList = getChatList();
+            const index = chatList.findIndex(chat => chat.id === currentChatId);
+            if (index !== -1) {
+                // If it's the current chat and it's truly empty, remove it from the list
+                chatList.splice(index, 1);
+                saveChatList(chatList);
+            }
+        }
+
+        currentChatId = Date.now().toString(); // Generate a new unique ID for the new chat
+        chatHistory = []; // Reset history for the new chat
         clearChatDisplay();
-        appendMessage("Hi there! I'm ChatSphere AI, your general purpose assistant. How can I help you today?", 'ai');
-        chatHistory.push({ role: "ai", content: "Hi there! I'm ChatSphere AI, your general purpose assistant. How can I help you today?" });
+
+        const initialAIMessage = { role: "ai", content: "Hi there! I'm ChatSphere AI, your general purpose assistant. How can I help you today?" };
+        appendMessage(initialAIMessage.content, initialAIMessage.role);
+        chatHistory.push(initialAIMessage);
 
         const chatList = getChatList();
-        chatList.unshift({ id: currentChatId, title: 'New Chat' }); // Add to the beginning
+        chatList.unshift({ id: currentChatId, title: 'New Chat' }); // Add to the beginning of the list
         saveChatList(chatList);
         updateRecentChatsUI();
         highlightCurrentChatInSidebar();
+
+        currentChatNavLink.textContent = 'Current Chat'; // Reset "Current Chat" link text
+        messageInput.value = ''; // Clear input field
         messageInput.focus();
     }
 
@@ -215,11 +236,24 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function switchChat(chatId, chatTitle) {
         if (currentChatId === chatId) {
-            if (window.innerWidth <= 768) closeSidebar(); // Close sidebar if already on current chat on mobile
-            return; // Already on this chat
+            if (window.innerWidth <= 768) closeSidebar();
+            return; // Already on this chat, just close sidebar if mobile
         }
 
-        saveCurrentChatHistory(); // Save the current chat before switching
+        // Save the current chat's history before switching
+        if (currentChatId && chatHistory.length > 1) { // Only save if the current chat has user messages
+            saveCurrentChatHistory();
+        } else if (currentChatId && chatHistory.length === 1 && chatHistory[0].role === 'ai') {
+            // If we are switching away from a "New Chat" that never got a user message,
+            // remove it from the recent chats list to avoid clutter.
+            const chatList = getChatList();
+            const index = chatList.findIndex(chat => chat.id === currentChatId);
+            if (index !== -1) {
+                chatList.splice(index, 1);
+                saveChatList(chatList);
+            }
+        }
+
 
         currentChatId = chatId;
         chatHistory = loadChatHistory(chatId);
@@ -229,9 +263,9 @@ document.addEventListener('DOMContentLoaded', () => {
         chatHistory.forEach(msg => {
             appendMessage(msg.content, msg.role);
         });
-        chatMessages.scrollTop = chatMessages.scrollHeight; // Ensure scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
 
-        // Update current chat link and highlight recent chat link
+        // Update current chat link text and highlight recent chat link
         currentChatNavLink.textContent = chatTitle;
         highlightCurrentChatInSidebar();
 
@@ -245,20 +279,36 @@ document.addEventListener('DOMContentLoaded', () => {
      * Highlights the current chat in the sidebar.
      */
     function highlightCurrentChatInSidebar() {
-        document.querySelectorAll('.recent-chats-list a').forEach(link => {
-            link.classList.remove('active-chat');
-        });
+        // Remove 'active' from all nav links first
         document.querySelectorAll('.sidebar nav a').forEach(link => {
             link.classList.remove('active');
         });
+        // Remove 'active-chat' from all recent chat links
+        document.querySelectorAll('.recent-chats-list a').forEach(link => {
+            link.classList.remove('active-chat');
+        });
 
-        // Highlight "Current Chat" general link
-        currentChatNavLink.classList.add('active');
+        // Highlight the "Current Chat" link if it matches the current active chat
+        if (currentChatId) {
+             const currentChatEntry = getChatList().find(chat => chat.id === currentChatId);
+             if (currentChatEntry && currentChatEntry.title !== 'New Chat') {
+                 // Only highlight 'Current Chat' main link if it refers to a named, existing chat
+                 currentChatNavLink.classList.add('active');
+             } else {
+                 // If it's still 'New Chat', don't highlight the generic "Current Chat"
+                 // as "New Chat" button will be active instead.
+             }
+        }
+
 
         // Find and highlight the specific recent chat link if it exists
         const activeRecentChatLink = document.querySelector(`.recent-chats-list a[data-chat-id="${currentChatId}"]`);
         if (activeRecentChatLink) {
             activeRecentChatLink.classList.add('active-chat');
+        } else {
+             // If no specific recent chat link is highlighted (e.g., brand new chat),
+             // highlight the "New Chat" button.
+             newChatButton.classList.add('active-chat'); // Using active-chat for consistency
         }
     }
 
@@ -267,30 +317,38 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function updateRecentChatsUI() {
         recentChatsList.innerHTML = ''; // Clear existing list
-        const chatList = getChatList();
+        let chatList = getChatList();
 
-        // Remove any chats that are just "New Chat" and have no messages (except the initial AI welcome)
-        const filteredChatList = chatList.filter(chat => {
+        // Filter out "New Chat" entries that are truly empty (only initial AI message)
+        chatList = chatList.filter(chat => {
             const history = loadChatHistory(chat.id);
-            // A chat is considered "empty" if it only contains the initial AI message
-            // or if it's completely empty (which shouldn't happen with the current logic but good for robustness)
+            // A chat is considered "empty" if it only contains the initial AI message or is empty
             return history.length > 1 || (history.length === 1 && history[0].role !== 'ai');
         });
 
-        // Re-save the filtered list to ensure clean up
-        saveChatList(filteredChatList);
+        // Ensure the current chat (if it exists and has content) is at the top
+        if (currentChatId && chatHistory.length > 1) {
+            const currentChatEntry = chatList.find(chat => chat.id === currentChatId);
+            if (currentChatEntry) {
+                // Remove it from its current position
+                chatList = chatList.filter(chat => chat.id !== currentChatId);
+                // Add it to the front
+                chatList.unshift(currentChatEntry);
+            }
+        }
 
-        // Render the filtered list
-        filteredChatList.forEach(chat => {
+        saveChatList(chatList); // Save the cleaned and reordered list
+
+        chatList.forEach(chat => {
             const li = document.createElement('li');
             const a = document.createElement('a');
             a.href = "#"; // Prevent page reload
             a.textContent = chat.title;
             a.dataset.chatId = chat.id; // Store chat ID
-            a.classList.add('recent-chat-link'); // Add a class for styling/selection
+            a.classList.add('recent-chat-link');
 
             a.addEventListener('click', (event) => {
-                event.preventDefault(); // Prevent default link behavior
+                event.preventDefault();
                 switchChat(chat.id, chat.title);
             });
             li.appendChild(a);
@@ -304,15 +362,25 @@ document.addEventListener('DOMContentLoaded', () => {
     function initializeChat() {
         const chatList = getChatList();
         if (chatList.length > 0) {
-            // Load the most recent chat if available
-            currentChatId = chatList[0].id;
-            chatHistory = loadChatHistory(currentChatId);
-            chatHistory.forEach(msg => {
-                appendMessage(msg.content, msg.role);
-            });
-            currentChatNavLink.textContent = chatList[0].title;
+            // Load the most recent chat if available and not empty
+            const mostRecentChat = chatList[0];
+            const history = loadChatHistory(mostRecentChat.id);
+
+            // If the most recent chat is just an empty 'New Chat', discard it and start fresh
+            if (history.length === 1 && history[0].role === 'ai') {
+                chatList.shift(); // Remove it from the list
+                saveChatList(chatList);
+                startNewChat(); // Start a truly new one
+            } else {
+                currentChatId = mostRecentChat.id;
+                chatHistory = history;
+                chatHistory.forEach(msg => {
+                    appendMessage(msg.content, msg.role);
+                });
+                currentChatNavLink.textContent = mostRecentChat.title;
+            }
         } else {
-            // Start a new chat if no history exists
+            // Start a new chat if no history exists at all
             startNewChat();
         }
         updateRecentChatsUI();
@@ -334,7 +402,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const messageText = messageInput.value.trim();
         if (messageText === '') return;
 
-        // Add bounce animation to send button
         sendMessageButton.classList.add('send-button-bounce');
         sendMessageButton.addEventListener('animationend', () => {
             sendMessageButton.classList.remove('send-button-bounce');
@@ -347,16 +414,21 @@ document.addEventListener('DOMContentLoaded', () => {
         chatHistory.push({ role: "user", content: messageText });
 
         if (isFirstUserMessageInNewChat) {
-            const chatList = getChatList();
-            const currentChatEntry = chatList.find(chat => chat.id === currentChatId);
+            let chatList = getChatList();
+            let currentChatEntry = chatList.find(chat => chat.id === currentChatId);
+
             if (currentChatEntry) {
                 currentChatEntry.title = generateChatTitle(chatHistory);
                 currentChatNavLink.textContent = currentChatEntry.title; // Update the main link
-                saveChatList(chatList); // Save the updated list
+
+                // Move the current chat to the top of the list if it's not already
+                chatList = chatList.filter(chat => chat.id !== currentChatId); // Remove old entry
+                chatList.unshift(currentChatEntry); // Add updated entry to the front
+                saveChatList(chatList);
                 updateRecentChatsUI(); // Re-render recent chats with the new title
             }
         } else {
-            saveCurrentChatHistory(); // Save after every user message
+            saveCurrentChatHistory(); // Save after every subsequent user message
         }
 
         messageInput.value = '';
@@ -422,11 +494,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Modal Functionality ---
-    // Show modal on page load if no chat history exists at all
+    // Show modal on page load only if there are no saved chats at all
     if (getChatList().length === 0) {
         welcomeModal.style.display = 'flex';
     } else {
-        welcomeModal.style.display = 'none'; // Ensure it's hidden if there's existing history
+        welcomeModal.style.display = 'none';
     }
 
     closeModalButton.addEventListener('click', () => {
@@ -441,7 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event listener for the "New Chat" button
     newChatButton.addEventListener('click', (event) => {
-        event.preventDefault(); // Prevent default link behavior
+        event.preventDefault();
         startNewChat();
         if (window.innerWidth <= 768) {
             closeSidebar();
@@ -450,18 +522,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event listener for "Current Chat" link
     currentChatNavLink.addEventListener('click', (event) => {
-        event.preventDefault(); // Prevent default link behavior
+        event.preventDefault();
+        // If there's an active chat, simply re-display it and close the sidebar if mobile
         if (currentChatId) {
             const chatList = getChatList();
             const currentChatData = chatList.find(chat => chat.id === currentChatId);
             if (currentChatData) {
-                switchChat(currentChatId, currentChatData.title);
+                 // No need to reload history or clear display if it's the same chat
+                 // Just ensure UI is correct and close sidebar if mobile
+                highlightCurrentChatInSidebar(); // Ensure highlighting is correct
+                if (window.innerWidth <= 768) {
+                    closeSidebar();
+                }
             } else {
-                // If currentChatId somehow doesn't exist in the list, just start a new one
+                // Fallback: if currentChatId is set but not in list, start new
                 startNewChat();
             }
         } else {
-            // If no current chat ID, start a new one
+            // If no current chat ID, start a new one (should be handled by initializeChat usually)
             startNewChat();
         }
     });
