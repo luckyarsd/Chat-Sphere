@@ -3,8 +3,64 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ChatSphere - Chat</title>
+  <title>ChatSphere AI</title>
+  <link rel="icon" href="https://assets-global.website-files.com/64070a27ac02766324ef2898/6474b786ef78efed18255018_favicon.png" type="image/png">
   <style>
+    /* Theme Variables */
+    :root { /* Light theme defaults */
+      --bg-color: #f0f2f5;
+      --text-color: #333;
+      --header-bg: #1e1e1e;
+      --header-text: white;
+      --sidebar-bg: #1a1a1a;
+      --sidebar-text: #f8f8f8;
+      --sidebar-hover-bg: #333;
+      --sidebar-active-bg: #4a90e2;
+      --main-content-bg: white;
+      --border-color: #ccc;
+      --box-shadow-color: rgba(0, 0, 0, 0.1);
+      --chat-input-bg: #f8f8f8;
+      --chat-input-border: #ddd;
+      --user-message-bg: #007bff;
+      --user-message-text: white;
+      --ai-message-bg: #e2e6ea;
+      --ai-message-text: #333;
+      --timestamp-color: #777;
+      --placeholder-color: #999;
+      --scroll-thumb: #888;
+      --scroll-track: #f1f1f1;
+      --icon-color: currentColor; /* Default icon color for general use */
+      --theme-toggle-icon-color-light: #FFD700; /* Sun icon color for light theme */
+      --theme-toggle-icon-color-dark: #f0f2f5; /* Moon icon color for dark theme */
+      --theme-label-color: #f0f2f5; /* Color for the "Theme ChatSphere AI" text */
+    }
+
+    body.dark-theme {
+      --bg-color: #1a1a1a;
+      --text-color: #f0f2f5;
+      --header-bg: #2b2b2b;
+      --header-text: #e0e0e0;
+      --sidebar-bg: #2b2b2b;
+      --sidebar-text: #e0e0e0;
+      --sidebar-hover-bg: #444;
+      --sidebar-active-bg: #4a90e2; /* Keep blue for accent */
+      --main-content-bg: #333333;
+      --border-color: #555;
+      --box-shadow-color: rgba(0, 0, 0, 0.3);
+      --chat-input-bg: #444444;
+      --chat-input-border: #555;
+      --user-message-bg: #4a90e2; /* Keep blue for user message */
+      --user-message-text: white;
+      --ai-message-bg: #555555;
+      --ai-message-text: #f0f2f5;
+      --timestamp-color: #aaaaaa;
+      --placeholder-color: #bbbbbb;
+      --scroll-thumb: #666;
+      --scroll-track: #2b2b2b;
+      --icon-color: #f8f8f8; /* Dark theme general icon color */
+      --theme-label-color: #e0e0e0; /* Color for the "Theme ChatSphere AI" text in dark mode */
+    }
+
     /* Basic reset and font settings */
     * {
       box-sizing: border-box;
@@ -14,25 +70,26 @@
     }
 
     body {
-      background-color: #f0f2f5;
-      color: #333;
+      background-color: var(--bg-color);
+      color: var(--text-color);
       display: flex;
       min-height: 100vh;
-      overflow-x: hidden; /* Prevent horizontal scroll when sidebar is off-screen */
+      overflow-x: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     /* --- Sidebar Styling --- */
     .sidebar {
       width: 250px;
-      background-color: #1a1a1a;
-      color: #f8f8f8;
+      background-color: var(--sidebar-bg);
+      color: var(--sidebar-text);
       padding: 20px;
       display: flex;
       flex-direction: column;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+      box-shadow: 2px 0 10px var(--box-shadow-color);
       z-index: 100;
-      flex-shrink: 0; /* Prevent it from shrinking */
-      transition: transform 0.3s ease-in-out; /* Smooth transition */
+      flex-shrink: 0;
+      transition: transform 0.3s ease-in-out, background-color 0.3s ease, color 0.3s ease;
     }
 
     .sidebar-header {
@@ -40,7 +97,7 @@
       font-weight: bold;
       margin-bottom: 30px;
       text-align: center;
-      color: #4a90e2;
+      color: var(--sidebar-active-bg); /* Use accent color */
     }
 
     .sidebar nav ul {
@@ -55,7 +112,7 @@
 
     .sidebar nav a {
       display: block;
-      color: #f8f8f8;
+      color: var(--sidebar-text);
       text-decoration: none;
       padding: 12px 15px;
       border-radius: 8px;
@@ -67,45 +124,42 @@
     }
 
     .sidebar nav a:hover {
-      background-color: #333;
-      color: #fff;
+      background-color: var(--sidebar-hover-bg);
+      color: var(--header-text);
     }
 
     .sidebar nav a.active {
-      background-color: #4a90e2;
-      color: white;
+      background-color: var(--sidebar-active-bg);
+      color: white; /* Active link text always white for contrast */
       font-weight: bold;
     }
 
-    /* SVG Icons for nav links */
     .sidebar nav a svg {
-        fill: currentColor; /* Inherit color from parent 'a' tag */
+        fill: currentColor; /* Use current text color */
         width: 24px;
         height: 24px;
     }
 
-    /* --- Sidebar Footer (New) --- */
     .sidebar-footer {
-        margin-top: auto; /* Pushes the footer to the bottom */
+        margin-top: auto;
         padding-top: 20px;
         border-top: 1px solid rgba(255, 255, 255, 0.1);
         text-align: center;
-        color: #bbb;
+        color: var(--timestamp-color);
         font-size: 0.9rem;
     }
     .sidebar-footer .logo-text {
         font-weight: bold;
         font-size: 1.2rem;
-        color: #4a90e2; /* Accent color for logo */
+        color: var(--sidebar-active-bg);
         margin-bottom: 5px;
         display: block;
     }
     .sidebar-footer .suggested-name {
         font-style: italic;
-        color: #888;
+        color: var(--timestamp-color);
         margin-top: 5px;
     }
-
 
     /* --- Main Content Area Styling --- */
     .main-content {
@@ -114,13 +168,12 @@
       flex-direction: column;
       align-items: center;
       padding: 0 16px 32px;
-      overflow-y: auto; /* Allow scrolling for main content */
+      overflow-y: auto;
     }
 
-    /* Header styling */
     header {
-      background-color: #1e1e1e;
-      color: white;
+      background-color: var(--header-bg);
+      color: var(--header-text);
       width: 100%;
       max-width: 550px;
       text-align: center;
@@ -129,12 +182,33 @@
       font-weight: bold;
       letter-spacing: 1px;
       border-radius: 10px 10px 0 0;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 8px var(--box-shadow-color);
       margin-top: 20px;
       position: relative;
+      display: flex;
+      justify-content: center; /* Centers the h1 */
+      align-items: center;
     }
 
-    /* Hamburger Menu Button (hidden by default, shown on mobile) */
+    /* Styles for the new image logo in the header */
+    header h1 {
+        margin: 0;
+        font-size: 0; /* Hide font-size as it's an image now */
+        line-height: 0; /* Remove extra line height */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%; /* Ensure h1 takes full height of header for vertical centering */
+    }
+
+    .header-logo {
+        max-width: 180px; /* Max width for the logo */
+        height: auto; /* Maintain aspect ratio */
+        max-height: 40px; /* Max height for the logo */
+        display: block; /* Remove extra space below image */
+    }
+
+
     .hamburger-button {
         display: none;
         background: none;
@@ -148,99 +222,267 @@
         z-index: 10;
     }
     .hamburger-button svg {
-        fill: white;
+        fill: var(--header-text); /* Use header text color */
         width: 30px;
         height: 30px;
     }
 
-    /* Chat messages container */
-    #chat {
-      background-color: white;
+    /* Top Right Controls Group */
+    .top-right-controls {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        gap: 8px; /* Space between text and toggle */
+        flex-wrap: nowrap; /* Prevent wrapping */
+    }
+
+    .theme-label {
+        font-size: 0.9rem;
+        color: var(--theme-label-color);
+        white-space: nowrap; /* Keep text on one line */
+        font-weight: normal;
+    }
+
+    /* Theme Toggle Button */
+    .theme-toggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background-color 0.3s ease;
+    }
+    .theme-toggle:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    .theme-toggle svg {
+        width: 24px;
+        height: 24px;
+    }
+    /* Specific icon colors based on current theme for contrast */
+    body.light-theme .theme-toggle svg {
+      fill: var(--theme-toggle-icon-color-light); /* Sun icon color for light theme */
+    }
+    body.dark-theme .theme-toggle svg {
+      fill: var(--theme-toggle-icon-color-dark); /* Moon icon color for dark theme */
+    }
+
+
+    /* --- Chat Container Styling --- */
+    .chat-container {
+      background-color: var(--main-content-bg);
       width: 100%;
       max-width: 550px;
-      height: 75vh;
-      min-height: 450px;
-      padding: 15px;
-      overflow-y: auto;
+      height: 600px; /* Fixed height for chat area */
       display: flex;
       flex-direction: column;
-      gap: 8px;
       border-radius: 0 0 10px 10px;
-      border: 1px solid #ccc;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 16px var(--box-shadow-color);
+      overflow: hidden; /* Hide overflow from chat messages */
+      transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
-    /* Message bubbles */
-    .message {
-      max-width: 80%;
-      padding: 12px 16px;
-      border-radius: 20px;
-      font-size: 0.95rem;
-      line-height: 1.4;
-      word-wrap: break-word;
-      position: relative;
-    }
-
-    .user {
-      background-color: #007bff;
-      color: white;
-      align-self: flex-end;
-      border-bottom-right-radius: 5px;
-    }
-
-    .bot {
-      background-color: #e0e0e0;
-      color: #000;
-      align-self: flex-start;
-      border-bottom-left-radius: 5px;
-    }
-
-    /* Input form */
-    #inputForm {
-      margin-top: 15px;
-      width: 100%;
-      max-width: 550px;
-      display: flex;
-      gap: 8px;
-    }
-
-    #userInput {
+    /* Chat Messages Area */
+    .chat-messages {
       flex-grow: 1;
-      padding: 12px 18px;
-      font-size: 0.95rem;
-      border: 1px solid #ccc;
+      padding: 20px;
+      overflow-y: auto; /* Enable scrolling for messages */
+      display: flex;
+      flex-direction: column;
+      gap: 15px; /* Space between messages */
+      scrollbar-width: thin;
+      scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+    }
+    /* Custom scrollbar for Webkit browsers */
+    .chat-messages::-webkit-scrollbar {
+      width: 8px;
+    }
+    .chat-messages::-webkit-scrollbar-track {
+      background: var(--scroll-track);
+    }
+    .chat-messages::-webkit-scrollbar-thumb {
+      background-color: var(--scroll-thumb);
+      border-radius: 10px;
+      border: 2px solid var(--scroll-track);
+    }
+
+
+    .message {
+      display: flex;
+      max-width: 85%; /* Limit message width */
+      padding: 10px 15px;
+      border-radius: 15px;
+      word-wrap: break-word; /* Break long words */
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      line-height: 1.4;
+    }
+
+    .message.user {
+      align-self: flex-end; /* Align user messages to the right */
+      background-color: var(--user-message-bg);
+      color: var(--user-message-text);
+      border-bottom-right-radius: 2px; /* Pointy corner for user */
+    }
+
+    .message.ai {
+      align-self: flex-start; /* Align AI messages to the left */
+      background-color: var(--ai-message-bg);
+      color: var(--ai-message-text);
+      border-bottom-left-radius: 2px; /* Pointy corner for AI */
+    }
+
+    .typing-indicator {
+      align-self: flex-start;
+      padding: 10px 15px;
+      border-radius: 15px;
+      background-color: var(--ai-message-bg);
+      color: var(--ai-message-text);
+      font-style: italic;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.7; }
+      50% { opacity: 1; }
+      100% { opacity: 0.7; }
+    }
+
+    /* Chat Input Area */
+    .chat-input {
+      display: flex;
+      border-top: 1px solid var(--border-color);
+      padding: 15px 20px;
+      background-color: var(--main-content-bg);
+      gap: 10px;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .chat-input input[type="text"] {
+      flex-grow: 1;
+      padding: 12px 15px;
+      border: 1px solid var(--chat-input-border);
       border-radius: 25px;
+      font-size: 1rem;
+      background-color: var(--chat-input-bg);
+      color: var(--text-color);
+      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    }
+
+    .chat-input input[type="text"]::placeholder {
+      color: var(--placeholder-color);
+    }
+
+    .chat-input input[type="text"]:focus {
       outline: none;
-      background-color: white;
-      color: #333;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+      border-color: var(--sidebar-active-bg);
+      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.3);
     }
 
-    #userInput:focus {
-      border-color: #007bff;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.05), 0 0 0 2px rgba(0,123,255,0.2);
-    }
-
-    #sendBtn {
-      background-color: #007bff;
+    .chat-input button {
+      background-color: var(--sidebar-active-bg);
       color: white;
       border: none;
-      padding: 10px 20px;
-      font-size: 0.95rem;
-      border-radius: 25px;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
       transition: background-color 0.3s ease, transform 0.2s ease;
-      box-shadow: 0 2px 5px rgba(0,123,255,0.3);
+      flex-shrink: 0;
     }
 
-    #sendBtn:hover {
-      background-color: #0056b3;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(0,123,255,0.4);
+    .chat-input button:hover {
+      background-color: #3a7bd5; /* Slightly darker blue */
+      transform: scale(1.05);
+    }
+    .chat-input button:active {
+        transform: scale(0.95);
     }
 
-    #sendBtn:active {
-      transform: translateY(0);
+    .chat-input button svg {
+        fill: white;
+        width: 24px;
+        height: 24px;
+    }
+
+    /* --- Modal Styling --- */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 200; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .modal-content {
+        background-color: var(--main-content-bg);
+        margin: auto;
+        padding: 30px;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 5px 15px var(--box-shadow-color);
+        position: relative;
+        animation: slideIn 0.3s ease-out;
+        transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+        text-align: center;
+    }
+
+    .modal-content h2 {
+        color: var(--sidebar-active-bg);
+        margin-bottom: 20px;
+        font-size: 1.8rem;
+    }
+
+    .modal-content p {
+        margin-bottom: 20px;
+        line-height: 1.5;
+        font-size: 1.1rem;
+        color: var(--text-color);
+    }
+
+    .close-button {
+        color: var(--timestamp-color);
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .close-button:hover,
+    .close-button:focus {
+        color: #000;
+        text-decoration: none;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+        from { transform: translateY(-30px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
     }
 
     /* --- Mobile Responsiveness --- */
@@ -261,6 +503,9 @@
 
       .hamburger-button {
         display: block;
+        position: static; /* Adjust for flex layout */
+        transform: none;
+        margin-right: 10px; /* Space from h1 */
       }
 
       .overlay {
@@ -289,45 +534,51 @@
         border-radius: 0;
         padding: 12px 10px;
         font-size: 1.4rem;
-        display: flex;
-        justify-content: center;
+        display: flex; /* Keep flex for hamburger/theme toggle */
+        justify-content: space-between; /* Distribute items */
         align-items: center;
         max-width: 100%;
       }
       header h1 {
-        margin: 0;
+        flex-grow: 1; /* Allow h1 to take space */
+        text-align: center; /* Center h1 content */
+      }
+      /* Mobile adjustment for image logo */
+      .header-logo {
+          max-width: 140px; /* Smaller on mobile */
+          max-height: 35px;
       }
 
-      #chat {
-        height: calc(100vh - 120px);
+      .top-right-controls {
+          position: static; /* Adjust for flex layout */
+          transform: none;
+          margin-left: 10px; /* Space from h1 */
+      }
+
+      .chat-container {
         max-width: 100%;
+        height: calc(100vh - 60px); /* Adjust height for mobile header */
         border-radius: 0;
-        padding: 10px;
+      }
+
+      .chat-messages {
+        padding: 15px;
       }
 
       .message {
-        padding: 10px 14px;
-        font-size: 0.9rem;
-        border-radius: 16px;
+        padding: 8px 12px;
+        font-size: 0.95rem;
       }
 
-      #inputForm {
-        max-width: 100%;
-        padding: 8px;
-        border-top: none;
-        border-radius: 0;
-        margin-bottom: 0;
-      }
-
-      #userInput {
+      .chat-input {
         padding: 10px 15px;
-        font-size: 0.85rem;
-        border-radius: 20px;
       }
-      #sendBtn {
-        padding: 8px 16px;
-        font-size: 0.85rem;
-        border-radius: 20px;
+      .chat-input input[type="text"] {
+        padding: 10px 12px;
+      }
+      .chat-input button {
+        width: 40px;
+        height: 40px;
       }
     }
 
@@ -342,98 +593,16 @@
       .sidebar {
         width: 200px;
       }
-    }
-
-    /* --- Modern Name Input Modal (New) --- */
-    .modal {
-        display: none; /* Hidden by default */
-        position: fixed; /* Stay in place */
-        z-index: 1000; /* Sit on top */
-        left: 0;
-        top: 0;
-        width: 100%; /* Full width */
-        height: 100%; /* Full height */
-        overflow: auto; /* Enable scroll if needed */
-        background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
-        display: flex; /* Use flex to center content */
-        justify-content: center;
-        align-items: center;
-        opacity: 0; /* Start invisible for transition */
-        transition: opacity 0.3s ease-in-out;
-    }
-
-    .modal.active {
-        display: flex; /* Show when active */
-        opacity: 1; /* Fade in */
-    }
-
-    .modal-content {
-        background-color: #fff;
-        margin: auto; /* Center the modal */
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-        max-width: 400px;
-        width: 90%; /* Responsive width */
-        text-align: center;
-        animation: modalScaleIn 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Pop-in animation */
-    }
-
-    .modal-content h2 {
-        color: #1a1a1a;
-        margin-bottom: 15px;
-        font-size: 1.8rem;
-        font-weight: 700;
-    }
-
-    .modal-content p {
-        color: #555;
-        margin-bottom: 25px;
-        line-height: 1.5;
-        font-size: 1rem;
-    }
-
-    .modal-content input[type="text"] {
-        width: calc(100% - 40px); /* Adjust width for padding */
-        padding: 14px 20px;
-        margin-bottom: 25px;
-        border: 2px solid #ddd;
-        border-radius: 8px;
-        font-size: 1.1rem;
-        outline: none;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .modal-content input[type="text"]:focus {
-        border-color: #007bff;
-        box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
-    }
-
-    .modal-content button {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        padding: 14px 30px;
-        border-radius: 8px;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-        box-shadow: 0 4px 10px rgba(0,123,255,0.3);
-    }
-
-    .modal-content button:hover {
-        background-color: #0056b3;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(0,123,255,0.4);
-    }
-
-    .modal-content button:active {
-        transform: translateY(0);
-    }
-
-    @keyframes modalScaleIn {
-        0% { transform: scale(0.7); opacity: 0; }
-        100% { transform: scale(1); opacity: 1; }
+      .chat-input input[type="text"] {
+        font-size: 0.9rem;
+      }
+      .header-logo {
+          max-width: 120px; /* Even smaller on very small screens */
+          max-height: 30px;
+      }
+      .theme-label {
+          display: none; /* Hide text on very small screens to save space */
+      }
     }
   </style>
 </head>
@@ -443,19 +612,19 @@
     <div class="sidebar-header">ChatSphere</div>
     <nav>
       <ul>
-        <li><a href="#chat-section" class="active">
+        <li><a href="chat.html" class="active">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12zM6 9h12v2H6zm8 3H6v-2h8v2zm4-5H6V5h12v2z"/></svg>
             Chat
         </a></li>
-        <li><a href="services.html" id="services-link">
+        <li><a href="services.html">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM9 13H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg>
             Our Services
         </a></li>
-        <li><a href="about.html" id="about-link">
+        <li><a href="about.html">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.38 0 2.5 1.12 2.5 2.5S13.38 10 12 10 9.5 8.88 9.5 7.5 10.62 5 12 5zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
             About Us
         </a></li>
-        <li><a href="contact.html" id="contact-link">
+        <li><a href="contact.html">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
             Contact Us
         </a></li>
@@ -463,7 +632,7 @@
     </nav>
     <div class="sidebar-footer">
         <span class="logo-text">ChatSphere AI</span>
-        <p>Powered by <span class="suggested-name" id="aiSuggestedName">InsightBot</span></p>
+        <p>Powered by <span class="suggested-name" id="aiSuggestedName">Aura</span></p>
     </div>
   </aside>
 
@@ -474,78 +643,39 @@
       <button class="hamburger-button" id="hamburgerButton">
           <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
       </button>
-      <h1>Chat Sphere</h1>
+      <h1><img src="https://via.placeholder.com/180x50.png?text=Your+Logo" alt="ChatSphere AI Logo" class="header-logo"></h1>
+      <div class="top-right-controls">
+        <span class="theme-label">Theme ChatSphere AI</span>
+        <button class="theme-toggle" id="themeToggle">
+          <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="var(--icon-color)"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.34 2.42-3.92 2.76-2.5.56-4.92-1.39-5.48-3.89-.56-2.5 1.39-4.92 3.89-5.48 1.34-.3 2.75-.11 4.03.36C16.94 4.14 14.58 3 12 3zm-2.83 2.6c.5-.07 1-.1 1.5-.1 3.87 0 7 3.13 7 7 0 .5-.03 1-.09 1.5-.47-2.12-2.19-3.79-4.38-4.38-2.6-1.12-5.44.89-6.56 3.49-.64 1.46-.86 3.01-.68 4.54-2.13-1.66-3.57-4.27-3.57-7.25 0-3.87 3.13-7 7-7z"/></svg>
+        </button>
+      </div>
     </header>
 
-    <div id="chat"></div>
+    <div class="chat-container">
+      <div class="chat-messages" id="chatMessages">
+        <div class="message ai">
+          Hi there! I'm ChatSphere AI, your general purpose assistant. How can I help you today?
+        </div>
+      </div>
+      <div class="chat-input">
+        <input type="text" id="messageInput" placeholder="Type your message..." />
+        <button id="sendMessageButton">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M2.01 21.01L23 12 2.01 3 2 10l15 2-15 2 .01 7z"/></svg>
+        </button>
+      </div>
+    </div>
 
-    <form id="inputForm" autocomplete="off">
-      <input id="userInput" type="text" placeholder="Type a message..." required />
-      <button type="submit" id="sendBtn">Send</button>
-    </form>
+    <div id="welcomeModal" class="modal">
+      <div class="modal-content">
+        <span class="close-button" id="closeModalButton">&times;</span>
+        <h2>Welcome to ChatSphere AI!</h2>
+        <p>I am your AI assistant. Feel free to ask me anything! I can help with information, creative writing, explanations, and more.</p>
+        <p>Remember, I'm here to assist and provide insights.</p>
+      </div>
+    </div>
   </main>
 
-  <div id="nameModal" class="modal">
-    <div class="modal-content">
-      <h2>Welcome to ChatSphere!</h2>
-      <p>Please tell us your name to start chatting with our AI assistant.</p>
-      <input type="text" id="modalUserNameInput" placeholder="Enter your name" autofocus>
-      <button id="startChatModalBtn">Start Chat</button>
-    </div>
-  </div>
   <script src="chat.js"></script>
-  <script>
-    // --- Sidebar / Hamburger Menu JS ---
-    const sidebar = document.getElementById('sidebar');
-    const hamburgerButton = document.getElementById('hamburgerButton');
-    const overlay = document.getElementById('overlay');
-    const navLinks = document.querySelectorAll('.sidebar nav a');
-
-    function openSidebar() {
-        sidebar.classList.add('active');
-        overlay.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeSidebar() {
-        sidebar.classList.remove('active');
-        overlay.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-
-    hamburgerButton.addEventListener('click', openSidebar);
-    overlay.addEventListener('click', closeSidebar);
-
-    navLinks.forEach(link => {
-      link.addEventListener('click', (event) => {
-        navLinks.forEach(l => l.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-
-        if (window.innerWidth <= 768) {
-            closeSidebar();
-        }
-
-        if (event.currentTarget.getAttribute('href') === '#chat-section') {
-            const chatDiv = document.getElementById('chat');
-            if (chatDiv) chatDiv.scrollTop = chatDiv.scrollHeight;
-        }
-      });
-    });
-
-    // --- Active Link Highlight (Existing Logic) ---
-    document.addEventListener('DOMContentLoaded', () => {
-      const currentPath = window.location.pathname.split('/').pop();
-      const isChatPage = currentPath === 'chat.html' || currentPath === '';
-
-      navLinks.forEach(link => {
-        const linkHref = link.getAttribute('href');
-        if ((isChatPage && linkHref === '#chat-section') || (linkHref.endsWith(currentPath) && currentPath !== '')) {
-          link.classList.add('active');
-        } else {
-          link.classList.remove('active');
-        }
-      });
-    });
-  </script>
 </body>
 </html>
