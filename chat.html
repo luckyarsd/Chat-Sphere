@@ -264,6 +264,72 @@
       fill: var(--theme-toggle-icon-color-dark); /* Moon icon color for dark theme */
     }
 
+    /* New Chat Options Button */
+    .chat-options-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background-color 0.3s ease;
+        color: var(--header-text); /* Inherit header text color */
+    }
+    .chat-options-button:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    .chat-options-button svg {
+        width: 24px;
+        height: 24px;
+        fill: currentColor;
+    }
+
+    /* Chat Options Dropdown Menu */
+    .chat-options-dropdown {
+        display: none; /* Hidden by default */
+        position: absolute;
+        top: calc(75px + 10px); /* Header height (approx 55px + 18px padding = 73px) + 10px margin-top */
+        right: 36px; /* Align with right edge of header, adjust as needed */
+        background-color: var(--main-content-bg);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px var(--box-shadow-color);
+        z-index: 150; /* Above chat container, below modals */
+        min-width: 150px;
+        padding: 10px 0;
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        opacity: 0;
+        transform: translateY(-10px);
+        pointer-events: none; /* Prevent clicks when hidden */
+    }
+
+    .chat-options-dropdown.active {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto; /* Allow clicks when active */
+    }
+
+    .chat-options-dropdown ul {
+        list-style: none;
+    }
+
+    .chat-options-dropdown ul li a {
+        display: block;
+        padding: 10px 15px;
+        text-decoration: none;
+        color: var(--text-color);
+        font-size: 0.95rem;
+        white-space: nowrap;
+        transition: background-color 0.2s ease;
+    }
+
+    .chat-options-dropdown ul li a:hover {
+        background-color: var(--sidebar-hover-bg); /* Use sidebar hover for consistency */
+        color: var(--header-text); /* White text on hover */
+    }
+
 
     /* --- Chat Container Styling --- */
     .chat-container {
@@ -313,8 +379,6 @@
       word-wrap: break-word; /* Break long words */
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
       line-height: 1.4;
-      /* Message Pop-in Fix: .message no longer starts hidden by default */
-      /* The animation itself will handle initial opacity and transform */
     }
 
     .message.user {
@@ -582,6 +646,11 @@
           margin-left: 10px; /* Space from h1 */
       }
 
+      .chat-options-dropdown {
+          top: 70px; /* Approximate header height (50px) + margin from header (20px) */
+          right: 15px;
+      }
+
       .chat-container {
         max-width: 100%;
         height: calc(100vh - 60px); /* Adjust height for mobile header */
@@ -629,6 +698,9 @@
       .theme-label {
           display: none; /* Hide text on very small screens to save space */
       }
+      .chat-options-dropdown {
+          right: 10px;
+      }
     }
   </style>
 </head>
@@ -675,8 +747,19 @@
         <button class="theme-toggle" id="themeToggle">
           <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="var(--icon-color)"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.34 2.42-3.92 2.76-2.5.56-4.92-1.39-5.48-3.89-.56-2.5 1.39-4.92 3.89-5.48 1.34-.3 2.75-.11 4.03.36C16.94 4.14 14.58 3 12 3zm-2.83 2.6c.5-.07 1-.1 1.5-.1 3.87 0 7 3.13 7 7 0 .5-.03 1-.09 1.5-.47-2.12-2.19-3.79-4.38-4.38-2.6-1.12-5.44.89-6.56 3.49-.64 1.46-.86 3.01-.68 4.54-2.13-1.66-3.57-4.27-3.57-7.25 0-3.87 3.13-7 7-7z"/></svg>
         </button>
+        <button class="chat-options-button" id="chatOptionsButton" title="Chat options">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+        </button>
       </div>
     </header>
+
+    <div id="chatOptionsDropdown" class="chat-options-dropdown">
+        <ul>
+            <li><a href="#" id="clearChatOption">Clear Chat</a></li>
+            <li><a href="#" id="exportChatOption">Export Chat</a></li>
+            <li><a href="#" id="chatSettingsOption">Settings</a></li>
+        </ul>
+    </div>
 
     <div class="chat-container">
       <div class="chat-messages" id="chatMessages">
