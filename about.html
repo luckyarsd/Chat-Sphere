@@ -1,382 +1,588 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ChatSphere - About Us</title>
-  <style>
-    /* Basic reset and font settings (Copy from chat.html) */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ChatSphere AI - About Us</title>
+    <link rel="icon" href="https://assets-global.website-files.com/64070a27ac02766324ef2898/6474b786ef78efed18255018_favicon.png" type="image/png">
+    <style>
+        /* Theme Variables (for consistent theming across pages, copy from chat.html or centralize) */
+        :root { /* Light theme defaults */
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+            --header-bg: #1e1e1e;
+            --header-text: white;
+            --sidebar-bg: #1a1a1a;
+            --sidebar-text: #f8f8f8;
+            --sidebar-hover-bg: #333;
+            --sidebar-active-bg: #4a90e2;
+            --main-content-bg: white;
+            --border-color: #ccc;
+            --box-shadow-color: rgba(0, 0, 0, 0.1);
+            --timestamp-color: #777;
+        }
 
-    body {
-      background-color: #f0f2f5;
-      color: #333;
-      display: flex;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+        /* Basic reset and font settings */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    /* --- Sidebar Styling (Copy from chat.html) --- */
-    .sidebar {
-      width: 250px;
-      background-color: #1a1a1a;
-      color: #f8f8f8;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
-      z-index: 100;
-      flex-shrink: 0;
-      transition: transform 0.3s ease-in-out;
-    }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
 
-    .sidebar-header {
-      font-size: 1.5rem;
-      font-weight: bold;
-      margin-bottom: 30px;
-      text-align: center;
-      color: #4a90e2;
-    }
+        /* --- Sidebar Styling --- */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px var(--box-shadow-color);
+            z-index: 100;
+            flex-shrink: 0;
+            transition: transform 0.3s ease-in-out, background-color 0.3s ease, color 0.3s ease;
+        }
 
-    .sidebar nav ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
+        .sidebar-header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+            color: var(--sidebar-active-bg);
+            text-decoration: none; /* Make it a link, so add text-decoration none */
+        }
 
-    .sidebar nav li {
-      margin-bottom: 15px;
-    }
+        .sidebar nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
 
-    .sidebar nav a {
-      display: block;
-      color: #f8f8f8;
-      text-decoration: none;
-      padding: 12px 15px;
-      border-radius: 8px;
-      transition: background-color 0.3s ease, color 0.3s ease;
-      font-size: 1.1rem;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+        .sidebar nav li {
+            margin-bottom: 15px;
+        }
 
-    .sidebar nav a:hover {
-      background-color: #333;
-      color: #fff;
-    }
+        .sidebar nav a {
+            display: block;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    .sidebar nav a.active {
-      background-color: #4a90e2;
-      color: white;
-      font-weight: bold;
-    }
+        .sidebar nav a:hover {
+            background-color: var(--sidebar-hover-bg);
+            color: white; /* Ensure hover text is white for contrast */
+        }
 
-    .sidebar nav a svg {
-        fill: currentColor;
-        width: 24px;
-        height: 24px;
-    }
+        .sidebar nav a.active {
+            background-color: var(--sidebar-active-bg);
+            color: white;
+            font-weight: bold;
+        }
 
-    .sidebar-footer {
-        margin-top: auto;
-        padding-top: 20px;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        text-align: center;
-        color: #bbb;
-        font-size: 0.9rem;
-    }
-    .sidebar-footer .logo-text {
-        font-weight: bold;
-        font-size: 1.2rem;
-        color: #4a90e2;
-        margin-bottom: 5px;
-        display: block;
-    }
-    .sidebar-footer .suggested-name {
-        font-style: italic;
-        color: #888;
-        margin-top: 5px;
-    }
+        .sidebar nav a svg {
+            fill: currentColor;
+            width: 24px;
+            height: 24px;
+        }
 
-    /* --- Main Content Area Styling (Copy from chat.html, adjust for generic content) --- */
-    .main-content {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0 16px 32px;
-      overflow-y: auto;
-    }
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: var(--timestamp-color);
+            font-size: 0.9rem;
+        }
+        .sidebar-footer .logo-text {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--sidebar-active-bg);
+            margin-bottom: 5px;
+            display: block;
+        }
+        .sidebar-footer .suggested-name {
+            font-style: italic;
+            color: var(--timestamp-color);
+            margin-top: 5px;
+        }
 
-    header {
-      background-color: #1e1e1e;
-      color: white;
-      width: 100%;
-      max-width: 550px;
-      text-align: center;
-      padding: 18px;
-      font-size: 1.6rem;
-      font-weight: bold;
-      letter-spacing: 1px;
-      border-radius: 10px 10px 0 0;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      margin-top: 20px;
-      position: relative;
-    }
+        /* --- Main Content Area Styling --- */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 16px 32px;
+            overflow-y: auto;
+        }
 
-    .hamburger-button {
-        display: none;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 10px;
-        position: absolute;
-        left: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 10;
-    }
-    .hamburger-button svg {
-        fill: white;
-        width: 30px;
-        height: 30px;
-    }
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            width: 100%;
+            max-width: 550px;
+            text-align: center;
+            padding: 18px;
+            font-size: 1.6rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 2px 8px var(--box-shadow-color);
+            margin-top: 20px;
+            position: relative;
+            display: flex; /* Use flexbox for header content */
+            align-items: center;
+            justify-content: center;
+        }
+        header h1 {
+            margin: 0;
+            flex-grow: 1; /* Allows h1 to take available space */
+        }
 
-    /* --- Page Specific Content Styling (New for about.html) --- */
-    .page-content {
-      background-color: white;
-      width: 100%;
-      max-width: 550px;
-      min-height: 450px;
-      padding: 25px 30px;
-      border-radius: 0 0 10px 10px;
-      border: 1px solid #ccc;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-      line-height: 1.6;
-      color: #444;
-    }
+        .hamburger-button {
+            display: none; /* Hidden by default on desktop */
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+        .hamburger-button svg {
+            fill: var(--header-text);
+            width: 30px;
+            height: 30px;
+        }
 
-    .page-content h2 {
-        font-size: 1.8rem;
-        color: #1a1a1a;
-        margin-bottom: 20px;
-        text-align: center;
-    }
+        /* --- Page Specific Content Styling (About Us) --- */
+        .about-us-content {
+            background-color: var(--main-content-bg);
+            width: 100%;
+            max-width: 550px;
+            min-height: 450px;
+            padding: 25px 30px;
+            border-radius: 0 0 10px 10px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 16px var(--box-shadow-color);
+            line-height: 1.6;
+            color: var(--text-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+        }
 
-    .page-content p {
-        margin-bottom: 15px;
-        text-align: justify;
-    }
+        .about-us-content h2 {
+            font-size: 1.8rem;
+            color: var(--sidebar-active-bg); /* Use accent color for headings */
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border-color); /* Subtle separator */
+            text-align: center;
+        }
 
-    .page-content strong {
-        color: #007bff;
-    }
+        .about-us-content p, .about-us-content ul {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
 
-    /* --- Mobile Responsiveness (Copy from chat.html) --- */
-    @media (max-width: 768px) {
-      .sidebar {
-        position: fixed;
-        left: 0;
-        top: 0;
-        height: 100vh;
-        transform: translateX(-100%);
-        box-shadow: none;
-      }
+        .about-us-content ul {
+            list-style: none; /* Remove default bullets */
+            padding-left: 0;
+        }
 
-      .sidebar.active {
-        transform: translateX(0);
-        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
-      }
+        .about-us-content ul li {
+            position: relative;
+            padding-left: 25px; /* Space for custom bullet */
+            margin-bottom: 8px;
+        }
 
-      .hamburger-button {
-        display: block;
-      }
+        .about-us-content ul li::before {
+            content: '•'; /* Custom bullet point */
+            color: var(--sidebar-active-bg); /* Bullet color */
+            font-size: 1.2em;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
 
-      .overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 90;
-      }
-      .overlay.active {
-        display: block;
-      }
+        /* --- Team Section Styles --- */
+        .our-team {
+            margin-top: 40px; /* More space for this prominent section */
+            padding-top: 20px; /* Internal padding */
+            border-top: 1px dashed var(--border-color); /* Separator from values */
+        }
 
-      .main-content {
-        width: 100%;
-        margin-left: 0;
-        padding-top: 0;
-        flex-grow: 1;
-      }
+        .team-member {
+            display: flex;
+            flex-direction: column; /* Stacks image and info vertically */
+            align-items: center; /* Centers items horizontally */
+            margin: 30px auto; /* Centered with vertical spacing */
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px; /* Slightly more rounded */
+            background-color: var(--main-content-bg); /* Card background */
+            box-shadow: 0 2px 8px var(--box-shadow-color);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+        }
 
-      header {
-        margin-top: 0;
-        border-radius: 0;
-        padding: 12px 10px;
-        font-size: 1.4rem;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        max-width: 100%;
-      }
-      header h1 {
-        margin: 0;
-      }
+        .team-member:hover {
+            border-color: var(--sidebar-active-bg); /* Accent color on hover */
+            box-shadow: 0 4px 12px var(--box-shadow-color);
+        }
 
-      .page-content { /* Adjust for page content on mobile */
-        max-width: 100%;
-        border-radius: 0;
-        padding: 15px;
-      }
+        .member-info {
+            text-align: center;
+            width: 100%; /* Ensure text content takes full width within the card */
+        }
 
-      .page-content h2 {
-          font-size: 1.6rem;
-      }
+        .member-logo {
+            width: 150px; /* Larger logo size */
+            height: 150px;
+            border-radius: 50%; /* Makes it circular */
+            overflow: hidden; /* Crops content outside the circle */
+            margin-bottom: 20px;
+            border: 4px solid var(--sidebar-active-bg); /* Prominent border in accent color */
+            box-shadow: 0 0 0 6px rgba(74, 144, 226, 0.2); /* A subtle glow effect */
+            flex-shrink: 0; /* Prevents shrinking on smaller screens */
+        }
 
-      .page-content p {
-          font-size: 0.95rem;
-      }
-    }
+        .member-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures the image covers the circular area without distortion */
+            display: block; /* Removes extra space below image */
+        }
 
-    @media (max-width: 400px) {
-      header {
-        font-size: 1.2rem;
-      }
-      .hamburger-button svg {
-        width: 25px;
-        height: 25px;
-      }
-      .sidebar {
-        width: 200px;
-      }
-    }
+        .member-info h3 {
+            margin-bottom: 8px;
+            color: var(--text-color);
+            font-size: 1.6rem;
+        }
 
-    /* --- Modal (NOT needed on these new pages, but keeping for reference/copy-paste) --- */
-    .modal { display: none; } /* Ensure it's hidden */
-  </style>
+        .member-info .member-title {
+            font-style: normal; /* Remove italic */
+            color: var(--timestamp-color); /* Subtle grey for title */
+            font-weight: 500; /* Slightly bolder */
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .member-info .member-bio {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            text-align: justify;
+            max-width: 400px; /* Control bio width */
+            margin: 0 auto; /* Center bio text */
+        }
+
+        /* Optional: Social Links Styling */
+        .social-links {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .social-links a svg {
+            width: 28px; /* Larger social icons */
+            height: 28px;
+            transition: transform 0.2s ease-in-out, fill 0.2s ease;
+            fill: var(--sidebar-active-bg); /* Default social icon color */
+        }
+
+        .social-links a svg:hover {
+            transform: translateY(-3px); /* Subtle lift on hover */
+            fill: #3a7bd5; /* Slightly darker blue on hover */
+        }
+
+        /* --- Mobile Responsiveness --- */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100vh;
+                transform: translateX(-100%);
+                box-shadow: none;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            }
+
+            .hamburger-button {
+                display: block;
+                position: static; /* Adjust for flex layout */
+                transform: none;
+                margin-right: 10px; /* Space from h1 */
+            }
+
+            header {
+                margin-top: 0;
+                border-radius: 0;
+                padding: 12px 10px;
+                font-size: 1.4rem;
+                display: flex;
+                justify-content: space-between; /* Distribute items */
+                align-items: center;
+                max-width: 100%;
+            }
+            header h1 {
+                flex-grow: 1; /* Allow h1 to take space */
+                text-align: center; /* Center h1 content */
+                font-size: 1.6rem; /* Adjust font size for mobile header */
+            }
+
+            .overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 90;
+            }
+            .overlay.active {
+                display: block;
+            }
+
+            .main-content {
+                width: 100%;
+                margin-left: 0;
+                padding-top: 0;
+                flex-grow: 1;
+            }
+
+            .about-us-content {
+                max-width: 100%;
+                border-radius: 0;
+                padding: 15px;
+                box-shadow: none;
+            }
+
+            .about-us-content h2 {
+                font-size: 1.5rem;
+                margin-top: 20px;
+                margin-bottom: 10px;
+            }
+
+            .about-us-content p, .about-us-content ul li {
+                font-size: 0.9rem;
+            }
+
+            .team-member {
+                padding: 15px;
+                margin: 20px auto;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            }
+
+            .member-logo {
+                width: 100px;
+                height: 100px;
+                border: 3px solid var(--sidebar-active-bg);
+                box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.15);
+            }
+
+            .member-info h3 {
+                font-size: 1.4rem;
+            }
+
+            .member-info .member-title {
+                font-size: 0.9rem;
+            }
+
+            .member-info .member-bio {
+                font-size: 0.85rem;
+            }
+
+            .social-links svg {
+                width: 22px;
+                height: 22px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            header {
+                font-size: 1.2rem;
+            }
+            .hamburger-button svg {
+                width: 25px;
+                height: 25px;
+            }
+            .sidebar {
+                width: 200px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">ChatSphere</div>
-    <nav>
-      <ul>
-        <li><a href="chat.html">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12zM6 9h12v2H6zm8 3H6v-2h8v2zm4-5H6V5h12v2z"/></svg>
-            Chat
-        </a></li>
-        <li><a href="services.html">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM9 13H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg>
-            Our Services
-        </a></li>
-        <li><a href="about.html" class="active">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.38 0 2.5 1.12 2.5 2.5S13.38 10 12 10 9.5 8.88 9.5 7.5 10.62 5 12 5zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
-            About Us
-        </a></li>
-        <li><a href="contact.html">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-            Contact Us
-        </a></li>
-      </ul>
-    </nav>
-    <div class="sidebar-footer">
-        <span class="logo-text">ChatSphere AI</span>
-        <p>Powered by <span class="suggested-name" id="aiSuggestedName">Aura</span></p>
-    </div>
-  </aside>
+    <aside class="sidebar" id="sidebar">
+        <a href="index.html" class="sidebar-header">ChatSphere AI</a>
+        <nav>
+            <ul>
+                <li><a href="chat.html">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12zM6 9h12v2H6zm8 3H6v-2h8v2zm4-5H6V5h12v2z"/></svg>
+                    Chat
+                </a></li>
+                <li><a href="services.html">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM9 13H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg>
+                    Our Services
+                </a></li>
+                <li><a href="about.html" class="active">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.38 0 2.5 1.12 2.5 2.5S13.38 10 12 10 9.5 8.88 9.5 7.5 10.62 5 12 5zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+                    About Us
+                </a></li>
+                <li><a href="contact.html">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                    Contact Us
+                </a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <span class="logo-text">ChatSphere AI</span>
+            <p>Powered by <span class="suggested-name" id="aiSuggestedName">Aura</span></p>
+        </div>
+    </aside>
 
-  <div class="overlay" id="overlay"></div>
+    <div class="overlay" id="overlay"></div>
 
-  <main class="main-content">
-    <header>
-      <button class="hamburger-button" id="hamburgerButton">
-          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-      </button>
-      <h1>About Us</h1>
-    </header>
+    <main class="main-content">
+        <header>
+            <button class="hamburger-button" id="hamburgerButton">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+            </button>
+            <h1>About Us</h1>
+        </header>
 
-    <div class="page-content">
-      <h2>Our Mission</h2>
-      <p>At <strong>ChatSphere</strong>, we believe in empowering individuals on their journey of self-discovery and spiritual growth through innovative technology. Our mission is to bridge the gap between ancient wisdom and modern living, making spiritual guidance accessible, engaging, and personalized for everyone.</p>
+        <div class="about-us-content">
+            <h2>Our Mission</h2>
+            <p>At **ChatSphere AI**, we are dedicated to **empowering individuals on their unique journeys of self-discovery and spiritual growth** through the innovative application of artificial intelligence. Our core mission is to **bridge the timeless wisdom of spiritual traditions with the dynamic demands of modern living**, making personalized guidance accessible, engaging, and deeply enriching for everyone, everywhere.</p>
 
-      <h2>Our Vision</h2>
-      <p>We envision a world where spiritual inquiry is seamless and enriching, fostering a global community connected by shared values and a thirst for knowledge. Through our AI-powered platform, we aim to be a trusted companion for millions, guiding them towards inner peace, clarity, and a deeper understanding of themselves and the universe.</p>
+            <h2>Our Vision</h2>
+            <p>We envision a world where spiritual exploration is not just seamless, but genuinely transformative. We aspire to cultivate a **vibrant global community** united by a shared quest for knowledge, inner peace, and profound clarity. Through our intuitive AI-powered platform, ChatSphere AI aims to be a **trusted companion**, guiding millions towards a deeper understanding of themselves, their potential, and the intricate tapestry of the universe.</p>
 
-      <h2>Our Values</h2>
-      <ul>
-        <li><strong>Accessibility:</strong> Making spiritual insights and practices available to all, regardless of location or background.</li>
-        <li><strong>Innovation:</strong> Continuously exploring new technological frontiers to enhance the spiritual experience.</li>
-        <li><strong>Respect:</strong> Honoring diverse beliefs, traditions, and individual paths with an open mind and heart.</li>
-        <li><strong>Integrity:</strong> Upholding the highest standards of accuracy, privacy, and ethical conduct in all our interactions.</li>
-        <li><strong>Community:</strong> Fostering a supportive and engaging environment where users can connect, share, and grow together.</li>
-      </ul>
+            <h2>Our Values</h2>
+            <ul>
+                <li><strong>Accessibility:</strong> Ensuring that profound spiritual insights and practices are readily available to all, transcending geographical boundaries and diverse backgrounds.</li>
+                <li><strong>Innovation:</strong> Continuously pioneering new technological frontiers to elevate and enrich the spiritual experience, making it more intuitive and effective.</li>
+                <li><strong>Respect:</strong> Upholding the highest reverence for diverse beliefs, spiritual traditions, and individual paths, engaging with an open mind and heart.</li>
+                <li><strong>Integrity:</strong> Committing to unwavering standards of accuracy, safeguarding user privacy, and adhering to the strictest ethical conduct in every interaction.</li>
+                <li><strong>Community:</strong> Fostering a supportive, inclusive, and engaging environment where users can connect, share experiences, and collectively grow on their spiritual expeditions.</li>
+            </ul>
 
-      <p>Join us as we embark on this transformative journey, bringing enlightenment closer to home.</p>
-    </div>
+            <p>Join us as we embark on this transformative journey, bringing enlightenment closer to home and guiding you toward a more centered and insightful existence.</p>
 
-  </main>
+            ---
 
-  <script src="chat.js"></script>
-  <script>
-    // --- Sidebar / Hamburger Menu JS (Copy from chat.html, active link adjusted) ---
-    const sidebar = document.getElementById('sidebar');
-    const hamburgerButton = document.getElementById('hamburgerButton');
-    const overlay = document.getElementById('overlay');
-    const navLinks = document.querySelectorAll('.sidebar nav a');
+            <section class="our-story">
+                <h2>Our Story</h2>
+                <p>Founded in **Delhi, India, in 2024**, ChatSphere AI was born out of a profound passion for **making spiritual guidance accessible and engaging through cutting-edge technology**. We envisioned a future where profound spiritual insights could be seamlessly integrated into modern life, fostering deeper understanding and inner peace for individuals worldwide.</p>
+                <p>Our journey began with a commitment to bridging the gap between ancient wisdom and contemporary needs. Based in the vibrant and dynamic tech landscape of Delhi, we are dedicated to continuous innovation and unwavering excellence, striving to be a trusted companion for individuals seeking clarity, personal growth, and deeper spiritual connection.</p>
+            </section>
 
-    function openSidebar() {
-        sidebar.classList.add('active');
-        overlay.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
+            <section class="our-team">
+                <h2>Meet the Founder</h2>
+                <p>Our vision is passionately driven by the dedication and pioneering spirit of our founder.</p>
 
-    function closeSidebar() {
-        sidebar.classList.remove('active');
-        overlay.classList.remove('active');
-        document.body.style.overflow = '';
-    }
+                <div class="team-member">
+                    <div class="member-info">
+                        <div class="member-logo">
+                            <img src="assets/owner.jpg" alt="Lucky Tiwari - Founder">
+                        </div>
+                        <h3>Lucky Tiwari</h3>
+                        <p class="member-title">Founder & CEO</p>
+                        <p class="member-bio">
+                            Based in Delhi, **Lucky Tiwari** brings a robust foundation of expertise and a profound passion for spiritual development to ChatSphere AI. With **[Your Years of Experience] years** of experience in **[Your Relevant Industry/Expertise, e.g., AI development, digital innovation, spiritual wellness platforms]**, Lucky established ChatSphere AI to fulfill a personal commitment to empowering individuals on their paths to self-discovery and enlightenment. He holds a **[Your Degree, e.g., Bachelor of Technology, Master of Arts in Philosophy]** from **[Your University Name]** and is dedicated to fostering a platform that truly resonates with the needs of a modern spiritual seeker, blending technology with timeless wisdom.
+                        </p>
+                        </div>
+                </div>
+            </section>
+        </div>
+    </main>
 
-    hamburgerButton.addEventListener('click', openSidebar);
-    overlay.addEventListener('click', closeSidebar);
+    <script>
+        // --- Sidebar / Hamburger Menu JS ---
+        const sidebar = document.getElementById('sidebar');
+        const hamburgerButton = document.getElementById('hamburgerButton');
+        const overlay = document.getElementById('overlay');
+        const navLinks = document.querySelectorAll('.sidebar nav a');
 
-    navLinks.forEach(link => {
-      link.addEventListener('click', (event) => {
-        navLinks.forEach(l => l.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-
-        if (window.innerWidth <= 768) {
-            closeSidebar();
+        function openSidebar() {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
-      });
-    });
 
-    // --- Active Link Highlight (Copy from chat.html, adjusted for this page) ---
-    document.addEventListener('DOMContentLoaded', () => {
-      const currentPath = window.location.pathname.split('/').pop();
-      const aiSuggestedNameSpan = document.getElementById('aiSuggestedName');
-      if (aiSuggestedNameSpan) {
-        aiSuggestedNameSpan.textContent = "Aura";
-      }
-
-      navLinks.forEach(link => {
-        const linkHref = link.getAttribute('href');
-        if (linkHref.endsWith(currentPath) || (currentPath === '' && linkHref === 'chat.html')) {
-          link.classList.add('active');
-        } else {
-          link.classList.remove('active');
+        function closeSidebar() {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
         }
-      });
-    });
-  </script>
+
+        hamburgerButton.addEventListener('click', openSidebar);
+        overlay.addEventListener('click', closeSidebar);
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (event) => {
+                // Remove active class from all links first
+                navLinks.forEach(l => l.classList.remove('active'));
+                // Add active class to the clicked link
+                event.currentTarget.classList.add('active');
+
+                if (window.innerWidth <= 768) {
+                    closeSidebar(); // Close sidebar on link click for mobile
+                }
+            });
+        });
+
+        // --- Active Link Highlight (on page load) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPath = window.location.pathname.split('/').pop();
+            const aiSuggestedNameSpan = document.getElementById('aiSuggestedName');
+
+            if (aiSuggestedNameSpan) {
+                aiSuggestedNameSpan.textContent = "Aura"; // Set AI name
+            }
+
+            // Set active class for current page in sidebar
+            navLinks.forEach(link => {
+                const linkHref = link.getAttribute('href');
+                if (linkHref === currentPath || (currentPath === '' && linkHref === 'chat.html')) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+
+            // Set active class for the main sidebar header if it links to index.html
+            const sidebarHeaderLink = document.querySelector('.sidebar-header');
+            if (sidebarHeaderLink && sidebarHeaderLink.getAttribute('href') === 'index.html' && currentPath === 'index.html') {
+                sidebarHeaderLink.classList.add('active'); // Add active class if this is the home page
+            }
+        });
+    </script>
 </body>
 </html>
