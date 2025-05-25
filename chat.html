@@ -84,6 +84,29 @@
         height: 24px;
     }
 
+    /* --- Sidebar Footer (New) --- */
+    .sidebar-footer {
+        margin-top: auto; /* Pushes the footer to the bottom */
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        text-align: center;
+        color: #bbb;
+        font-size: 0.9rem;
+    }
+    .sidebar-footer .logo-text {
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: #4a90e2; /* Accent color for logo */
+        margin-bottom: 5px;
+        display: block;
+    }
+    .sidebar-footer .suggested-name {
+        font-style: italic;
+        color: #888;
+        margin-top: 5px;
+    }
+
+
     /* --- Main Content Area Styling --- */
     .main-content {
       flex-grow: 1;
@@ -99,11 +122,10 @@
       background-color: #1e1e1e;
       color: white;
       width: 100%;
-      /* Adjusted max-width for overall more compact look */
-      max-width: 550px; /* Slightly smaller than before (was 600px) */
+      max-width: 550px;
       text-align: center;
-      padding: 18px; /* Slightly less padding */
-      font-size: 1.6rem; /* Slightly smaller font */
+      padding: 18px;
+      font-size: 1.6rem;
       font-weight: bold;
       letter-spacing: 1px;
       border-radius: 10px 10px 0 0;
@@ -135,16 +157,14 @@
     #chat {
       background-color: white;
       width: 100%;
-      /* Adjusted max-width for overall more compact look */
-      max-width: 550px; /* Slightly smaller than before (was 600px) */
-      height: 75vh; /* Slightly more vertical space for chat */
-      min-height: 450px; /* Increased min-height */
-      padding: 15px; /* Slightly less padding inside chat area */
+      max-width: 550px;
+      height: 75vh;
+      min-height: 450px;
+      padding: 15px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      /* Adjusted gap for a tighter feel */
-      gap: 8px; /* Reduced gap between messages (was 12px) */
+      gap: 8px;
       border-radius: 0 0 10px 10px;
       border: 1px solid #ccc;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
@@ -152,10 +172,10 @@
 
     /* Message bubbles */
     .message {
-      max-width: 80%; /* Slightly more width for messages */
-      padding: 12px 16px; /* Slightly less padding inside bubbles */
-      border-radius: 20px; /* More rounded bubbles */
-      font-size: 0.95rem; /* Slightly smaller font for messages */
+      max-width: 80%;
+      padding: 12px 16px;
+      border-radius: 20px;
+      font-size: 0.95rem;
       line-height: 1.4;
       word-wrap: break-word;
       position: relative;
@@ -165,40 +185,39 @@
       background-color: #007bff;
       color: white;
       align-self: flex-end;
-      border-bottom-right-radius: 5px; /* Keep this for pointed look */
+      border-bottom-right-radius: 5px;
     }
 
     .bot {
       background-color: #e0e0e0;
       color: #000;
       align-self: flex-start;
-      border-bottom-left-radius: 5px; /* Keep this for pointed look */
+      border-bottom-left-radius: 5px;
     }
 
     /* Input form */
     #inputForm {
-      margin-top: 15px; /* Slightly less margin */
+      margin-top: 15px;
       width: 100%;
-      /* Adjusted max-width to match chat container */
       max-width: 550px;
       display: flex;
-      gap: 8px; /* Reduced gap between input and button */
+      gap: 8px;
     }
 
     #userInput {
       flex-grow: 1;
-      padding: 12px 18px; /* Adjusted padding */
-      font-size: 0.95rem; /* Slightly smaller font */
+      padding: 12px 18px;
+      font-size: 0.95rem;
       border: 1px solid #ccc;
-      border-radius: 25px; /* More rounded input field */
+      border-radius: 25px;
       outline: none;
       background-color: white;
       color: #333;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Subtle inner shadow */
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
     }
 
     #userInput:focus {
-      border-color: #007bff; /* Highlight on focus */
+      border-color: #007bff;
       box-shadow: inset 0 1px 3px rgba(0,0,0,0.05), 0 0 0 2px rgba(0,123,255,0.2);
     }
 
@@ -206,9 +225,9 @@
       background-color: #007bff;
       color: white;
       border: none;
-      padding: 10px 20px; /* Adjusted padding */
-      font-size: 0.95rem; /* Slightly smaller font */
-      border-radius: 25px; /* More rounded button */
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      border-radius: 25px;
       cursor: pointer;
       transition: background-color 0.3s ease, transform 0.2s ease;
       box-shadow: 0 2px 5px rgba(0,123,255,0.3);
@@ -216,7 +235,7 @@
 
     #sendBtn:hover {
       background-color: #0056b3;
-      transform: translateY(-1px); /* Slight lift on hover */
+      transform: translateY(-1px);
       box-shadow: 0 4px 8px rgba(0,123,255,0.4);
     }
 
@@ -268,47 +287,47 @@
       header {
         margin-top: 0;
         border-radius: 0;
-        padding: 12px 10px; /* Adjusted padding for header */
-        font-size: 1.4rem; /* Adjusted font size for header */
+        padding: 12px 10px;
+        font-size: 1.4rem;
         display: flex;
         justify-content: center;
         align-items: center;
-        max-width: 100%; /* Ensure full width on mobile */
+        max-width: 100%;
       }
       header h1 {
         margin: 0;
       }
 
       #chat {
-        height: calc(100vh - 120px); /* Adjusted height calculation */
+        height: calc(100vh - 120px);
         max-width: 100%;
         border-radius: 0;
-        padding: 10px; /* Adjusted padding for chat area */
+        padding: 10px;
       }
 
       .message {
-        padding: 10px 14px; /* Adjusted padding for messages */
-        font-size: 0.9rem; /* Adjusted font size for messages */
-        border-radius: 16px; /* Slightly less rounded on mobile */
+        padding: 10px 14px;
+        font-size: 0.9rem;
+        border-radius: 16px;
       }
 
       #inputForm {
         max-width: 100%;
-        padding: 8px; /* Adjusted padding for form */
+        padding: 8px;
         border-top: none;
         border-radius: 0;
         margin-bottom: 0;
       }
 
       #userInput {
-        padding: 10px 15px; /* Adjusted padding for input */
-        font-size: 0.85rem; /* Adjusted font size for input */
-        border-radius: 20px; /* Adjusted roundedness */
+        padding: 10px 15px;
+        font-size: 0.85rem;
+        border-radius: 20px;
       }
       #sendBtn {
-        padding: 8px 16px; /* Adjusted padding for button */
-        font-size: 0.85rem; /* Adjusted font size for button */
-        border-radius: 20px; /* Adjusted roundedness */
+        padding: 8px 16px;
+        font-size: 0.85rem;
+        border-radius: 20px;
       }
     }
 
@@ -321,8 +340,100 @@
         height: 25px;
       }
       .sidebar {
-        width: 200px; /* Make sidebar slightly smaller */
+        width: 200px;
       }
+    }
+
+    /* --- Modern Name Input Modal (New) --- */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1000; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+        display: flex; /* Use flex to center content */
+        justify-content: center;
+        align-items: center;
+        opacity: 0; /* Start invisible for transition */
+        transition: opacity 0.3s ease-in-out;
+    }
+
+    .modal.active {
+        display: flex; /* Show when active */
+        opacity: 1; /* Fade in */
+    }
+
+    .modal-content {
+        background-color: #fff;
+        margin: auto; /* Center the modal */
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        max-width: 400px;
+        width: 90%; /* Responsive width */
+        text-align: center;
+        animation: modalScaleIn 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Pop-in animation */
+    }
+
+    .modal-content h2 {
+        color: #1a1a1a;
+        margin-bottom: 15px;
+        font-size: 1.8rem;
+        font-weight: 700;
+    }
+
+    .modal-content p {
+        color: #555;
+        margin-bottom: 25px;
+        line-height: 1.5;
+        font-size: 1rem;
+    }
+
+    .modal-content input[type="text"] {
+        width: calc(100% - 40px); /* Adjust width for padding */
+        padding: 14px 20px;
+        margin-bottom: 25px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        outline: none;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .modal-content input[type="text"]:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
+    }
+
+    .modal-content button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 14px 30px;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0,123,255,0.3);
+    }
+
+    .modal-content button:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0,123,255,0.4);
+    }
+
+    .modal-content button:active {
+        transform: translateY(0);
+    }
+
+    @keyframes modalScaleIn {
+        0% { transform: scale(0.7); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
     }
   </style>
 </head>
@@ -350,6 +461,10 @@
         </a></li>
       </ul>
     </nav>
+    <div class="sidebar-footer">
+        <span class="logo-text">ChatSphere AI</span>
+        <p>Powered by <span class="suggested-name" id="aiSuggestedName">InsightBot</span></p>
+    </div>
   </aside>
 
   <div class="overlay" id="overlay"></div>
@@ -370,47 +485,46 @@
     </form>
   </main>
 
+  <div id="nameModal" class="modal">
+    <div class="modal-content">
+      <h2>Welcome to ChatSphere!</h2>
+      <p>Please tell us your name to start chatting with our AI assistant.</p>
+      <input type="text" id="modalUserNameInput" placeholder="Enter your name" autofocus>
+      <button id="startChatModalBtn">Start Chat</button>
+    </div>
+  </div>
   <script src="chat.js"></script>
   <script>
-    // --- Sidebar / Hamburger Menu JS (NEW) ---
+    // --- Sidebar / Hamburger Menu JS ---
     const sidebar = document.getElementById('sidebar');
     const hamburgerButton = document.getElementById('hamburgerButton');
     const overlay = document.getElementById('overlay');
-    const navLinks = document.querySelectorAll('.sidebar nav a'); // All sidebar navigation links
+    const navLinks = document.querySelectorAll('.sidebar nav a');
 
-    // Function to open sidebar
     function openSidebar() {
         sidebar.classList.add('active');
         overlay.classList.add('active');
-        document.body.style.overflow = 'hidden'; // Prevent scrolling main content
+        document.body.style.overflow = 'hidden';
     }
 
-    // Function to close sidebar
     function closeSidebar() {
         sidebar.classList.remove('active');
         overlay.classList.remove('active');
-        document.body.style.overflow = ''; // Restore scrolling
+        document.body.style.overflow = '';
     }
 
-    // Toggle sidebar on hamburger button click
     hamburgerButton.addEventListener('click', openSidebar);
-
-    // Close sidebar when overlay is clicked
     overlay.addEventListener('click', closeSidebar);
 
-    // Close sidebar when a navigation link is clicked (optional, good UX)
     navLinks.forEach(link => {
       link.addEventListener('click', (event) => {
-        // Handle active class for navigation
         navLinks.forEach(l => l.classList.remove('active'));
         event.currentTarget.classList.add('active');
 
-        // Close sidebar only if it's an internal link or on mobile
-        if (window.innerWidth <= 768) { // Only close if on mobile screens
+        if (window.innerWidth <= 768) {
             closeSidebar();
         }
 
-        // For the chat section, scroll to bottom of chat
         if (event.currentTarget.getAttribute('href') === '#chat-section') {
             const chatDiv = document.getElementById('chat');
             if (chatDiv) chatDiv.scrollTop = chatDiv.scrollHeight;
@@ -418,15 +532,13 @@
       });
     });
 
-    // --- Active Link Highlight (Existing Logic, slightly modified) ---
+    // --- Active Link Highlight (Existing Logic) ---
     document.addEventListener('DOMContentLoaded', () => {
-      // Find the currently active link based on current page URL
-      const currentPath = window.location.pathname.split('/').pop(); // Get filename (e.g., chat.html)
-      const isChatPage = currentPath === 'chat.html' || currentPath === ''; // Default to chat if root
+      const currentPath = window.location.pathname.split('/').pop();
+      const isChatPage = currentPath === 'chat.html' || currentPath === '';
 
       navLinks.forEach(link => {
         const linkHref = link.getAttribute('href');
-        // If it's the chat page and the link is for chat-section OR if href matches current page
         if ((isChatPage && linkHref === '#chat-section') || (linkHref.endsWith(currentPath) && currentPath !== '')) {
           link.classList.add('active');
         } else {
