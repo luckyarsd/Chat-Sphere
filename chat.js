@@ -11,6 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const welcomeModal = document.getElementById('welcomeModal');
     const closeModalButton = document.getElementById('closeModalButton');
 
+    // --- API PROXY CONFIGURATION ---
+    // This endpoint will be handled by your Vercel Function (e.g., /api/chat-proxy.js)
+    // which then securely communicates with your chosen AI API (Cohere, GoRQ, etc.).
+    const PROXY_API_ENDPOINT = '/api/chat-proxy';
+
+    // Stores chat history for conversational context
+    const chatHistory = [];
+
     // --- Theme Toggle Elements ---
     const themeToggle = document.getElementById('themeToggle');
     const themeIcon = document.getElementById('themeIcon');
@@ -96,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- Chat Functionality (UPDATED: Removed Timestamps) ---
+    // --- Chat Functionality (Vercel Proxy Integration) ---
     sendMessageButton.addEventListener('click', sendMessage);
     messageInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
@@ -104,56 +112,61 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    function sendMessage() {
+    async function sendMessage() {
         const messageText = messageInput.value.trim();
         if (messageText === '') return;
 
         appendMessage(messageText, 'user');
+        chatHistory.push({ role: "user", content: messageText }); // Use 'content' for history based on typical proxy setups
         messageInput.value = '';
 
-        // Simulate AI response after a short delay
         const typingIndicator = document.createElement('div');
         typingIndicator.classList.add('typing-indicator');
         typingIndicator.textContent = 'ChatSphere AI is typing...';
         chatMessages.appendChild(typingIndicator);
         chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
 
-        setTimeout(() => {
+        try {
+            const response = await fetch(PROXY_API_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: messageText,
+                    chat_history: chatHistory.slice(0, -1) // Send all history except the current user message
+                    // Your Vercel Function can specify the model or other API parameters
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`Proxy error: ${response.status} - ${errorData.message || 'Unknown error from proxy'}`);
+            }
+
+            const data = await response.json();
+            // Assuming your Vercel function returns the AI's response text directly,
+            // or in a field like 'text' or 'response'. Adjust 'data.text' as needed.
+            const aiResponse = data.text || data.response || JSON.stringify(data);
+
             chatMessages.removeChild(typingIndicator); // Remove typing indicator
-            const aiResponse = getAiResponse(messageText);
             appendMessage(aiResponse, 'ai');
-        }, 1500); // Simulate 1.5 seconds typing
+            chatHistory.push({ role: "assistant", content: aiResponse }); // Add AI response to history
+
+        } catch (error) {
+            console.error('Error fetching AI response from proxy:', error);
+            chatMessages.removeChild(typingIndicator); // Remove typing indicator
+            appendMessage("Oops! I couldn't get a response from the AI right now. Please check your Vercel proxy setup or try again later.", 'ai');
+        }
     }
 
     function appendMessage(text, sender) {
         const messageElement = document.createElement('div');
         messageElement.classList.add('message', sender);
-        // Removed timestamp generation and appending here
-        messageElement.innerHTML = `<span>${text}</span>`; // Only message text
+        messageElement.innerHTML = `<span>${text}</span>`;
         chatMessages.appendChild(messageElement);
         chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll to the latest message
-    }
-
-    function getAiResponse(userMessage) {
-        const lowerCaseMessage = userMessage.toLowerCase();
-        // Simple keyword-based responses
-        if (lowerCaseMessage.includes('hello') || lowerCaseMessage.includes('hi')) {
-            return "Hello! How can I assist you on your spiritual journey today?";
-        } else if (lowerCaseMessage.includes('meditation')) {
-            return "Meditation is a wonderful practice for inner peace. Would you like some tips to get started, or perhaps a guided meditation?";
-        } else if (lowerCaseMessage.includes('mindfulness')) {
-            return "Mindfulness is about being present. How do you practice mindfulness in your daily life, or would you like to explore techniques?";
-        } else if (lowerCaseMessage.includes('meaning of life')) {
-            return "The meaning of life is a profound question explored by many spiritual traditions. What are your thoughts on it?";
-        } else if (lowerCaseMessage.includes('thank you') || lowerCaseMessage.includes('thanks')) {
-            return "You're most welcome! I'm here to help.";
-        } else if (lowerCaseMessage.includes('spiritual guidance')) {
-            return "I can offer insights and different perspectives on spiritual topics. What specific guidance are you seeking?";
-        } else if (lowerCaseMessage.includes('divine')) {
-            return "The concept of the Divine is vast and deeply personal. What aspects of the Divine are you contemplating?";
-        } else {
-            return "That's an interesting thought! Could you tell me more, or perhaps ask another question related to spirituality?";
-        }
     }
 
     // --- Modal Functionality (existing) ---
