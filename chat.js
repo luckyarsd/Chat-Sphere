@@ -122,6 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {Array<Object>} list - The array of chat objects to save.
      */
     function saveChatList(list) {
+        console.log("Saving chat list:", list); // DEBUG
         localStorage.setItem(CHAT_LIST_KEY, JSON.stringify(list));
     }
 
@@ -131,10 +132,14 @@ document.addEventListener('DOMContentLoaded', () => {
      * @returns {Array<Object>} The chat history messages.
      */
     function loadChatHistory(chatId) {
-        if (!chatId) return [];
+        if (!chatId) {
+            console.warn("Attempted to load chat history with null chatId.");
+            return [];
+        }
         try {
             const storedHistory = localStorage.getItem(CHAT_STORAGE_PREFIX + chatId);
             const parsedHistory = storedHistory ? JSON.parse(storedHistory) : [];
+            console.log(`Loaded history for ${chatId}:`, parsedHistory); // DEBUG
             return Array.isArray(parsedHistory) ? parsedHistory : [];
         } catch (e) {
             console.error(`Error parsing chat history for ID ${chatId}:`, e);
@@ -147,8 +152,9 @@ document.addEventListener('DOMContentLoaded', () => {
      * Saves the current chat history to localStorage using the currentChatId.
      */
     function saveCurrentChatHistory() {
-        if (currentChatId && chatHistory.length > 0) {
+        if (currentChatId) { // Always save if there's a currentChatId, even if chatHistory is empty (for cleanup)
             localStorage.setItem(CHAT_STORAGE_PREFIX + currentChatId, JSON.stringify(chatHistory));
+            console.log(`Saved history for current chat ${currentChatId}:`, chatHistory); // DEBUG
             updateRecentChatsUI(); // Update UI whenever history is saved
         }
     }
@@ -160,7 +166,9 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function generateChatTitle(history) {
         const firstUserMessage = history.find(msg => msg.role === 'user');
-        return firstUserMessage ? firstUserMessage.content.substring(0, 30) + (firstUserMessage.content.length > 30 ? '...' : '') : 'New Chat';
+        const title = firstUserMessage ? firstUserMessage.content.substring(0, 30) + (firstUserMessage.content.length > 30 ? '...' : '') : 'New Chat';
+        console.log("Generated chat title:", title); // DEBUG
+        return title;
     }
 
     /**
@@ -187,46 +195,57 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function clearChatDisplay() {
         chatMessages.innerHTML = '';
+        console.log("Chat display cleared."); // DEBUG
     }
 
     /**
      * Starts a new chat session.
      */
     function startNewChat() {
-        // Save the current chat before starting a new one, but only if it's not truly empty.
-        // A chat is considered "not truly empty" if it has more than just the initial AI welcome.
-        if (currentChatId && chatHistory.length > 1) { // If there's more than just the initial AI message
-            saveCurrentChatHistory();
-        } else if (currentChatId && chatHistory.length === 1 && chatHistory[0].role === 'ai') {
-            // If it's a "New Chat" with only the AI welcome, and user clicks "New Chat" again,
-            // we should not save this empty chat to the recent list.
-            // Instead, we just replace it with a fresh "New Chat".
-            const chatList = getChatList();
-            const index = chatList.findIndex(chat => chat.id === currentChatId);
-            if (index !== -1) {
-                // If it's the current chat and it's truly empty, remove it from the list
-                chatList.splice(index, 1);
+        console.log("Starting new chat..."); // DEBUG
+
+        // 1. Before creating a new chat, potentially save or clean up the OLD current chat.
+        if (currentChatId) {
+            // Get the history of the chat we are moving *from*
+            const oldChatHistory = loadChatHistory(currentChatId);
+
+            // If the old chat only has the initial AI message (i.e., no user interaction),
+            // remove it from the chat list to keep it clean.
+            if (oldChatHistory.length === 1 && oldChatHistory[0].role === 'ai') {
+                let chatList = getChatList();
+                chatList = chatList.filter(chat => chat.id !== currentChatId);
                 saveChatList(chatList);
+                // Also remove its specific history from local storage
+                localStorage.removeItem(CHAT_STORAGE_PREFIX + currentChatId);
+                console.log(`Cleaned up empty chat ${currentChatId}`); // DEBUG
+            } else if (oldChatHistory.length > 1) {
+                // If the old chat has user messages, make sure it's saved.
+                saveCurrentChatHistory(); // Saves the current chatHistory (which still belongs to the old chat)
             }
         }
 
-        currentChatId = Date.now().toString(); // Generate a new unique ID for the new chat
+        // 2. Initialize the NEW chat
+        currentChatId = Date.now().toString(); // Generate a new unique ID
         chatHistory = []; // Reset history for the new chat
         clearChatDisplay();
 
         const initialAIMessage = { role: "ai", content: "Hi there! I'm ChatSphere AI, your general purpose assistant. How can I help you today?" };
         appendMessage(initialAIMessage.content, initialAIMessage.role);
         chatHistory.push(initialAIMessage);
+        saveCurrentChatHistory(); // Save initial AI message to its specific chat ID
 
-        const chatList = getChatList();
-        chatList.unshift({ id: currentChatId, title: 'New Chat' }); // Add to the beginning of the list
+        // 3. Add new chat to the chat list (initially with "New Chat" title)
+        let chatList = getChatList();
+        chatList.unshift({ id: currentChatId, title: 'New Chat' });
         saveChatList(chatList);
-        updateRecentChatsUI();
-        highlightCurrentChatInSidebar();
 
+        // 4. Update UI
         currentChatNavLink.textContent = 'Current Chat'; // Reset "Current Chat" link text
         messageInput.value = ''; // Clear input field
         messageInput.focus();
+        updateRecentChatsUI();
+        highlightCurrentChatInSidebar();
+        console.log(`New chat started with ID: ${currentChatId}`); // DEBUG
     }
 
     /**
@@ -235,26 +254,30 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {string} chatTitle - The title of the chat.
      */
     function switchChat(chatId, chatTitle) {
+        console.log(`Switching to chat: ${chatId} - "${chatTitle}"`); // DEBUG
+
         if (currentChatId === chatId) {
+            console.log("Already on this chat."); // DEBUG
             if (window.innerWidth <= 768) closeSidebar();
-            return; // Already on this chat, just close sidebar if mobile
+            return;
         }
 
-        // Save the current chat's history before switching
-        if (currentChatId && chatHistory.length > 1) { // Only save if the current chat has user messages
-            saveCurrentChatHistory();
-        } else if (currentChatId && chatHistory.length === 1 && chatHistory[0].role === 'ai') {
-            // If we are switching away from a "New Chat" that never got a user message,
-            // remove it from the recent chats list to avoid clutter.
-            const chatList = getChatList();
-            const index = chatList.findIndex(chat => chat.id === currentChatId);
-            if (index !== -1) {
-                chatList.splice(index, 1);
+        // Save the current chat's history before switching away from it
+        if (currentChatId) {
+            const oldChatHistory = loadChatHistory(currentChatId);
+            // If the old chat only has the initial AI message (i.e., no user interaction), remove it.
+            if (oldChatHistory.length === 1 && oldChatHistory[0].role === 'ai') {
+                let chatList = getChatList();
+                chatList = chatList.filter(chat => chat.id !== currentChatId);
                 saveChatList(chatList);
+                localStorage.removeItem(CHAT_STORAGE_PREFIX + currentChatId);
+                console.log(`Cleaned up empty chat ${currentChatId} before switching.`); // DEBUG
+            } else {
+                saveCurrentChatHistory(); // This saves the chatHistory that *was* active.
             }
         }
 
-
+        // Load the new chat
         currentChatId = chatId;
         chatHistory = loadChatHistory(chatId);
         clearChatDisplay();
@@ -267,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Update current chat link text and highlight recent chat link
         currentChatNavLink.textContent = chatTitle;
-        highlightCurrentChatInSidebar();
+        highlightCurrentChatInSidebar(); // This will re-highlight based on new currentChatId
 
         if (window.innerWidth <= 768) {
             closeSidebar();
@@ -279,36 +302,30 @@ document.addEventListener('DOMContentLoaded', () => {
      * Highlights the current chat in the sidebar.
      */
     function highlightCurrentChatInSidebar() {
-        // Remove 'active' from all nav links first
+        console.log("Highlighting sidebar for current chat:", currentChatId); // DEBUG
+        // Remove 'active' from all generic nav links
         document.querySelectorAll('.sidebar nav a').forEach(link => {
             link.classList.remove('active');
         });
-        // Remove 'active-chat' from all recent chat links
+        // Remove 'active-chat' from all recent chat links and the new chat button
         document.querySelectorAll('.recent-chats-list a').forEach(link => {
             link.classList.remove('active-chat');
         });
+        newChatButton.classList.remove('active-chat'); // Remove from new chat button
 
-        // Highlight the "Current Chat" link if it matches the current active chat
-        if (currentChatId) {
-             const currentChatEntry = getChatList().find(chat => chat.id === currentChatId);
-             if (currentChatEntry && currentChatEntry.title !== 'New Chat') {
-                 // Only highlight 'Current Chat' main link if it refers to a named, existing chat
-                 currentChatNavLink.classList.add('active');
-             } else {
-                 // If it's still 'New Chat', don't highlight the generic "Current Chat"
-                 // as "New Chat" button will be active instead.
-             }
+        // Highlight the "Current Chat" generic link if it refers to a non-"New Chat"
+        const currentChatEntry = getChatList().find(chat => chat.id === currentChatId);
+        if (currentChatEntry && currentChatEntry.title !== 'New Chat') {
+            currentChatNavLink.classList.add('active');
         }
 
-
-        // Find and highlight the specific recent chat link if it exists
+        // Highlight the specific recent chat link or the "New Chat" button
         const activeRecentChatLink = document.querySelector(`.recent-chats-list a[data-chat-id="${currentChatId}"]`);
         if (activeRecentChatLink) {
             activeRecentChatLink.classList.add('active-chat');
         } else {
-             // If no specific recent chat link is highlighted (e.g., brand new chat),
-             // highlight the "New Chat" button.
-             newChatButton.classList.add('active-chat'); // Using active-chat for consistency
+            // If current chat is a "New Chat" (or not yet in recent list), highlight "New Chat" button
+            newChatButton.classList.add('active-chat');
         }
     }
 
@@ -316,30 +333,36 @@ document.addEventListener('DOMContentLoaded', () => {
      * Populates and updates the "Recent Chats" list in the sidebar.
      */
     function updateRecentChatsUI() {
+        console.log("Updating Recent Chats UI..."); // DEBUG
         recentChatsList.innerHTML = ''; // Clear existing list
         let chatList = getChatList();
 
         // Filter out "New Chat" entries that are truly empty (only initial AI message)
         chatList = chatList.filter(chat => {
             const history = loadChatHistory(chat.id);
-            // A chat is considered "empty" if it only contains the initial AI message or is empty
-            return history.length > 1 || (history.length === 1 && history[0].role !== 'ai');
+            // Keep chat if it has more than just the initial AI message or if it's the current active chat
+            return (history.length > 1) || (history.length === 1 && history[0].role === 'ai' && chat.id === currentChatId);
         });
 
         // Ensure the current chat (if it exists and has content) is at the top
-        if (currentChatId && chatHistory.length > 1) {
-            const currentChatEntry = chatList.find(chat => chat.id === currentChatId);
-            if (currentChatEntry) {
-                // Remove it from its current position
-                chatList = chatList.filter(chat => chat.id !== currentChatId);
-                // Add it to the front
-                chatList.unshift(currentChatEntry);
+        if (currentChatId) {
+            const currentChatEntryIndex = chatList.findIndex(chat => chat.id === currentChatId);
+            if (currentChatEntryIndex !== -1) {
+                const currentChatEntry = chatList.splice(currentChatEntryIndex, 1)[0]; // Remove and get
+                chatList.unshift(currentChatEntry); // Add to the front
             }
         }
 
         saveChatList(chatList); // Save the cleaned and reordered list
 
         chatList.forEach(chat => {
+            // Do not add the currently active "New Chat" (without user messages) to the recent list
+            // It will be highlighted by the "New Chat" button
+            if (chat.id === currentChatId && chat.title === 'New Chat' && chatHistory.length === 1 && chatHistory[0].role === 'ai') {
+                 console.log("Skipping empty 'New Chat' from recent list rendering:", chat.id); // DEBUG
+                 return;
+            }
+
             const li = document.createElement('li');
             const a = document.createElement('a');
             a.href = "#"; // Prevent page reload
@@ -351,39 +374,88 @@ document.addEventListener('DOMContentLoaded', () => {
                 event.preventDefault();
                 switchChat(chat.id, chat.title);
             });
+
+            // Add delete button for recent chats
+            const deleteButton = document.createElement('button');
+            deleteButton.classList.add('delete-chat-button');
+            deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>'; // Font Awesome trash icon
+            deleteButton.title = `Delete "${chat.title}"`;
+            deleteButton.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent the link click event
+                deleteChat(chat.id, chat.title);
+            });
+
             li.appendChild(a);
+            li.appendChild(deleteButton);
             recentChatsList.appendChild(li);
         });
 
         highlightCurrentChatInSidebar(); // Ensure the active chat is highlighted after update
+        console.log("Recent Chats UI updated."); // DEBUG
     }
+
+    /**
+     * Deletes a chat from localStorage and updates the UI.
+     * @param {string} chatIdToDelete - The ID of the chat to delete.
+     * @param {string} chatTitleToDelete - The title of the chat to delete (for confirmation).
+     */
+    function deleteChat(chatIdToDelete, chatTitleToDelete) {
+        if (confirm(`Are you sure you want to delete the chat "${chatTitleToDelete}"?`)) {
+            // Remove from chat list
+            let chatList = getChatList();
+            chatList = chatList.filter(chat => chat.id !== chatIdToDelete);
+            saveChatList(chatList);
+
+            // Remove its history from localStorage
+            localStorage.removeItem(CHAT_STORAGE_PREFIX + chatIdToDelete);
+            console.log(`Chat ${chatIdToDelete} deleted.`); // DEBUG
+
+            // If the deleted chat was the current active chat, start a new one
+            if (currentChatId === chatIdToDelete) {
+                console.log("Deleted current chat, starting new one."); // DEBUG
+                startNewChat();
+            } else {
+                updateRecentChatsUI(); // Just refresh the list if a non-current chat was deleted
+            }
+        }
+    }
+
 
     // Initialize/load the latest chat on page load
     function initializeChat() {
+        console.log("Initializing chat..."); // DEBUG
         const chatList = getChatList();
         if (chatList.length > 0) {
-            // Load the most recent chat if available and not empty
-            const mostRecentChat = chatList[0];
-            const history = loadChatHistory(mostRecentChat.id);
+            // Try to load the most recent chat from the list
+            const mostRecentChatId = chatList[0].id;
+            const mostRecentChatTitle = chatList[0].title;
+            const history = loadChatHistory(mostRecentChatId);
 
             // If the most recent chat is just an empty 'New Chat', discard it and start fresh
+            // This happens if user just opened the page, got initial AI message, and closed.
             if (history.length === 1 && history[0].role === 'ai') {
-                chatList.shift(); // Remove it from the list
-                saveChatList(chatList);
+                console.log(`Most recent chat (${mostRecentChatId}) is empty, starting new one.`); // DEBUG
+                // Remove the empty chat from the list
+                let newChatList = chatList.filter(chat => chat.id !== mostRecentChatId);
+                saveChatList(newChatList);
+                localStorage.removeItem(CHAT_STORAGE_PREFIX + mostRecentChatId);
                 startNewChat(); // Start a truly new one
             } else {
-                currentChatId = mostRecentChat.id;
+                // Otherwise, load the actual most recent chat
+                currentChatId = mostRecentChatId;
                 chatHistory = history;
                 chatHistory.forEach(msg => {
                     appendMessage(msg.content, msg.role);
                 });
-                currentChatNavLink.textContent = mostRecentChat.title;
+                currentChatNavLink.textContent = mostRecentChatTitle;
+                console.log(`Loaded existing chat: ${mostRecentChatId}`); // DEBUG
             }
         } else {
             // Start a new chat if no history exists at all
+            console.log("No existing chats, starting new one."); // DEBUG
             startNewChat();
         }
-        updateRecentChatsUI();
+        updateRecentChatsUI(); // Ensure UI is updated regardless of initial state
         highlightCurrentChatInSidebar();
     }
 
@@ -407,13 +479,13 @@ document.addEventListener('DOMContentLoaded', () => {
             sendMessageButton.classList.remove('send-button-bounce');
         }, { once: true });
 
-        // If it's a "New Chat" and this is the first user message, generate its title
-        const isFirstUserMessageInNewChat = chatHistory.length === 1 && chatHistory[0].role === 'ai';
+        // Check if this is the first user message in the current chat
+        const isFirstUserMessage = chatHistory.length === 1 && chatHistory[0].role === 'ai';
 
         appendMessage(messageText, 'user');
         chatHistory.push({ role: "user", content: messageText });
 
-        if (isFirstUserMessageInNewChat) {
+        if (isFirstUserMessage) {
             let chatList = getChatList();
             let currentChatEntry = chatList.find(chat => chat.id === currentChatId);
 
@@ -421,11 +493,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentChatEntry.title = generateChatTitle(chatHistory);
                 currentChatNavLink.textContent = currentChatEntry.title; // Update the main link
 
-                // Move the current chat to the top of the list if it's not already
+                // Move the current chat to the top of the list (even if it's already there)
                 chatList = chatList.filter(chat => chat.id !== currentChatId); // Remove old entry
                 chatList.unshift(currentChatEntry); // Add updated entry to the front
                 saveChatList(chatList);
-                updateRecentChatsUI(); // Re-render recent chats with the new title
+                updateRecentChatsUI(); // Re-render recent chats with the new title and order
             }
         } else {
             saveCurrentChatHistory(); // Save after every subsequent user message
@@ -525,15 +597,13 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
         // If there's an active chat, simply re-display it and close the sidebar if mobile
         if (currentChatId) {
-            const chatList = getChatList();
-            const currentChatData = chatList.find(chat => chat.id === currentChatId);
+            // No need to reload history or clear display if it's the same chat,
+            // just ensure UI is correct and close sidebar if mobile.
+            // However, we should explicitly switch to it to ensure its title is correct
+            // and it's brought to the top of the recent chats list.
+            const currentChatData = getChatList().find(chat => chat.id === currentChatId);
             if (currentChatData) {
-                 // No need to reload history or clear display if it's the same chat
-                 // Just ensure UI is correct and close sidebar if mobile
-                highlightCurrentChatInSidebar(); // Ensure highlighting is correct
-                if (window.innerWidth <= 768) {
-                    closeSidebar();
-                }
+                switchChat(currentChatData.id, currentChatData.title);
             } else {
                 // Fallback: if currentChatId is set but not in list, start new
                 startNewChat();
