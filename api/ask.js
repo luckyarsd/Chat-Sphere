@@ -31,16 +31,14 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Bad Request - No message content provided.' });
     }
 
-    // --- Keep the explicit formatting instructions for the AI ---
+    // --- REFINED FORMATTING INSTRUCTIONS FOR SHORT, POINT-TO-POINT ---
     const formattingInstruction = `
-        Please provide a detailed overview of the topic.
-        Begin with a short introductory paragraph to set the context.
-        After the introduction, present the main information as a list of distinct points.
-        Each main section (like "General Information", "Geography", "Economy", "Culture", "History") should have its own title on a new line, followed by a colon (e.g., General Information:).
-        Under each section title, list related details. Each detail should start on a new line and be prefixed with a single dash ( - ) followed by a space.
-        Crucially, do NOT use asterisks (*) or double asterisks (**) or any other markdown symbols for bolding or bullet points. Simply format the text so it appears structured and important terms are naturally emphasized.
-        Ensure there is a blank line between the introductory paragraph and the first section, and between each main section's title and its details.
-        Conclude with a brief, friendly closing sentence.
+        Provide a very short, point-to-point answer to the following request.
+        List only the essential key points.
+        Each point must start on a new line and be prefixed with a single dash ( - ) followed by a space.
+        Do NOT include any introductory or concluding sentences/paragraphs.
+        Do NOT use any markdown symbols for bolding (like **) or for bullet points (like *).
+        Focus solely on delivering brief, direct facts in the specified list format.
     `.trim();
 
     const formattedMessage = `${message}\n\n${formattingInstruction}`;
@@ -51,12 +49,12 @@ export default async function handler(req, res) {
       messages: [
         {
           role: "system",
-          content: "You are a helpful AI assistant. Your responses must be clearly structured, highly readable, and adhere precisely to the user's formatting instructions. Absolutely avoid markdown syntax for bolding or lists, unless explicitly asked."
+          content: "You are a concise AI assistant. Your output must be extremely brief, direct, and adhere strictly to requested formatting. Avoid conversational text, introductions, or conclusions. Only provide requested facts."
         },
         { role: "user", content: formattedMessage } // Sending the combined, formatted message
       ],
-      temperature: 0.7, // Creativity level (0.0 to 1.0)
-      max_tokens: 1024, // Max tokens in the response
+      temperature: 0.2, // Lower temperature for less creativity, more directness
+      max_tokens: 256, // Significantly reduced max_tokens to force brevity
     };
 
     // Make the direct fetch call to the Groq API
@@ -83,16 +81,10 @@ export default async function handler(req, res) {
 
     let reply = groqData.choices?.[0]?.message?.content || "No AI response content found.";
 
-    // --- START OF NEW POST-PROCESSING STEP ---
-    // Remove all instances of double asterisks (**) from the reply string
-    // This will effectively remove markdown bolding
+    // --- Post-processing: Remove all instances of double asterisks (**) ---
     reply = reply.replaceAll('**', '');
-    // Optionally, if it still uses single asterisks for lists despite instructions, you could also remove those:
-    // reply = reply.replaceAll('* ', ''); // Note the space after * to avoid removing actual text characters
-    // Or replace them with your desired bullet character:
-    // reply = reply.replaceAll('* ', '• '); // Replace * with a proper bullet character
-
-    // --- END OF NEW POST-PROCESSING STEP ---
+    // Also remove single asterisks if they pop up for list items, replace with nothing or a dash
+    reply = reply.replaceAll('* ', '- '); // Replace markdown * bullet with a simple dash bullet
 
     // Send the AI's cleaned reply back to the frontend
     res.status(200).json({ reply });
