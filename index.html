@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ChatSphere AI — Transcend Boundaries</title>
+    <title>ChatSphere AI — Intelligent Evolution</title>
     <link rel="icon" href="https://assets-global.website-files.com/64070a27ac02766324ef2898/6474b786ef78efed18255018_favicon.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -18,21 +18,9 @@
             height: 100%;
             font-family: 'Poppins', sans-serif;
             overflow: hidden; /* Prevent scrolling */
-            background-color: #0d121c; /* Even deeper, more sophisticated dark background */
-            color: #f0f8ff; /* Alice Blue for soft white text */
+            background-color: #0c1017; /* Very deep, dark background */
+            color: #e6f0fa; /* Soft, cool white for primary text */
             line-height: 1.6;
-        }
-
-        /* --- Global Animations (for background) --- */
-        @keyframes subtle-fade {
-            0%, 100% { opacity: 0.9; }
-            50% { opacity: 1; }
-        }
-
-        @keyframes ripple-effect {
-            0% { transform: scale(0); opacity: 0; }
-            25% { opacity: 0.2; }
-            100% { transform: scale(1); opacity: 0; }
         }
 
         /* --- Background Layers & Effects --- */
@@ -42,46 +30,34 @@
             left: 0;
             width: 100%;
             height: 100%;
-            /* Ensure 'background.png' is a high-resolution, abstract, or subtly textured image */
             background: url('background.png') no-repeat center center/cover;
-            filter: brightness(0.4) contrast(1.2); /* Darker, higher contrast for dramatic effect */
-            z-index: -4; /* Furthest back */
-            animation: subtle-fade 15s infinite ease-in-out; /* Slow, breathing animation */
+            filter: brightness(0.3) contrast(1.3); /* Stronger contrast, darker background */
+            z-index: -4;
         }
 
-        .gradient-overlay {
+        .overlay-dark {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            /* Radial gradient for depth, focused on a central glow */
-            background: radial-gradient(circle at center, rgba(13, 18, 28, 0.1) 0%, rgba(13, 18, 28, 0.9) 80%, rgba(13, 18, 28, 1) 100%);
+            background: rgba(0, 0, 0, 0.7); /* Solid dark overlay for depth */
             z-index: -3;
         }
 
-        /* Animated "Net" Overlay (subtle connection/AI feel) */
-        .animated-net-overlay {
+        .gradient-vignette {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(rgba(0,0,0,0.01) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(0,0,0,0.01) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: pan-background 30s infinite linear;
+            /* Tighter radial gradient for a focused "spotlight" on the center */
+            background: radial-gradient(circle at center, rgba(12, 16, 23, 0.1) 0%, rgba(12, 16, 23, 0.95) 80%, rgba(12, 16, 23, 1) 100%);
             z-index: -2;
-            opacity: 0.1; /* Very subtle */
         }
 
-        @keyframes pan-background {
-            0% { background-position: 0 0; }
-            100% { background-position: -500px -500px; }
-        }
-
-        /* Particle flow (more ethereal, less "bubble-like") */
-        .particle-overlay {
+        /* Animated grid/particles - more uniform and techy */
+        .animated-field {
             position: fixed;
             top: 0;
             left: 0;
@@ -89,32 +65,33 @@
             height: 100%;
             pointer-events: none;
             overflow: hidden;
-            z-index: -1.5;
+            z-index: -1;
+            background: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 80px 80px; /* Larger grid squares */
+            animation: pan-grid 60s infinite linear; /* Slower pan */
         }
 
-        .particle {
+        .animated-field::before {
+            content: '';
             position: absolute;
-            background: radial-gradient(circle at center, rgba(74, 144, 226, 0.3), rgba(74, 144, 226, 0));
-            border-radius: 50%;
-            animation: particle-float 30s infinite ease-in-out;
-            opacity: 0;
-            filter: blur(3px); /* Stronger blur for glow */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(74, 144, 226, 0.05) 0%, transparent 50%); /* Central blue glow */
+            animation: pulse-glow 10s infinite alternate ease-in-out;
         }
 
-        /* Individual particle properties for varied look */
-        .particle:nth-child(1) { width: 15px; height: 15px; top: 10%; left: 15%; animation-delay: 0s; animation-duration: 25s; }
-        .particle:nth-child(2) { width: 12px; height: 12px; top: 30%; left: 40%; animation-delay: 3s; animation-duration: 28s; }
-        .particle:nth-child(3) { width: 18px; height: 18px; top: 60%; left: 70%; animation-delay: 1s; animation-duration: 26s; }
-        .particle:nth-child(4) { width: 10px; height: 10px; top: 80%; left: 25%; animation-delay: 5s; animation-duration: 30s; }
-        .particle:nth-child(5) { width: 14px; height: 14px; top: 5%; left: 85%; animation-delay: 2s; animation-duration: 27s; }
-        .particle:nth-child(6) { width: 9px; height: 9px; top: 45%; left: 5%; animation-delay: 4s; animation-duration: 29s; }
-        .particle:nth-child(7) { width: 11px; height: 11px; top: 70%; left: 90%; animation-delay: 0.5s; animation-duration: 24s; }
+        @keyframes pan-grid {
+            0% { background-position: 0 0; }
+            100% { background-position: -800px -800px; }
+        }
 
-        @keyframes particle-float {
-            0% { transform: translate(0, 0); opacity: 0; }
-            20% { opacity: 0.6; }
-            80% { opacity: 0.6; }
-            100% { transform: translate(calc(var(--rand-x, 1) * 200px), calc(var(--rand-y, 1) * -800px)); opacity: 0; }
+        @keyframes pulse-glow {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.1); opacity: 0.6; }
         }
 
         /* --- Hero Section (Main Content) --- */
@@ -125,199 +102,208 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 0 40px; /* Increased padding */
+            padding: 0 40px;
             position: relative;
             z-index: 1; /* Content on top */
-            animation: fadeInUp 1.8s ease-out forwards; /* Even slower, more graceful entry */
+            animation: fadeInUp 1.5s cubic-bezier(0.23, 1, 0.32, 1) forwards; /* Smoother, impactful fade-in */
+        }
+
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(50px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         /* --- Typography --- */
         h1 {
-            font-size: 6.2rem; /* Even more dominant */
-            margin-bottom: 0.8rem;
+            font-size: 6.8rem; /* Even larger, commanding */
+            margin-bottom: 0.7rem;
             font-weight: 700;
-            letter-spacing: -0.08em; /* Tighter for sleekness */
+            letter-spacing: -0.09em; /* Aggressively tight */
             line-height: 1;
-            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.9); /* Stronger shadow */
-            /* Enhanced Shimmer Effect */
-            background: linear-gradient(90deg, #e3f2fd, #ffffff, #e3f2fd); /* Brighter, almost iridescent shimmer */
-            background-size: 400% 100%; /* Wider shimmer area for smoother flow */
+            text-shadow: 0 12px 40px rgba(0, 0, 0, 0.9); /* Deeper shadow */
+            /* Streamlined Shimmer Effect */
+            background: linear-gradient(90deg, #d8f0ff, #ffffff, #d8f0ff); /* Crisp white shimmer */
+            background-size: 300% 100%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: shimmer 8s infinite linear; /* Long, very subtle shimmer */
+            animation: shimmer 7s infinite linear; /* Refined shimmer speed */
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
 
         p {
-            font-size: 1.8rem; /* Prominent tagline */
-            margin-bottom: 3.5rem; /* More space to buttons */
-            max-width: 800px; /* Wider for descriptive text */
-            line-height: 1.7;
-            text-shadow: 0 3px 15px rgba(0, 0, 0, 0.8);
+            font-size: 2.1rem; /* Bolder tagline */
+            margin-bottom: 4rem; /* More prominent spacing */
+            max-width: 850px; /* Wider for impact */
+            line-height: 1.5;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
             font-weight: 300;
-            color: #c0d1e3; /* Softer blue-white */
-            opacity: 0.9;
+            color: #d1e2f3; /* Slightly deeper blue-white */
+            opacity: 0.95;
+            letter-spacing: -0.01em; /* Subtle negative spacing */
         }
 
-        /* --- Buttons (Glassmorphism & Micro-Interactions) --- */
+        /* --- Buttons (Sleek & Reactive) --- */
         .btn {
-            display: inline-flex; /* Use flexbox for centering text if needed */
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            background: rgba(74, 144, 226, 0.2); /* Semi-transparent blue background */
-            backdrop-filter: blur(10px); /* Frosted glass effect */
-            border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle, thin border */
+            /* Solid background with subtle gradient */
+            background: linear-gradient(135deg, #2a75e3, #1a5ac9);
+            border: none; /* No visible border for cleaner look */
             border-radius: 60px;
-            padding: 22px 65px; /* Larger padding */
-            font-size: 1.5rem; /* Larger font */
+            padding: 24px 70px; /* Generous padding */
+            font-size: 1.6rem; /* Large, bold font */
             font-weight: 600;
-            color: #e0f2ff; /* Lighter blue-white text */
+            color: white;
             cursor: pointer;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.05); /* Soft outer, subtle inner shadow */
-            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 18px 45px rgba(0, 80, 179, 0.5); /* Strong, vibrant shadow */
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); /* Very smooth, springy transition */
             user-select: none;
             outline: none;
             text-decoration: none;
             position: relative;
             overflow: hidden;
-            letter-spacing: 0.02em; /* Slight letter spacing */
+            letter-spacing: 0.03em;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1); /* Subtle internal highlight */
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn:hover::before {
+            opacity: 1;
         }
 
         .btn:hover {
-            background: rgba(74, 144, 226, 0.3); /* Slightly less transparent on hover */
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-            transform: translateY(-8px); /* More pronounced lift */
+            background: linear-gradient(135deg, #1a5ac9, #0f3d8a); /* Darker, richer hover gradient */
+            box-shadow: 0 25px 60px rgba(0, 80, 179, 0.7);
+            transform: translateY(-10px); /* More dramatic lift */
         }
 
         .btn:active {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 80, 179, 0.4);
         }
 
-        /* Ripple effect on click */
-        .btn:focus:not(:focus-visible) { /* Prevent outline on click if not using keyboard */
-            outline: none;
-        }
-
+        /* Ripple effect on click (same as before, but ensure it overlays the new button style) */
         .btn-ripple {
             position: absolute;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.4); /* Slightly stronger ripple */
             border-radius: 50%;
             transform: scale(0);
             animation: ripple-effect 0.6s ease-out;
-            pointer-events: none; /* Crucial for click-through */
+            pointer-events: none;
         }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.05); /* Very subtle transparent white */
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #d0e0f0;
-            padding: 18px 55px;
-            font-size: 1.3rem;
-            margin-top: 30px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            background: transparent; /* No background */
+            border: 1px solid rgba(255, 255, 255, 0.25); /* More visible, cleaner border */
+            color: #b0c4d9; /* Softer text color */
+            padding: 20px 60px;
+            font-size: 1.4rem;
+            margin-top: 35px;
+            box-shadow: none; /* No shadow */
+            letter-spacing: 0.02em;
         }
 
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.08); /* Subtle fill on hover */
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1); /* Subtle hover shadow */
             transform: translateY(-5px);
         }
 
-        /* --- Visitor Counter (Subtle & Elegant) --- */
+        /* --- Visitor Counter (Integrated & Subtle) --- */
         .visitor-counter {
-            font-size: 1.25rem;
+            font-size: 1.3rem;
             font-weight: 300;
-            color: rgba(255, 255, 255, 0.7);
-            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.6);
-            margin-top: 5rem; /* More distinct separation */
-            letter-spacing: 0.08em;
+            color: rgba(255, 255, 255, 0.6);
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.7);
+            margin-top: 5rem;
+            letter-spacing: 0.1em; /* More distinct spacing */
             opacity: 0.8;
-            animation: fadeIn 2s ease-out forwards; /* Fade in separately */
-        }
-
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 0.8; }
+            animation: fadeIn 2.5s ease-out forwards; /* Slower, graceful fade in */
         }
 
         /* --- Footer --- */
         footer {
             position: fixed;
-            bottom: 30px; /* Higher from bottom for elegance */
+            bottom: 35px; /* Higher, more elegant placement */
             width: 100%;
             text-align: center;
             color: rgba(255, 255, 255, 0.4);
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             z-index: 1;
             padding: 0 20px;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.04em;
         }
 
         /* --- Responsive Design --- */
         @media (max-width: 992px) {
-            h1 { font-size: 4.5rem; }
-            p { font-size: 1.6rem; max-width: 90%; }
-            .btn { padding: 18px 55px; font-size: 1.3rem; }
-            .btn-secondary { padding: 14px 45px; font-size: 1.15rem; }
-            .visitor-counter { font-size: 1.15rem; }
+            h1 { font-size: 5.5rem; }
+            p { font-size: 1.8rem; max-width: 90%; }
+            .btn { padding: 20px 60px; font-size: 1.4rem; }
+            .btn-secondary { padding: 16px 50px; font-size: 1.25rem; }
+            .visitor-counter { font-size: 1.2rem; }
         }
 
         @media (max-width: 768px) {
-            h1 { font-size: 3.5rem; letter-spacing: -0.07em; }
-            p { font-size: 1.3rem; max-width: 90%; }
-            .btn { padding: 16px 40px; font-size: 1.2rem; }
-            .btn-secondary { padding: 12px 35px; font-size: 1rem; margin-top: 20px; }
-            .visitor-counter { font-size: 1rem; margin-top: 4rem; }
-            footer { font-size: 0.75rem; bottom: 25px; }
+            h1 { font-size: 4rem; letter-spacing: -0.08em; }
+            p { font-size: 1.5rem; max-width: 90%; }
+            .btn { padding: 18px 45px; font-size: 1.25rem; }
+            .btn-secondary { padding: 14px 40px; font-size: 1.1rem; margin-top: 25px; }
+            .visitor-counter { font-size: 1.1rem; margin-top: 4rem; }
+            footer { font-size: 0.8rem; bottom: 30px; }
         }
 
         @media (max-width: 480px) {
-            h1 { font-size: 2.5rem; letter-spacing: -0.05em; }
-            p { font-size: 1rem; max-width: 90vw; }
-            .btn { width: 90%; padding: 14px 0; font-size: 1.1rem; }
-            .btn-secondary { width: 90%; padding: 10px 0; font-size: 0.9rem; }
-            .visitor-counter { font-size: 0.9rem; margin-top: 3rem; }
-            footer { font-size: 0.7rem; bottom: 20px; }
+            h1 { font-size: 2.8rem; letter-spacing: -0.06em; }
+            p { font-size: 1.2rem; max-width: 90vw; }
+            .btn { width: 90%; padding: 16px 0; font-size: 1.1rem; }
+            .btn-secondary { width: 90%; padding: 12px 0; font-size: 0.95rem; }
+            .visitor-counter { font-size: 1rem; margin-top: 3.5rem; }
+            footer { font-size: 0.75rem; bottom: 25px; }
         }
     </style>
 </head>
 <body>
 
     <div class="bg-container"></div>
-    <div class="gradient-overlay"></div>
-    <div class="animated-net-overlay"></div> <div class="particle-overlay">
-        <div class="particle" style="--rand-x: 0.5; --rand-y: 1;"></div>
-        <div class="particle" style="--rand-x: 0.8; --rand-y: 0.7;"></div>
-        <div class="particle" style="--rand-x: 0.3; --rand-y: 0.9;"></div>
-        <div class="particle" style="--rand-x: 0.7; --rand-y: 0.4;"></div>
-        <div class="particle" style="--rand-x: 0.2; --rand-y: 0.6;"></div>
-        <div class="particle" style="--rand-x: 0.9; --rand-y: 0.3;"></div>
-        <div class="particle" style="--rand-x: 0.4; --rand-y: 0.8;"></div>
-    </div>
-
-    <main class="hero-section">
+    <div class="overlay-dark"></div>
+    <div class="gradient-vignette"></div>
+    <div class="animated-field"></div> <main class="hero-section">
         <h1>ChatSphere AI</h1>
-        <p>Transcend boundaries of knowledge. Engage with a **revolutionary AI companion** designed for **profound insights** and enlightened growth.</p>
+        <p>Your portal to **intelligent evolution**. Experience a **cutting-edge AI companion** for unparalleled insights and transformative growth.</p>
         <a href="chat.html" class="btn" id="startChatBtn">Begin Your Exploration</a>
         <a href="services.html" class="btn btn-secondary">Discover Our Capabilities</a>
         <div class="visitor-counter">Global Explorers: <span id="visitorCount">0</span></div>
     </main>
 
     <footer>
-        &copy; 2025 ChatSphere AI. Crafted with care in Delhi.
+        &copy; 2025 ChatSphere AI. Crafted with precision in Delhi.
     </footer>
 
     <script>
         // --- Visitor Counter Animation ---
-        const finalVisitorCount = Math.floor(Math.random() * 500000 + 100000); // Now between 100k and 600k
+        const finalVisitorCount = Math.floor(Math.random() * 750000 + 150000); // Higher range for impactful count
         const visitorCounterSpan = document.getElementById('visitorCount');
         let currentCount = 0;
 
         function animateCount() {
             if (currentCount < finalVisitorCount) {
-                const increment = Math.ceil((finalVisitorCount - currentCount) / 80); // Slower, smoother for larger numbers
+                const increment = Math.ceil((finalVisitorCount - currentCount) / 100); // Very slow, smooth animation
                 currentCount += increment;
                 if (currentCount > finalVisitorCount) currentCount = finalVisitorCount;
                 visitorCounterSpan.textContent = currentCount.toLocaleString();
@@ -340,7 +326,6 @@
                 ripple.style.top = `${y}px`;
                 this.appendChild(ripple);
 
-                // Remove the ripple after animation
                 ripple.addEventListener('animationend', () => {
                     ripple.remove();
                 });
