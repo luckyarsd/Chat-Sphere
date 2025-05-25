@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- Chat Functionality (Timestamps Removed) ---
+    // --- Chat Functionality (UPDATED: Removed Timestamps) ---
     sendMessageButton.addEventListener('click', sendMessage);
     messageInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
@@ -128,7 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function appendMessage(text, sender) {
         const messageElement = document.createElement('div');
         messageElement.classList.add('message', sender);
-        messageElement.innerHTML = `<span>${text}</span>`;
+        // Removed timestamp generation and appending here
+        messageElement.innerHTML = `<span>${text}</span>`; // Only message text
         chatMessages.appendChild(messageElement);
         chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll to the latest message
     }
