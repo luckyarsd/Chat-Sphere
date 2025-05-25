@@ -31,25 +31,19 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Bad Request - No message content provided.' });
     }
 
-    // --- START OF DETAILED FORMATTING INSTRUCTIONS ---
-
-    // Refined formatting instruction to get paragraphs and visually distinct points,
-    // avoiding explicit markdown symbols like ** or *
+    // --- Keep the explicit formatting instructions for the AI ---
     const formattingInstruction = `
         Please provide a detailed overview of the topic.
         Begin with a short introductory paragraph to set the context.
         After the introduction, present the main information as a list of distinct points.
-        Each main section (like "General Information", "Geography", "Economy", "Culture", "History") should have its own bolded title on a new line, followed by a colon (e.g., General Information:).
+        Each main section (like "General Information", "Geography", "Economy", "Culture", "History") should have its own title on a new line, followed by a colon (e.g., General Information:).
         Under each section title, list related details. Each detail should start on a new line and be prefixed with a single dash ( - ) followed by a space.
-        Do not use asterisks or any other markdown symbols for bullet points or bolding. Simply format the text so it looks like it's bold (e.g., "General Information:").
+        Crucially, do NOT use asterisks (*) or double asterisks (**) or any other markdown symbols for bolding or bullet points. Simply format the text so it appears structured and important terms are naturally emphasized.
         Ensure there is a blank line between the introductory paragraph and the first section, and between each main section's title and its details.
         Conclude with a brief, friendly closing sentence.
     `.trim();
 
-    // Combine the user's message with the refined formatting instruction
     const formattedMessage = `${message}\n\n${formattingInstruction}`;
-
-    // --- END OF DETAILED FORMATTING INSTRUCTIONS ---
 
     // Prepare the payload for the Groq API
     const groqPayload = {
@@ -57,7 +51,7 @@ export default async function handler(req, res) {
       messages: [
         {
           role: "system",
-          content: "You are a helpful AI assistant. Your responses must be clearly structured, highly readable, and adhere precisely to the user's formatting instructions. Avoid markdown syntax unless explicitly requested."
+          content: "You are a helpful AI assistant. Your responses must be clearly structured, highly readable, and adhere precisely to the user's formatting instructions. Absolutely avoid markdown syntax for bolding or lists, unless explicitly asked."
         },
         { role: "user", content: formattedMessage } // Sending the combined, formatted message
       ],
@@ -87,10 +81,20 @@ export default async function handler(req, res) {
 
     const groqData = await groqResponse.json(); // Parse Groq's response
 
-    // Extract the AI's reply. Use optional chaining for safety.
-    const reply = groqData.choices?.[0]?.message?.content || "No AI response content found.";
+    let reply = groqData.choices?.[0]?.message?.content || "No AI response content found.";
 
-    // Send the AI's reply back to the frontend
+    // --- START OF NEW POST-PROCESSING STEP ---
+    // Remove all instances of double asterisks (**) from the reply string
+    // This will effectively remove markdown bolding
+    reply = reply.replaceAll('**', '');
+    // Optionally, if it still uses single asterisks for lists despite instructions, you could also remove those:
+    // reply = reply.replaceAll('* ', ''); // Note the space after * to avoid removing actual text characters
+    // Or replace them with your desired bullet character:
+    // reply = reply.replaceAll('* ', '• '); // Replace * with a proper bullet character
+
+    // --- END OF NEW POST-PROCESSING STEP ---
+
+    // Send the AI's cleaned reply back to the frontend
     res.status(200).json({ reply });
 
   } catch (error) {
