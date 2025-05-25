@@ -15,24 +15,37 @@
       --sidebar-bg: #1a1a1a;
       --sidebar-text: #f8f8f8;
       --sidebar-hover-bg: #333;
-      --sidebar-active-bg: #4a90e2;
+      --sidebar-active-bg: #4a90e2; /* Main accent color */
       --main-content-bg: white;
       --border-color: #ccc;
       --box-shadow-color: rgba(0, 0, 0, 0.1);
-      --chat-input-bg: #f8f8f8;
-      --chat-input-border: #ddd;
+      
+      /* NEW/UPDATED INPUT AREA VARIABLES */
+      --chat-input-bg: #ffffff; /* Background of the textarea itself */
+      --chat-input-border: #ccc; /* Border of the textarea */
+      --chat-input-bg-focus: #ffffff; /* Background on focus */
       --user-message-bg: #007bff;
       --user-message-text: white;
       --ai-message-bg: #e2e6ea;
       --ai-message-text: #333;
       --timestamp-color: #777;
-      --placeholder-color: #999;
+      --placeholder-color: #888; /* Placeholder text color */
       --scroll-thumb: #888;
       --scroll-track: #f1f1f1;
       --icon-color: currentColor; /* Default icon color for general use */
       --theme-toggle-icon-color-light: #FFD700; /* Sun icon color for light theme */
       --theme-toggle-icon-color-dark: #f0f2f5; /* Moon icon color for dark theme */
       --theme-label-color: #f0f2f5; /* Color for the "Theme" text */
+      
+      /* Specific variables for the new input area */
+      --input-area-bg: var(--bg-color); /* Matches theme background for sticky area */
+      --input-area-border-top: var(--border-color);
+      --input-area-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+
+      --accent-color: var(--sidebar-active-bg); /* Use sidebar-active as the primary accent */
+      --accent-rgb: 74, 144, 226; /* RGB for the accent color to use in shadows (based on 4a90e2) */
+      --accent-color-dark: #3a7bd5; /* Slightly darker accent for hover states */
+      --button-text-color: #ffffff; /* Color for text/icons on accent buttons */
     }
 
     body.dark-theme {
@@ -47,8 +60,11 @@
       --main-content-bg: #333333;
       --border-color: #555;
       --box-shadow-color: rgba(0, 0, 0, 0.3);
-      --chat-input-bg: #444444;
-      --chat-input-border: #555;
+      
+      /* NEW/UPDATED INPUT AREA VARIABLES for Dark Theme */
+      --chat-input-bg: #3a3a3a; /* Background of the textarea itself */
+      --chat-input-border: #555; /* Border of the textarea */
+      --chat-input-bg-focus: #4a4a4a; /* Background on focus */
       --user-message-bg: #4a90e2; /* Keep blue for user message */
       --user-message-text: white;
       --ai-message-bg: #555555;
@@ -59,6 +75,16 @@
       --scroll-track: #2b2b2b;
       --icon-color: #f8f8f8; /* Dark theme general icon color */
       --theme-label-color: #e0e0e0; /* Color for the "Theme" text in dark mode */
+
+      /* Specific variables for the new input area in dark theme */
+      --input-area-bg: var(--bg-color);
+      --input-area-border-top: var(--border-color);
+      --input-area-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2); /* Darker shadow for dark theme */
+
+      --accent-color: var(--sidebar-active-bg);
+      --accent-rgb: 74, 144, 226;
+      --accent-color-dark: #3a7bd5;
+      --button-text-color: #ffffff;
     }
 
     /* Basic reset and font settings */
@@ -373,82 +399,102 @@
         }
     }
 
-
-    /* Chat Input Area */
-    .chat-input {
-      display: flex;
-      border-top: 1px solid var(--border-color);
-      padding: 15px 20px;
-      background-color: var(--main-content-bg);
-      gap: 10px;
-      transition: background-color 0.3s ease, border-color 0.3s ease;
-      align-items: flex-end; /* Align items to the bottom, useful for resizing textarea */
+    /* --- UPDATED Chat Input Area Styling --- */
+    .chat-input-area { /* New container for the input and button */
+        position: relative; /* Use relative for positioning within chat-container */
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        padding: 15px 20px; /* Generous padding around the input */
+        background-color: var(--input-area-bg); /* Matches theme */
+        border-top: 1px solid var(--input-area-border-top); /* Subtle separator */
+        display: flex; /* Uses flexbox for alignment */
+        align-items: flex-end; /* Aligns items to the bottom (important for textarea resize) */
+        gap: 10px; /* Space between textarea and button */
+        box-shadow: var(--input-area-shadow); /* Subtle shadow for depth */
+        z-index: 10; /* Ensure it stays above chat messages */
     }
 
-    .chat-input textarea { /* Changed from input[type="text"] to textarea */
-      flex-grow: 1;
-      padding: 12px 15px;
-      border: 1px solid var(--chat-input-border);
-      border-radius: 25px;
-      font-size: 1rem;
-      background-color: var(--chat-input-bg);
-      color: var(--text-color);
-      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-      resize: none; /* Prevent manual resizing by user */
-      min-height: 45px; /* Match button height for alignment */
-      max-height: 150px; /* Limit auto-resizing height to prevent overwhelming screen */
-      overflow-y: auto; /* Enable scrollbar if text exceeds max-height */
-      line-height: 1.4;
+    #messageInput {
+        flex-grow: 1; /* Allows textarea to take available space */
+        min-height: 48px; /* Professional minimum height for the input box */
+        max-height: 200px; /* Prevents it from growing too tall */
+        padding: 12px 15px; /* Padding inside the textarea for text and placeholder */
+        border: 1px solid var(--chat-input-border); /* Initial subtle border */
+        border-radius: 25px; /* Rounded corners for a modern look */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Consistent font */
+        font-size: 1rem;
+        color: var(--text-color);
+        background-color: var(--chat-input-bg);
+        resize: none; /* Disable manual resizing by user */
+        overflow-y: auto; /* Enable scrollbar if content exceeds max-height */
+        box-sizing: border-box; /* Crucial: padding and border are included in the element's total width and height */
+        transition: all 0.2s ease-in-out; /* Smooth transitions for focus and hover effects */
+        line-height: 1.4; /* Ensure good line spacing */
     }
 
-    .chat-input textarea::placeholder { /* Changed from input[type="text"] to textarea */
-      color: var(--placeholder-color);
+    #messageInput::placeholder {
+        color: var(--placeholder-color); /* Placeholder color */
+        opacity: 0.8; /* Subtle transparency */
+        transition: opacity 0.2s ease-in-out; /* Smooth transition for placeholder fade */
     }
 
-    .chat-input textarea:focus { /* Changed from input[type="text"] to textarea */
-      outline: none;
-      border-color: var(--sidebar-active-bg);
-      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.3);
+    #messageInput:focus {
+        outline: none; /* Remove default outline */
+        border-color: var(--accent-color); /* Highlight border on focus */
+        box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.2); /* Subtle glow on focus */
+        background-color: var(--chat-input-bg-focus);
     }
 
-    .chat-input button {
-      background-color: var(--sidebar-active-bg);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 45px;
-      height: 45px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-      flex-shrink: 0;
+    #messageInput:focus::placeholder {
+        opacity: 0.5; /* Slightly fade placeholder on focus */
     }
 
-    .chat-input button:hover {
-      background-color: #3a7bd5; /* Slightly darker blue */
-      transform: scale(1.05);
-    }
-    .chat-input button:active {
-        transform: scale(0.95);
-    }
-
-    /* Send button bounce animation */
-    .chat-input button.send-button-bounce {
-        animation: sendButtonBounce 0.3s ease-out;
-    }
-    @keyframes sendButtonBounce {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.15); } /* Slightly larger */
-        100% { transform: scale(1); }
+    #sendMessageButton {
+        background-color: var(--accent-color);
+        color: var(--button-text-color); /* Assuming a light color for text on accent button */
+        border: none;
+        border-radius: 50%; /* Make it a circle */
+        width: 48px; /* Fixed width and height for circular button */
+        height: 48px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        flex-shrink: 0; /* Prevent button from shrinking */
     }
 
-    .chat-input button svg {
-        fill: white;
+    #sendMessageButton svg {
+        fill: var(--button-text-color); /* Color the SVG icon */
         width: 24px;
         height: 24px;
+        transform: translateX(2px); /* Adjust icon position slightly for send icon */
     }
+
+    #sendMessageButton:hover {
+        background-color: var(--accent-color-dark); /* Darker on hover */
+    }
+
+    #sendMessageButton:active {
+        transform: scale(0.95); /* Slight shrink on click */
+    }
+
+    /* Send button bounce animation (from your JS, just keeping for reference) */
+    .send-button-bounce {
+        animation: bounce 0.4s ease-in-out;
+    }
+
+    @keyframes bounce {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+    }
+
 
     /* --- Modal Styling --- */
     .modal {
@@ -688,7 +734,7 @@
 
       .chat-container {
         max-width: 100%;
-        height: calc(100vh - 60px); /* Adjust height for mobile header */
+        height: calc(100vh - 60px); /* Adjust height for mobile header (assuming 60px header height) */
         border-radius: 0;
       }
 
@@ -701,14 +747,15 @@
         font-size: 0.95rem;
       }
 
-      .chat-input {
+      /* UPDATED mobile input area styling */
+      .chat-input-area { /* Use the new class name */
         padding: 10px 15px;
       }
-      .chat-input textarea { /* Changed from input[type="text"] to textarea */
+      #messageInput { /* Use the new ID for textarea */
         padding: 10px 12px;
         min-height: 40px; /* Adjust for smaller button size */
       }
-      .chat-input button {
+      #sendMessageButton { /* Use the new ID for button */
         width: 40px;
         height: 40px;
       }
@@ -725,7 +772,7 @@
       .sidebar {
         width: 200px;
       }
-      .chat-input textarea { /* Changed from input[type="text"] to textarea */
+      #messageInput { /* Use the new ID for textarea */
         font-size: 0.9rem;
       }
       header h1 {
@@ -737,7 +784,8 @@
     }
   </style>
 </head>
-<body class="light-theme"> <aside class="sidebar" id="sidebar">
+<body class="light-theme">
+  <aside class="sidebar" id="sidebar">
     <a href="index.html" class="sidebar-header">ChatSphere</a>
     <nav>
       <ul>
@@ -796,12 +844,15 @@
 
     <div class="chat-container">
       <div class="chat-messages" id="chatMessages" role="log" aria-live="polite">
-        </div>
-      <div class="chat-input">
+      </div>
+      <div class="chat-input-area">
         <label for="messageInput" class="sr-only">Type your message</label>
         <textarea id="messageInput" placeholder="Type your message..." rows="1" aria-label="Chat input field"></textarea>
         <button id="sendMessageButton" aria-label="Send message">
-          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M2.01 21.01L23 12 2.01 3 2 10l15 2-15 2 .01 7z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor">
+              <path d="M0 0h24v24H0V0z" fill="none"/>
+              <path d="M2.01 21.01L23 12 2.01 3 2 10l15 2-15 2 .01 7z"/>
+          </svg>
         </button>
       </div>
     </div>
