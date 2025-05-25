@@ -31,14 +31,13 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Bad Request - No message content provided.' });
     }
 
-    // --- REFINED FORMATTING INSTRUCTIONS FOR SHORT, POINT-TO-POINT ---
+    // --- REFINED FORMATTING INSTRUCTIONS FOR RELEVANCE + CONCISE POINTS ---
     const formattingInstruction = `
         Provide a very short, point-to-point answer to the following request.
-        List only the essential key points.
+        List only the essential key facts.
         Each point must start on a new line and be prefixed with a single dash ( - ) followed by a space.
-        Do NOT include any introductory or concluding sentences/paragraphs.
-        Do NOT use any markdown symbols for bolding (like **) or for bullet points (like *).
-        Focus solely on delivering brief, direct facts in the specified list format.
+        Do NOT include any introductory or concluding sentences or paragraphs.
+        Just the list of points, nothing else.
     `.trim();
 
     const formattedMessage = `${message}\n\n${formattingInstruction}`;
@@ -49,12 +48,12 @@ export default async function handler(req, res) {
       messages: [
         {
           role: "system",
-          content: "You are a concise AI assistant. Your output must be extremely brief, direct, and adhere strictly to requested formatting. Avoid conversational text, introductions, or conclusions. Only provide requested facts."
+          content: "You are an ultra-concise AI assistant focused on delivering only essential facts. Your output must be a simple list of points without any conversational text, introductions, or conclusions. Each point should be on a new line and prefixed with a a single dash."
         },
         { role: "user", content: formattedMessage } // Sending the combined, formatted message
       ],
-      temperature: 0.2, // Lower temperature for less creativity, more directness
-      max_tokens: 256, // Significantly reduced max_tokens to force brevity
+      temperature: 0.5, // Increased temperature slightly for more varied content
+      max_tokens: 512, // Increased max_tokens significantly to allow for diverse answers
     };
 
     // Make the direct fetch call to the Groq API
@@ -81,10 +80,21 @@ export default async function handler(req, res) {
 
     let reply = groqData.choices?.[0]?.message?.content || "No AI response content found.";
 
-    // --- Post-processing: Remove all instances of double asterisks (**) ---
+    // --- POST-PROCESSING: THE RELIABLE CLEANUP ---
+    // Remove all instances of double asterisks (**) for bolding
     reply = reply.replaceAll('**', '');
-    // Also remove single asterisks if they pop up for list items, replace with nothing or a dash
-    reply = reply.replaceAll('* ', '- '); // Replace markdown * bullet with a simple dash bullet
+
+    // Replace markdown list item asterisks (*) with your preferred dash (-)
+    // This is important because the AI might still use '*' despite instructions
+    reply = reply.replaceAll('* ', '- '); 
+    
+    // Ensure there's a newline between points if the AI mushes them together
+    // This is a more advanced regex to ensure each dash-prefixed item is on its own line
+    // It looks for a dash, then anything not a newline, followed by another dash, and inserts a newline
+    reply = reply.replace(/(- [^\n]+)( - )/g, '$1\n$2');
+
+
+    // --- END OF POST-PROCESSING ---
 
     // Send the AI's cleaned reply back to the frontend
     res.status(200).json({ reply });
