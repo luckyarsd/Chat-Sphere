@@ -375,13 +375,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 switchChat(chat.id, chat.title);
             });
 
-            // Add delete button for recent chats
+           // Add delete button for recent chats
             const deleteButton = document.createElement('button');
             deleteButton.classList.add('delete-chat-button');
-            deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>'; // Font Awesome trash icon
+            deleteButton.textContent = 'X'; // Or 'Delete', or '🗑️' (emoji)
             deleteButton.title = `Delete "${chat.title}"`;
+            // <--- ADD THESE LINES FOR INLINE STYLING
+            deleteButton.style.backgroundColor = 'transparent';
+            deleteButton.style.border = 'none';
+            deleteButton.style.color = 'red';
+            deleteButton.style.cursor = 'pointer';
+            deleteButton.style.marginLeft = '5px'; // Adjust spacing
+            // --- END ADDED LINES ---
             deleteButton.addEventListener('click', (event) => {
-                event.stopPropagation(); // Prevent the link click event
+                event.stopPropagation();
                 deleteChat(chat.id, chat.title);
             });
 
