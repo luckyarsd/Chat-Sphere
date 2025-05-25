@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ChatSphere - Contact Us</title>
   <style>
-    /* Basic reset and font settings (Copy from chat.html) */
+    /* Basic reset and font settings */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -21,7 +21,7 @@
       overflow-x: hidden;
     }
 
-    /* --- Sidebar Styling (Copy from chat.html) --- */
+    /* --- Sidebar Styling --- */
     .sidebar {
       width: 250px;
       background-color: #1a1a1a;
@@ -104,7 +104,7 @@
         margin-top: 5px;
     }
 
-    /* --- Main Content Area Styling (Copy from chat.html, adjust for generic content) --- */
+    /* --- Main Content Area Styling --- */
     .main-content {
       flex-grow: 1;
       display: flex;
@@ -148,7 +148,7 @@
         height: 30px;
     }
 
-    /* --- Page Specific Content Styling (New for contact.html) --- */
+    /* --- Page Specific Content Styling --- */
     .page-content {
       background-color: white;
       width: 100%;
@@ -175,15 +175,21 @@
     }
 
     .contact-info p {
-        margin-bottom: 10px;
+        margin-bottom: 15px; /* Increased margin for better spacing */
         display: flex;
-        align-items: center;
-        gap: 10px;
+        align-items: flex-start; /* Align text to the top */
+        gap: 15px; /* Increased gap for better separation */
     }
 
     .contact-info p strong {
         color: #007bff;
-        min-width: 80px; /* Align labels */
+        min-width: 70px; /* Adjust this value if needed to align labels */
+        flex-shrink: 0; /* Prevent label from shrinking */
+    }
+
+    .contact-info span { /* For the address text itself */
+        flex-grow: 1; /* Allow the address text to take up remaining space */
+        text-align: left; /* Ensure the text aligns left */
     }
 
     .contact-info a {
@@ -198,9 +204,9 @@
 
     .contact-info svg {
         fill: #007bff;
-        width: 20px;
-        height: 20px;
-        flex-shrink: 0;
+        width: 24px; /* Slightly larger icon */
+        height: 24px; /* Slightly larger icon */
+        flex-shrink: 0; /* Prevent icon from shrinking */
     }
 
     /* Simple form styling (optional, uncomment to use) */
@@ -245,7 +251,7 @@
     }
     */
 
-    /* --- Mobile Responsiveness (Copy from chat.html) --- */
+    /* --- Mobile Responsiveness --- */
     @media (max-width: 768px) {
       .sidebar {
         position: fixed;
@@ -312,11 +318,19 @@
 
       .contact-info p {
           font-size: 1rem;
-          flex-direction: column; /* Stack label and value on very small screens */
+          flex-direction: row; /* Keep row for icon and label */
           align-items: flex-start;
+          gap: 10px;
+          flex-wrap: wrap; /* Allow wrapping for long address lines */
       }
       .contact-info p strong {
           min-width: unset;
+          flex-basis: auto; /* Allow basis to be natural size */
+          text-align: left;
+      }
+      .contact-info span {
+          flex-basis: 100%; /* Make address line take full width */
+          margin-left: 34px; /* Offset for icon and label */
       }
     }
 
@@ -331,10 +345,17 @@
       .sidebar {
         width: 200px;
       }
+      .contact-info p {
+          flex-direction: column; /* Stack icon/label and value on very small screens */
+          align-items: flex-start;
+      }
+      .contact-info span {
+          margin-left: 0; /* No offset when stacked */
+      }
     }
 
-    /* --- Modal (NOT needed on these new pages, but keeping for reference/copy-paste) --- */
-    .modal { display: none; } /* Ensure it's hidden */
+    /* --- Modal (NOT needed on these new pages) --- */
+    .modal { display: none; }
   </style>
 </head>
 <body>
@@ -392,7 +413,7 @@
         </p>
         <p>
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm7 16H5V8h14v10zM5 6v-.5c0-.28.22-.5.5-.5h13c.28 0 .5.22.5.5V6H5zm14-1H5.01V4.5c0-.28.22-.5.5-.5h13c.28 0 .5.22.5.5V5zM12 13.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-            <strong>Address:</strong> ChatSphere Headquarters, 123 Digital Lane, Cyber City, Gurgaon, India
+            <strong>Address:</strong> <span>ChatSphere Headquarters, 123 Digital Lane, Chauhan patti, Delhi, India</span>
         </p>
       </div>
 
@@ -402,7 +423,7 @@
 
   <script src="chat.js"></script>
   <script>
-    // --- Sidebar / Hamburger Menu JS (Copy from chat.html, active link adjusted) ---
+    // --- Sidebar / Hamburger Menu JS ---
     const sidebar = document.getElementById('sidebar');
     const hamburgerButton = document.getElementById('hamburgerButton');
     const overlay = document.getElementById('overlay');
@@ -434,7 +455,7 @@
       });
     });
 
-    // --- Active Link Highlight (Copy from chat.html, adjusted for this page) ---
+    // --- Active Link Highlight ---
     document.addEventListener('DOMContentLoaded', () => {
       const currentPath = window.location.pathname.split('/').pop();
       const aiSuggestedNameSpan = document.getElementById('aiSuggestedName');
