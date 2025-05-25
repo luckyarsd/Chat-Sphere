@@ -30,11 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Theme Toggle Elements ---
     const themeToggle = document.getElementById('themeToggle');
     const themeIcon = document.getElementById('themeIcon');
+    // Using complete SVG paths for clarity and direct embedding
     const moonIconPath = "M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.34 2.42-3.92 2.76-2.5.56-4.92-1.39-5.48-3.89-.56-2.5 1.39-4.92 3.89-5.48 1.34-.3 2.75-.11 4.03.36C16.94 4.14 14.58 3 12 3zm-2.83 2.6c.5-.07 1-.1 1.5-.1 3.87 0 7 3.13 7 7 0 .5-.03 1-.09 1.5-.47-2.12-2.19-3.79-4.38-4.38-2.6-1.12-5.44.89-6.56 3.49-.64 1.46-.86 3.01-.68 4.54-2.13-1.66-3.57-4.27-3.57-7.25 0-3.87 3.13-7 7-7z";
     const sunIconPath = "M6.07 16.5c2.81 2.81 7.15 3.69 10.45 2.51-.76-2.02-2.18-3.72-4.01-4.87-2.6-1.63-5.91-1.55-8.44.2-.42.28-1.07.72-1.46 1.13.06 1.52.27 2.97 1.46 4.03zm12.39-3.73c.78-1.43 1.13-3.05.99-4.68-.42-1.28-1.07-2.43-1.92-3.41-1.03-1.18-2.31-2.06-3.7-2.58-1.57-.57-3.27-.47-4.83.27-.22.11-.44.23-.66.36-1.01-1.6-2.28-2.85-3.81-3.53C6.58 2.07 3.04 4.54 2.15 8.16c-1.33 5.4 2.44 10.4 7.6 11.66 4.31 1.05 8.9-.76 11.39-4.14-.14-1.24-.55-2.45-1.74-3.55z";
 
     // --- Theme Management Functions ---
     function setOppositeThemeIcon(currentTheme) {
+        // Sets the icon to represent the *alternative* theme to toggle to
         if (currentTheme === 'dark') {
             themeIcon.innerHTML = `<path d="M0 0h24v24H0V0z" fill="none"/><path d="${sunIconPath}" />`;
         } else {
@@ -112,17 +114,30 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * Formats plain text with markdown for display in HTML.
      * Converts **bold** or *bold* to <strong>bold</strong> and newlines \n to <br>.
+     * This is an IMPROVED markdown formatter.
      * @param {string} text - The raw text content.
      * @returns {string} The HTML formatted string.
      */
     function formatMessageText(text) {
-    let formattedText = text;
-    // Add a <br> before single asterisks not at the start of the string or preceded by a space/newline.
-    formattedText = formattedText.replace(/\*/g, '<br>');
+        let formattedText = text;
 
-    return formattedText;
-}
-     /* Appends a message to the chat display.
+        // Convert newlines to <br> tags
+        formattedText = formattedText.replace(/\n/g, '<br>');
+
+        // Convert **bold** to <strong>bold</strong>
+        formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+        // Convert *italic* to <em>italic</em>
+        formattedText = formattedText.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        
+        // Convert `code` to <code>code</code>
+        formattedText = formattedText.replace(/`(.*?)`/g, '<code>$1</code>');
+
+        return formattedText;
+    }
+
+    /**
+     * Appends a message to the chat display.
      * @param {string} text - The message content.
      * @param {string} sender - 'user' or 'ai'.
      * @param {Object} [infoData=null] - Optional: Data object for creator info (for AI messages).
@@ -154,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
         messageElement.innerHTML = contentHTML; // Use innerHTML to render formatted text
         chatMessages.appendChild(messageElement);
 
+        // Add pop-in animation
         messageElement.classList.add('message-pop-in');
         messageElement.addEventListener('animationend', () => {
             messageElement.classList.remove('message-pop-in');
@@ -309,6 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 4. Update UI
         currentChatNavLink.textContent = 'Current Chat'; // Reset "Current Chat" link text
         messageInput.value = ''; // Clear input field
+        autoResizeTextarea(); // Reset textarea height
         messageInput.focus();
         updateRecentChatsUI();
         highlightCurrentChatInSidebar();
@@ -452,7 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 0 24 24" width="18px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/></svg>`; // Trash can SVG icon
             deleteButton.title = `Delete "${chat.title}"`;
             deleteButton.addEventListener('click', (event) => {
-                event.stopPropagation();
+                event.stopPropagation(); // Prevent the link's click event
                 deleteChat(chat.id, chat.title);
             });
 
@@ -516,7 +533,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentChatId = mostRecentChatId;
                 chatHistory = history;
                 chatHistory.forEach(msg => {
-                    appendMessage(msg.content, msg.role, null);
+                    appendMessage(msg.content, msg.role, null); // infoData will be null on load, as it's not saved in history
                 });
                 currentChatNavLink.textContent = mostRecentChatTitle;
                 console.log(`Loaded existing chat: ${mostRecentChatId}`); // DEBUG
@@ -539,6 +556,8 @@ document.addEventListener('DOMContentLoaded', () => {
         messageInput.style.height = messageInput.scrollHeight + 'px'; // Set to scroll height
     }
     messageInput.addEventListener('input', autoResizeTextarea);
+    // Initial resize in case of pre-filled text (e.g., from browser history)
+    autoResizeTextarea(); 
 
     // --- Chat Functionality (Groq API via Vercel Function) ---
     sendMessageButton.addEventListener('click', sendMessage);
@@ -612,10 +631,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             const aiResponseText = data.reply || "No AI response content found.";
-            const aiDisplayInfo = data.displayInfo || null;
+            const aiDisplayInfo = data.displayInfo || null; // Capture displayInfo if available
 
             removeTypingIndicator(); // Remove typing indicator before showing response
-            appendMessage(aiResponseText, 'ai', aiDisplayInfo);
+            appendMessage(aiResponseText, 'ai', aiDisplayInfo); // Pass displayInfo to appendMessage
             chatHistory.push({ role: "ai", content: aiResponseText });
             saveCurrentChatHistory();
 
