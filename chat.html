@@ -176,9 +176,7 @@
       color: var(--header-text);
       width: 100%;
       max-width: 550px;
-      text-align: center;
       padding: 18px;
-      font-size: 1.6rem;
       font-weight: bold;
       letter-spacing: 1px;
       border-radius: 10px 10px 0 0;
@@ -186,31 +184,22 @@
       margin-top: 20px;
       position: relative;
       display: flex;
-      justify-content: center; /* Centers the h1 */
+      justify-content: center; /* Centers the h1 by default */
       align-items: center;
     }
 
-    /* Styles for the new image logo in the header */
+    /* Styles for the header h1 text */
     header h1 {
         margin: 0;
-        font-size: 0; /* Hide font-size as it's an image now */
-        line-height: 0; /* Remove extra line height */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%; /* Ensure h1 takes full height of header for vertical centering */
+        font-size: 1.8rem; /* Prominent font size */
+        color: var(--header-text); /* Ensure it matches header text color */
+        line-height: 1; /* Standard line height */
+        flex-grow: 1; /* Allow it to take available space in flex container */
+        text-align: center; /* Center the text */
     }
-
-    .header-logo {
-        max-width: 180px; /* Max width for the logo */
-        height: auto; /* Maintain aspect ratio */
-        max-height: 40px; /* Max height for the logo */
-        display: block; /* Remove extra space below image */
-    }
-
 
     .hamburger-button {
-        display: none;
+        /* This button remains absolutely positioned for consistent layout */
         background: none;
         border: none;
         cursor: pointer;
@@ -229,6 +218,7 @@
 
     /* Top Right Controls Group */
     .top-right-controls {
+        /* This group remains absolutely positioned */
         position: absolute;
         right: 10px;
         top: 50%;
@@ -323,6 +313,9 @@
       word-wrap: break-word; /* Break long words */
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
       line-height: 1.4;
+      /* Add pop-in animation for new messages */
+      opacity: 0; /* Start invisible for animation */
+      transform: translateY(20px); /* Start below final position */
     }
 
     .message.user {
@@ -339,6 +332,17 @@
       border-bottom-left-radius: 2px; /* Pointy corner for AI */
     }
 
+    /* New Message Pop-in Animation */
+    .message.message-pop-in {
+        animation: messagePopIn 0.4s ease-out forwards;
+    }
+    @keyframes messagePopIn {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
     .typing-indicator {
       align-self: flex-start;
       padding: 10px 15px;
@@ -346,14 +350,28 @@
       background-color: var(--ai-message-bg);
       color: var(--ai-message-text);
       font-style: italic;
-      animation: pulse 1.5s infinite;
     }
 
-    @keyframes pulse {
-      0% { opacity: 0.7; }
-      50% { opacity: 1; }
-      100% { opacity: 0.7; }
+    /* Bouncy dots for typing indicator */
+    .typing-indicator span {
+        display: inline-block; /* Make dots animate individually */
+        animation: bounce 1.4s infinite ease-in-out both;
+        transform: translateY(0); /* Start at base line */
+        margin-left: 2px; /* Space between dots */
     }
+    .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+    .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0s; }
+
+    @keyframes bounce {
+        0%, 80%, 100% {
+            transform: translateY(0);
+        }
+        40% {
+            transform: translateY(-10px); /* Bounce height */
+        }
+    }
+
 
     /* Chat Input Area */
     .chat-input {
@@ -407,6 +425,16 @@
     }
     .chat-input button:active {
         transform: scale(0.95);
+    }
+
+    /* Send button bounce animation */
+    .chat-input button.send-button-bounce {
+        animation: sendButtonBounce 0.3s ease-out;
+    }
+    @keyframes sendButtonBounce {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.15); } /* Slightly larger */
+        100% { transform: scale(1); }
     }
 
     .chat-input button svg {
@@ -542,11 +570,7 @@
       header h1 {
         flex-grow: 1; /* Allow h1 to take space */
         text-align: center; /* Center h1 content */
-      }
-      /* Mobile adjustment for image logo */
-      .header-logo {
-          max-width: 140px; /* Smaller on mobile */
-          max-height: 35px;
+        font-size: 1.6rem; /* Adjust font size for mobile header */
       }
 
       .top-right-controls {
@@ -596,9 +620,8 @@
       .chat-input input[type="text"] {
         font-size: 0.9rem;
       }
-      .header-logo {
-          max-width: 120px; /* Even smaller on very small screens */
-          max-height: 30px;
+      header h1 {
+        font-size: 1.4rem; /* Even smaller on very small screens */
       }
       .theme-label {
           display: none; /* Hide text on very small screens to save space */
@@ -632,7 +655,7 @@
     </nav>
     <div class="sidebar-footer">
         <span class="logo-text">ChatSphere AI</span>
-        <p>Powered by <span class="suggested-name" id="aiSuggestedName">Humans</span></p>
+        <p>Powered by <span class="suggested-name" id="aiSuggestedName">Aura</span></p>
     </div>
   </aside>
 
@@ -643,10 +666,9 @@
       <button class="hamburger-button" id="hamburgerButton">
           <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
       </button>
-      <h1><img src="https://via.placeholder.com/180x50.png?text=Your+Logo" alt="ChatSphere AI Logo" class="header-logo"></h1>
+      <h1>ChatSphere AI</h1>
       <div class="top-right-controls">
-        <span class="theme-label">Theme ChatSphere AI</span>
-        <button class="theme-toggle" id="themeToggle">
+        <span class="theme-label">Theme</span> <button class="theme-toggle" id="themeToggle">
           <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="var(--icon-color)"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.34 2.42-3.92 2.76-2.5.56-4.92-1.39-5.48-3.89-.56-2.5 1.39-4.92 3.89-5.48 1.34-.3 2.75-.11 4.03.36C16.94 4.14 14.58 3 12 3zm-2.83 2.6c.5-.07 1-.1 1.5-.1 3.87 0 7 3.13 7 7 0 .5-.03 1-.09 1.5-.47-2.12-2.19-3.79-4.38-4.38-2.6-1.12-5.44.89-6.56 3.49-.64 1.46-.86 3.01-.68 4.54-2.13-1.66-3.57-4.27-3.57-7.25 0-3.87 3.13-7 7-7z"/></svg>
         </button>
       </div>
@@ -655,7 +677,7 @@
     <div class="chat-container">
       <div class="chat-messages" id="chatMessages">
         <div class="message ai">
-          Hi there! I'm ChatSphere AI, your assistant. How can I help you today?
+          Hi there! I'm ChatSphere AI, your general purpose assistant. How can I help you today?
         </div>
       </div>
       <div class="chat-input">
