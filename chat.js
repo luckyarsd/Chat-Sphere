@@ -123,26 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // if there's already a newline, and we want to preserve the markdown itself.
 
     // Add a <br> before single asterisks not at the start of the string or preceded by a space/newline.
-    formattedText = formattedText.replace(/(?<!^)(?<![\s\n])\*/g, '<br>*');
-
-    // Add a <br> before double asterisks not at the start of the string or preceded by a space/newline.
-    formattedText = formattedText.replace(/(?<!^)(?<![\s\n])\*\*/g, '<br>**');
-
-    // Add a <br> before a number followed by a period and space (for lists),
-    // if it's not at the start of the string or already preceded by a newline.
-    formattedText = formattedText.replace(/(?<!^)(?<![\n])(\d+\.\s)/g, '<br>$1');
-
-    // Remove any accidental double <br><br> created by the above rules
-    formattedText = formattedText.replace(/<br><br>/g, '<br>');
-
-    // 2. Convert bold (both **text** and *text*) - keep this after adding newlines
-    // to ensure bolding still works after <br> insertions.
-    formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    formattedText = formattedText.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
-
-
-    // 3. Convert explicit newlines \n to <br> tags (important for existing newlines)
-    formattedText = formattedText.replace(/\n/g, '<br>');
+    formattedText = formattedText.replace(/\*/g, '<br>');
 
 
     return formattedText;
