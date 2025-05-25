@@ -12,11 +12,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModalButton = document.getElementById('closeModalButton');
 
     // --- API PROXY CONFIGURATION ---
-    // This endpoint will be handled by your Vercel Function (e.g., /api/chat-proxy.js)
-    // which then securely communicates with your chosen AI API (Cohere, GoRQ, etc.).
+    // This endpoint should point to your Vercel Serverless Function that
+    // securely communicates with the GoRQ API using your environment variable.
+    // Example: For a Vercel Function at `api/chat-proxy.js` or `api/chat-proxy/index.js`
     const PROXY_API_ENDPOINT = '/api/chat-proxy';
 
     // Stores chat history for conversational context
+    // This array will be sent to your Vercel proxy, which will then format it
+    // as required by the GoRQ API's 'messages' parameter.
     const chatHistory = [];
 
     // --- Theme Toggle Elements ---
@@ -92,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Active Link Highlight (existing) ---
     const currentPath = window.location.pathname.split('/').pop();
     if (aiSuggestedNameSpan) {
-        aiSuggestedNameSpan.textContent = "Aura";
+        aiSuggestedNameSpan.textContent = "Aura"; // You can set a specific name for your AI here
     }
 
     navLinks.forEach(link => {
@@ -117,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (messageText === '') return;
 
         appendMessage(messageText, 'user');
-        chatHistory.push({ role: "user", content: messageText }); // Use 'content' for history based on typical proxy setups
+        chatHistory.push({ role: "user", content: messageText }); // Add user message to history
         messageInput.value = '';
 
         const typingIndicator = document.createElement('div');
@@ -134,9 +137,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({
-                    message: messageText,
+                    message: messageText, // The current user message
                     chat_history: chatHistory.slice(0, -1) // Send all history except the current user message
-                    // Your Vercel Function can specify the model or other API parameters
+                    // Your Vercel Function should handle adding the 'system' message or model selection for GoRQ
                 })
             });
 
@@ -147,17 +150,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             // Assuming your Vercel function returns the AI's response text directly,
-            // or in a field like 'text' or 'response'. Adjust 'data.text' as needed.
-            const aiResponse = data.text || data.response || JSON.stringify(data);
+            // or in a field like 'text' or 'response' or 'content'.
+            const aiResponse = data.text || data.response || data.content || JSON.stringify(data);
 
             chatMessages.removeChild(typingIndicator); // Remove typing indicator
             appendMessage(aiResponse, 'ai');
             chatHistory.push({ role: "assistant", content: aiResponse }); // Add AI response to history
 
         } catch (error) {
-            console.error('Error fetching AI response from proxy:', error);
+            console.error('Error fetching AI response from Vercel proxy:', error);
             chatMessages.removeChild(typingIndicator); // Remove typing indicator
-            appendMessage("Oops! I couldn't get a response from the AI right now. Please check your Vercel proxy setup or try again later.", 'ai');
+            appendMessage("Oops! I couldn't get a response from the AI. Please check your Vercel proxy setup or try again later.", 'ai');
         }
     }
 
