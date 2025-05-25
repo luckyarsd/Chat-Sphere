@@ -11,6 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const welcomeModal = document.getElementById('welcomeModal');
     const closeModalButton = document.getElementById('closeModalButton');
 
+    // New dropdown elements
+    const chatOptionsButton = document.getElementById('chatOptionsButton');
+    const chatOptionsDropdown = document.getElementById('chatOptionsDropdown');
+    const clearChatOption = document.getElementById('clearChatOption');
+    const exportChatOption = document.getElementById('exportChatOption');
+    const chatSettingsOption = document.getElementById('chatSettingsOption');
+
+
     // --- API PROXY CONFIGURATION ---
     // This endpoint now points directly to your api/ask.js Vercel Serverless Function.
     const PROXY_API_ENDPOINT = '/api/ask';
@@ -107,6 +115,59 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- Chat Options Dropdown Functionality ---
+    chatOptionsButton.addEventListener('click', (event) => {
+        event.stopPropagation(); // Prevent the window click listener from closing it immediately
+        chatOptionsDropdown.classList.toggle('active');
+    });
+
+    // Close dropdown if clicked anywhere outside of it
+    window.addEventListener('click', (event) => {
+        if (!chatOptionsDropdown.contains(event.target) && !chatOptionsButton.contains(event.target)) {
+            chatOptionsDropdown.classList.remove('active');
+        }
+    });
+
+    // --- Dropdown Menu Item Actions ---
+    clearChatOption.addEventListener('click', (event) => {
+        event.preventDefault(); // Prevent default link behavior
+        // Clear all messages except the initial AI greeting
+        chatMessages.innerHTML = `
+            <div class="message ai">
+              Hi there! I'm ChatSphere AI, your general purpose assistant. How can I help you today?
+            </div>
+        `;
+        chatHistory.length = 0; // Clear the chat history array
+        chatOptionsDropdown.classList.remove('active'); // Close dropdown
+        // Optionally, add a subtle notification or animation here
+        alert('Chat cleared!');
+    });
+
+    exportChatOption.addEventListener('click', (event) => {
+        event.preventDefault();
+        chatOptionsDropdown.classList.remove('active');
+        alert('Export Chat functionality to be implemented!');
+        // You would typically stringify chatHistory and offer it as a download
+        // const chatData = JSON.stringify(chatHistory, null, 2);
+        // const blob = new Blob([chatData], { type: 'application/json' });
+        // const url = URL.createObjectURL(blob);
+        // const a = document.createElement('a');
+        // a.href = url;
+        // a.download = 'chatsphere_chat.json';
+        // document.body.appendChild(a);
+        // a.click();
+        // document.body.removeChild(a);
+        // URL.revokeObjectURL(url);
+    });
+
+    chatSettingsOption.addEventListener('click', (event) => {
+        event.preventDefault();
+        chatOptionsDropdown.classList.remove('active');
+        alert('Settings functionality to be implemented!');
+        // This could open another modal or navigate to a settings page
+    });
+
+
     // --- Chat Functionality (Groq API via Vercel Function) ---
     sendMessageButton.addEventListener('click', sendMessage);
     messageInput.addEventListener('keypress', (e) => {
@@ -195,9 +256,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Add message pop-in animation
         messageElement.classList.add('message-pop-in');
-        // Removing the class after animation end is good practice, but not strictly necessary for this specific
-        // animation if 'forwards' is used and the default state of .message is the 'to' state.
-        // Keeping it here for consistency and to avoid potential issues if CSS changes.
         messageElement.addEventListener('animationend', () => {
             messageElement.classList.remove('message-pop-in');
         }, { once: true });
