@@ -14,25 +14,25 @@
     }
 
     body {
-      background-color: #f0f2f5; /* Lighter background for the entire page */
+      background-color: #f0f2f5;
       color: #333;
-      display: flex; /* Use flexbox for main layout (sidebar + main content) */
-      min-height: 100vh; /* Ensure full viewport height */
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden; /* Prevent horizontal scroll when sidebar is off-screen */
     }
 
     /* --- Sidebar Styling --- */
     .sidebar {
-      width: 250px; /* Fixed width for the sidebar */
-      background-color: #1a1a1a; /* Dark background for sidebar */
-      color: #f8f8f8; /* Light text color */
+      width: 250px;
+      background-color: #1a1a1a;
+      color: #f8f8f8;
       padding: 20px;
       display: flex;
       flex-direction: column;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2); /* Shadow for depth */
-      z-index: 100; /* Ensure it's above other elements if needed */
-      position: sticky; /* Make it sticky if content scrolls */
-      top: 0; /* Align to the top */
-      height: 100vh; /* Full height */
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+      z-index: 100;
+      flex-shrink: 0; /* Prevent it from shrinking */
+      transition: transform 0.3s ease-in-out; /* Smooth transition */
     }
 
     .sidebar-header {
@@ -40,21 +40,21 @@
       font-weight: bold;
       margin-bottom: 30px;
       text-align: center;
-      color: #4a90e2; /* Accent color for logo/title */
+      color: #4a90e2;
     }
 
     .sidebar nav ul {
-      list-style: none; /* Remove bullet points */
+      list-style: none;
       padding: 0;
       margin: 0;
     }
 
     .sidebar nav li {
-      margin-bottom: 15px; /* Space between nav items */
+      margin-bottom: 15px;
     }
 
     .sidebar nav a {
-      display: block; /* Make the whole area clickable */
+      display: block;
       color: #f8f8f8;
       text-decoration: none;
       padding: 12px 15px;
@@ -63,63 +63,38 @@
       font-size: 1.1rem;
       display: flex;
       align-items: center;
-      gap: 10px; /* Space between icon and text */
+      gap: 10px;
     }
 
     .sidebar nav a:hover {
-      background-color: #333; /* Darker background on hover */
+      background-color: #333;
       color: #fff;
     }
 
     .sidebar nav a.active {
-      background-color: #4a90e2; /* Active link styling */
+      background-color: #4a90e2;
       color: white;
       font-weight: bold;
     }
 
-    /* Icons (using a simple placeholder, consider Font Awesome or similar) */
-    .sidebar nav a::before {
-      content: ' '; /* Placeholder for icon */
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      background-color: #f8f8f8; /* Default icon color */
-      mask-size: cover; /* For SVG masks */
-      -webkit-mask-size: cover;
+    /* SVG Icons for nav links */
+    .sidebar nav a svg {
+        fill: currentColor; /* Inherit color from parent 'a' tag */
+        width: 24px;
+        height: 24px;
     }
-
-    .sidebar nav a[href="#chat-section"]::before {
-      background-color: white;
-      mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 6H6v-2h8v2zm4-8H6V5h12v2z"/></svg>');
-      -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 6H6v-2h8v2zm4-8H6V5h12v2z"/></svg>');
-    }
-    .sidebar nav a[href="#services-section"]::before {
-      background-color: white;
-      mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M11 17h2v-6h-2v6zm2-8V7h-2v2h2zm4 10H7V5h10v14zm0-16c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2H7c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h10z"/></svg>');
-      -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M11 17h2v-6h-2v6zm2-8V7h-2v2h2zm4 10H7V5h10v14zm0-16c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2H7c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h10z"/></svg>');
-    }
-    .sidebar nav a[href="#about-section"]::before {
-      background-color: white;
-      mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.38 0 2.5 1.12 2.5 2.5S13.38 10 12 10 9.5 8.88 9.5 7.5 10.62 5 12 5zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z"/></svg>');
-      -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.38 0 2.5 1.12 2.5 2.5S13.38 10 12 10 9.5 8.88 9.5 7.5 10.62 5 12 5zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z"/></svg>');
-    }
-    .sidebar nav a[href="#contact-section"]::before {
-      background-color: white;
-      mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>');
-      -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>');
-    }
-
 
     /* --- Main Content Area Styling --- */
     .main-content {
-      flex-grow: 1; /* Takes up remaining space */
+      flex-grow: 1;
       display: flex;
       flex-direction: column;
-      align-items: center; /* Center content horizontally within main area */
-      padding: 0 16px 32px; /* Padding for the main content */
+      align-items: center;
+      padding: 0 16px 32px;
+      overflow-y: auto; /* Allow scrolling for main content */
     }
 
-    /* Chat header styling (adjusted for new layout) */
+    /* Header styling */
     header {
       background-color: #1e1e1e;
       color: white;
@@ -132,16 +107,36 @@
       letter-spacing: 1px;
       border-radius: 10px 10px 0 0;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      margin-top: 20px; /* Add some top margin to separate from sidebar if needed */
+      margin-top: 20px;
+      position: relative; /* For hamburger button positioning */
     }
 
-    /* Chat messages container (adjusted for new layout) */
+    /* Hamburger Menu Button (hidden by default, shown on mobile) */
+    .hamburger-button {
+        display: none; /* Hidden on desktop */
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 10px;
+        position: absolute; /* Position relative to header */
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10; /* Ensure it's clickable */
+    }
+    .hamburger-button svg {
+        fill: white;
+        width: 30px;
+        height: 30px;
+    }
+
+    /* Chat messages container */
     #chat {
       background-color: white;
       width: 100%;
       max-width: 600px;
-      height: 70vh; /* Takes 70% of viewport height */
-      min-height: 400px; /* Ensure a minimum height */
+      height: 70vh;
+      min-height: 400px;
       padding: 20px;
       overflow-y: auto;
       display: flex;
@@ -164,7 +159,7 @@
     }
 
     .user {
-      background-color: #007bff; /* Primary blue for user messages */
+      background-color: #007bff;
       color: white;
       align-self: flex-end;
       border-bottom-right-radius: 5px;
@@ -202,7 +197,7 @@
     }
 
     #sendBtn {
-      background-color: #007bff; /* Primary blue for send button */
+      background-color: #007bff;
       color: white;
       border: none;
       padding: 12px 24px;
@@ -216,92 +211,141 @@
       background-color: #0056b3;
     }
 
-    /* --- Responsive Adjustments --- */
+    /* --- Mobile Responsiveness --- */
     @media (max-width: 768px) {
-      body {
-        flex-direction: column; /* Stack sidebar and main content vertically */
-      }
+      /* Hide sidebar by default on mobile, position off-screen */
       .sidebar {
-        width: 100%; /* Full width sidebar on small screens */
-        height: auto; /* Auto height */
-        position: relative; /* Not sticky anymore */
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Shadow below */
-        border-radius: 0 0 10px 10px;
-        padding-bottom: 0; /* Remove padding if you put toggler here */
+        position: fixed; /* Fixed position for off-canvas */
+        left: 0;
+        top: 0;
+        height: 100vh;
+        transform: translateX(-100%); /* Start off-screen to the left */
+        box-shadow: none; /* Remove shadow when hidden */
       }
-      .sidebar nav ul {
-        display: flex; /* Make nav items horizontal */
-        flex-wrap: wrap; /* Wrap if too many */
-        justify-content: center;
-        gap: 10px; /* Space between horizontal items */
-        padding-bottom: 15px;
+
+      /* When sidebar is active, slide it in */
+      .sidebar.active {
+        transform: translateX(0);
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2); /* Add shadow when visible */
       }
-      .sidebar nav li {
-        margin-bottom: 0; /* Remove vertical margin */
+
+      /* Show hamburger button on mobile */
+      .hamburger-button {
+        display: block;
       }
-      .sidebar nav a {
-        font-size: 0.9rem;
-        padding: 8px 12px;
-        gap: 5px;
+
+      /* Overlay for dimming main content when sidebar is open */
+      .overlay {
+        display: none; /* Hidden by default */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Dim effect */
+        z-index: 90; /* Below sidebar, above main content */
       }
-      .sidebar-header {
-        margin-bottom: 15px;
+      .overlay.active {
+        display: block; /* Show when sidebar is active */
       }
+
+      /* Main content adjustments for mobile */
       .main-content {
-        margin-top: 20px; /* Space between sidebar and main content */
+        width: 100%; /* Take full width */
+        margin-left: 0; /* No margin due to sidebar */
+        padding-top: 0; /* Adjust top padding if needed */
+        flex-grow: 1;
       }
-    }
 
-    @media (max-width: 480px) {
+      /* Header adjustments for mobile */
       header {
-        font-size: 1.4rem;
-        padding: 16px;
+        margin-top: 0; /* Remove top margin */
+        border-radius: 0; /* No rounded corners on header */
+        padding: 15px 10px; /* Adjust padding */
+        font-size: 1.6rem;
+        display: flex;
+        justify-content: center; /* Center title */
+        align-items: center;
+      }
+      header h1 {
+        margin: 0;
       }
 
+      /* Chat area adjustments */
       #chat {
-        height: 60vh;
-        padding: 16px;
+        height: calc(100vh - 120px); /* Adjust height based on header/input form */
+        max-width: 100%; /* Use full width available */
+        border-radius: 0;
+      }
+
+      #inputForm {
+        max-width: 100%;
+        padding: 10px;
+        border-top: none;
+        border-radius: 0;
+        margin-bottom: 0; /* Remove bottom margin */
       }
 
       #userInput {
-        font-size: 0.95rem;
+        padding: 12px 15px;
+        font-size: 0.9rem;
       }
-
       #sendBtn {
-        font-size: 0.95rem;
         padding: 10px 18px;
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 400px) {
+      /* Further adjustments for very small screens */
+      header {
+        font-size: 1.3rem;
+      }
+      .hamburger-button svg {
+        width: 25px;
+        height: 25px;
+      }
+      .sidebar {
+        width: 220px; /* Make sidebar slightly smaller */
       }
     }
   </style>
 </head>
 <body>
 
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">ChatSphere</div>
     <nav>
       <ul>
         <li><a href="#chat-section" class="active">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12zM6 9h12v2H6zm8 3H6v-2h8v2zm4-5H6V5h12v2z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12zM6 9h12v2H6zm8 3H6v-2h8v2zm4-5H6V5h12v2z"/></svg>
             Chat
         </a></li>
         <li><a href="services.html" id="services-link">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM9 13H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM9 13H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg>
             Our Services
         </a></li>
         <li><a href="about.html" id="about-link">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.38 0 2.5 1.12 2.5 2.5S13.38 10 12 10 9.5 8.88 9.5 7.5 10.62 5 12 5zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.38 0 2.5 1.12 2.5 2.5S13.38 10 12 10 9.5 8.88 9.5 7.5 10.62 5 12 5zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
             About Us
         </a></li>
         <li><a href="contact.html" id="contact-link">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
             Contact Us
         </a></li>
       </ul>
     </nav>
   </aside>
 
+  <div class="overlay" id="overlay"></div>
+
   <main class="main-content">
-    <header>Chat Sphere</header>
+    <header>
+      <button class="hamburger-button" id="hamburgerButton">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+      </button>
+      <h1>Chat Sphere</h1>
+    </header>
 
     <div id="chat"></div>
 
@@ -313,34 +357,66 @@
 
   <script src="chat.js"></script>
   <script>
-    // Simple logic to set active link in sidebar (client-side only for this page)
+    // --- Sidebar / Hamburger Menu JS (NEW) ---
+    const sidebar = document.getElementById('sidebar');
+    const hamburgerButton = document.getElementById('hamburgerButton');
+    const overlay = document.getElementById('overlay');
+    const navLinks = document.querySelectorAll('.sidebar nav a'); // All sidebar navigation links
+
+    // Function to open sidebar
+    function openSidebar() {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent scrolling main content
+    }
+
+    // Function to close sidebar
+    function closeSidebar() {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = ''; // Restore scrolling
+    }
+
+    // Toggle sidebar on hamburger button click
+    hamburgerButton.addEventListener('click', openSidebar);
+
+    // Close sidebar when overlay is clicked
+    overlay.addEventListener('click', closeSidebar);
+
+    // Close sidebar when a navigation link is clicked (optional, good UX)
+    navLinks.forEach(link => {
+      link.addEventListener('click', (event) => {
+        // Handle active class for navigation
+        navLinks.forEach(l => l.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+
+        // Close sidebar only if it's an internal link or on mobile
+        if (window.innerWidth <= 768) { // Only close if on mobile screens
+            closeSidebar();
+        }
+
+        // For the chat section, scroll to bottom of chat
+        if (event.currentTarget.getAttribute('href') === '#chat-section') {
+            const chatDiv = document.getElementById('chat');
+            if (chatDiv) chatDiv.scrollTop = chatDiv.scrollHeight;
+        }
+      });
+    });
+
+    // --- Active Link Highlight (Existing Logic, slightly modified) ---
     document.addEventListener('DOMContentLoaded', () => {
-      const currentPath = window.location.pathname;
-      const navLinks = document.querySelectorAll('.sidebar nav a');
+      // Find the currently active link based on current page URL
+      const currentPath = window.location.pathname.split('/').pop(); // Get filename (e.g., chat.html)
+      const isChatPage = currentPath === 'chat.html' || currentPath === ''; // Default to chat if root
 
       navLinks.forEach(link => {
-        // Example: if currentPath is /chat.html, and href is #chat-section, it's active
-        // Or, if link.href matches the current page path exactly
-        if (link.getAttribute('href') === '#chat-section' || link.href === window.location.href) {
+        const linkHref = link.getAttribute('href');
+        // If it's the chat page and the link is for chat-section OR if href matches current page
+        if ((isChatPage && linkHref === '#chat-section') || (linkHref.endsWith(currentPath) && currentPath !== '')) {
           link.classList.add('active');
         } else {
           link.classList.remove('active');
         }
-
-        // For internal page navigation (if you decide to use sections within chat.html)
-        link.addEventListener('click', function(event) {
-          if (this.getAttribute('href').startsWith('#')) {
-            event.preventDefault(); // Prevent default scroll for now
-            // You can add smooth scrolling logic here if you have actual sections
-            navLinks.forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
-            // For now, if it's the chat-section, scroll to top of chat
-            if (this.getAttribute('href') === '#chat-section') {
-                const chatDiv = document.getElementById('chat');
-                if (chatDiv) chatDiv.scrollTop = chatDiv.scrollHeight; // Scroll to bottom of chat
-            }
-          }
-        });
       });
     });
   </script>
