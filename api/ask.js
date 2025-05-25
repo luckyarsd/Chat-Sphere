@@ -7,7 +7,6 @@
 export const maxDuration = 60; // Vercel Hobby plan max is 60 seconds
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-// You do NOT need to 'npm install groq' or 'import Groq from "groq-sdk";' with this approach.
 
 export default async function handler(req, res) {
   // Ensure only POST requests are processed
@@ -32,31 +31,37 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Bad Request - No message content provided.' });
     }
 
-    // --- START OF UPDATE ---
+    // --- START OF UPDATED INSTRUCTIONS ---
 
-    // 1. Define your formatting instructions
-    // You can customize this string to be more specific (e.g., "numbered list", "table", "short paragraphs").
-    // The key is to be explicit.
+    // Refined formatting instruction for clearer, systematic output
+    // We're explicitly asking for newlines and sub-headings.
     const formattingInstruction = `
-        Please provide your response in a clear, systematic manner.
-        Use bullet points for key information, and bold any important terms.
-        Keep each point concise and easy to read.
-    `.trim(); // .trim() helps clean up extra whitespace from the multiline string
+        Please provide a detailed and systematic overview.
+        For each main section (e.g., General Information, Geography, Economy, Culture, History), use a bold heading (e.g., **General Information**).
+        Under each heading, present information using clear bullet points.
+        Each bullet point should be on a new line.
+        Bold any important terms within the bullet points.
+        Do not use asterisks as bullet points; instead, ensure each new item starts on a fresh line.
+        Provide a brief concluding sentence at the end.
+    `.trim();
 
-    // 2. Combine the user's message with the formatting instruction
+    // Combine the user's message with the refined formatting instruction
     const formattedMessage = `${message}\n\n${formattingInstruction}`;
 
-    // --- END OF UPDATE ---
+    // --- END OF UPDATED INSTRUCTIONS ---
 
     // Prepare the payload for the Groq API
     const groqPayload = {
-      model: "llama3-8b-8192", // You can choose other Groq models: 'llama3-70b-8192', 'mixtral-8x7b-32768', 'gemma-7b-it'
+      model: "llama3-8b-8192", // You can choose other Groq models
       messages: [
-        { role: "system", content: "You are a helpful AI assistant. Always strive for clarity and conciseness." }, // Added a system role instruction for general behavior
-        { role: "user", content: formattedMessage } // <-- Now sending the combined, formatted message
+        {
+          role: "system",
+          content: "You are a helpful AI assistant. Your primary goal is to deliver highly structured, readable, and well-organized information. Always prioritize clarity and proper formatting with newlines."
+        },
+        { role: "user", content: formattedMessage } // Sending the combined, formatted message
       ],
       temperature: 0.7, // Creativity level (0.0 to 1.0)
-      max_tokens: 1024, // Max tokens in the response. Consider increasing if structured output gets cut off.
+      max_tokens: 1024, // Max tokens in the response
     };
 
     // Make the direct fetch call to the Groq API
@@ -64,7 +69,7 @@ export default async function handler(req, res) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${GROQ_API_KEY}` // Send API key in Authorization header
+        "Authorization": `Bearer ${GROQ_API_KEY}`
       },
       body: JSON.stringify(groqPayload)
     });
@@ -75,7 +80,7 @@ export default async function handler(req, res) {
       console.error('Error from Groq API:', groqResponse.status, errorData);
       return res.status(groqResponse.status).json({
         error: `Groq API Error: ${errorData.message || 'Failed to get response'}`,
-        details: errorData // Include details for debugging in development
+        details: errorData
       });
     }
 
