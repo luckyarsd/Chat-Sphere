@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ChatSphere - Our Services</title>
   <style>
-    /* Basic reset and font settings (Copy from chat.html) */
+    /* Basic reset and font settings */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -21,7 +21,7 @@
       overflow-x: hidden;
     }
 
-    /* --- Sidebar Styling (Copy from chat.html) --- */
+    /* --- Sidebar Styling --- */
     .sidebar {
       width: 250px;
       background-color: #1a1a1a;
@@ -104,7 +104,7 @@
         margin-top: 5px;
     }
 
-    /* --- Main Content Area Styling (Copy from chat.html, adjust for generic content) --- */
+    /* --- Main Content Area Styling --- */
     .main-content {
       flex-grow: 1;
       display: flex;
@@ -148,7 +148,7 @@
         height: 30px;
     }
 
-    /* --- Page Specific Content Styling (New for services.html) --- */
+    /* --- Page Specific Content Styling --- */
     .page-content {
       background-color: white;
       width: 100%;
@@ -160,13 +160,17 @@
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
       line-height: 1.6;
       color: #444;
+      text-align: center; /* Center text for this single service */
     }
 
     .page-content h2 {
         font-size: 1.8rem;
         color: #1a1a1a;
         margin-bottom: 20px;
-        text-align: center;
+    }
+
+    .page-content p {
+        margin-bottom: 15px;
     }
 
     .page-content ul {
@@ -194,19 +198,37 @@
         margin-bottom: 5px;
     }
 
-    .page-content li a {
-        color: #007bff;
-        text-decoration: none;
+    /* --- Explore Button Styling --- */
+    .explore-btn {
+        display: inline-block; /* Allows padding and margin */
+        background-color: #007bff; /* Primary blue */
+        color: white;
+        padding: 12px 25px; /* Slightly larger padding */
+        border-radius: 30px; /* More pill-like shape */
+        text-decoration: none; /* Remove underline */
         font-weight: bold;
-        transition: color 0.3s ease;
+        font-size: 1rem; /* Slightly larger font */
+        text-align: center;
+        margin-top: 25px; /* More space from description */
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3); /* Softer, larger shadow */
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
     }
 
-    .page-content li a:hover {
-        color: #0056b3;
-        text-decoration: underline;
+    .explore-btn:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+        transform: translateY(-3px); /* Lifts up slightly */
+        box-shadow: 0 8px 20px rgba(0, 123, 255, 0.4); /* Enhanced shadow on hover */
     }
 
-    /* --- Mobile Responsiveness (Copy from chat.html) --- */
+    .explore-btn:active {
+        transform: translateY(0); /* Presses down when clicked */
+        box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2); /* Smaller shadow when active */
+    }
+
+
+    /* --- Mobile Responsiveness --- */
     @media (max-width: 768px) {
       .sidebar {
         position: fixed;
@@ -278,6 +300,11 @@
       .page-content li strong {
           font-size: 1.1rem;
       }
+      .explore-btn {
+          padding: 10px 20px;
+          font-size: 0.9rem;
+          margin-top: 20px;
+      }
     }
 
     @media (max-width: 400px) {
@@ -293,8 +320,8 @@
       }
     }
 
-    /* --- Modal (NOT needed on these new pages, but keeping for reference/copy-paste) --- */
-    .modal { display: none; } /* Ensure it's hidden */
+    /* --- Modal (NOT needed on these new pages) --- */
+    .modal { display: none; }
   </style>
 </head>
 <body>
@@ -338,24 +365,18 @@
     </header>
 
     <div class="page-content">
-      <h2>Discover How We Can Help You</h2>
-      <p>At ChatSphere, we are dedicated to providing innovative and supportive solutions tailored to your spiritual and personal growth needs. Our services blend technology with traditional wisdom to offer unique experiences.</p>
+      <h2>Experience Virtual Darshan</h2>
+      <p>Connect with sacred spaces from the comfort of your home. Our high-definition Virtual Darshan platform offers a serene and immersive experience, bringing divine solace directly to you.</p>
 
       <ul>
         <li>
           <strong>Virtual Darshan Platform</strong>
           <p>Experience spiritual solace and connect with divine spaces from anywhere in the world. Our high-definition Virtual Darshan service brings sacred temples and shrines directly to your device.</p>
-          <a href="https://example.com/virtual-darshan" target="_blank">Visit Virtual Darshan Portal</a>
+          <a href="https://virtual-darshan-8133.vercel.app/" target="_blank" class="explore-btn">
+              Explore Virtual Darshan
+          </a>
         </li>
-        <li>
-          <strong>Personalized Spiritual Guidance</strong>
-          <p>Receive tailored advice and insights from our AI, drawing from vast spiritual texts and traditions. Whether you seek guidance on meditation, mindfulness, or life's challenges, our AI is here to assist.</p>
-        </li>
-        <li>
-          <strong>Community Support Programs</strong>
-          <p>Join a vibrant online community focused on shared values and mutual support. Participate in guided discussions, virtual events, and connect with like-minded individuals on your spiritual journey.</p>
-        </li>
-      </ul>
+        </ul>
 
       <p>We are constantly evolving our offerings to serve you better. Stay tuned for more enriching services coming soon!</p>
     </div>
@@ -364,7 +385,7 @@
 
   <script src="chat.js"></script>
   <script>
-    // --- Sidebar / Hamburger Menu JS (Copy from chat.html, active link adjusted) ---
+    // --- Sidebar / Hamburger Menu JS ---
     const sidebar = document.getElementById('sidebar');
     const hamburgerButton = document.getElementById('hamburgerButton');
     const overlay = document.getElementById('overlay');
@@ -398,7 +419,7 @@
       });
     });
 
-    // --- Active Link Highlight (Copy from chat.html, adjusted for this page) ---
+    // --- Active Link Highlight ---
     document.addEventListener('DOMContentLoaded', () => {
       const currentPath = window.location.pathname.split('/').pop();
       const aiSuggestedNameSpan = document.getElementById('aiSuggestedName');
