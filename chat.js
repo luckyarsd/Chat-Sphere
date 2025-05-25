@@ -177,29 +177,50 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {string} sender - 'user' or 'ai'.
      * @param {Object} [infoData=null] - Optional: Data object for creator info (for AI messages).
      */
-    // --- MODIFIED: appendMessage function to accept infoData ---
     function appendMessage(text, sender, infoData = null) {
         const messageElement = document.createElement('div');
         messageElement.classList.add('message', sender);
 
         let contentHTML = `<span>${text}</span>`; // Default text content
 
-        if (sender === 'ai' && infoData) {
-            // If it's an AI message AND infoData is provided, add the special layout
-            contentHTML = `
-                <div class="ai-response-content">
-                    <span>${text}</span>
-                    <div class="creator-info-card">
-                        <img src="${infoData.image}" alt="${infoData.name}" class="creator-logo">
-                        <div class="creator-details">
-                            <h4>${infoData.name}</h4>
-                            <p>${infoData.role}</p>
-                            <p class="creator-bio">${infoData.bio}</p>
+        if (sender === 'ai') {
+            // Check for and format "** text **"
+            if (text.includes('** text **')) {
+                // Use a regex to replace all occurrences globally
+                contentHTML = text.replace(/\*\* text \*\*/g, '<br><strong>text</strong>');
+                // If you want the ENTIRE message to be bolded and on a new line if it contains it,
+                // you might need more complex logic, but this handles just the specific phrase.
+                // For now, this replaces the specific phrase within the existing span.
+            } else {
+                contentHTML = `<span>${text}</span>`;
+            }
+
+            if (infoData) {
+                // If it's an AI message AND infoData is provided, add the special layout
+                // This wraps the contentHTML (which might now contain bolded "text")
+                contentHTML = `
+                    <div class="ai-response-content">
+                        ${contentHTML}
+                        <div class="creator-info-card">
+                            <img src="${infoData.image}" alt="${infoData.name}" class="creator-logo">
+                            <div class="creator-details">
+                                <h4>${infoData.name}</h4>
+                                <p>${infoData.role}</p>
+                                <p class="creator-bio">${infoData.bio}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
+            } else {
+                // If no infoData, just use the processed text content
+                contentHTML = `<span>${text}</span>`; // Re-wrap if it's not a special AI response with infoData
+                // This ensures that the ** text ** replacement still works without infoData
+                if (text.includes('** text **')) {
+                    contentHTML = text.replace(/\*\* text \*\*/g, '<br><strong>text</strong>');
+                }
+            }
         }
+
 
         messageElement.innerHTML = contentHTML;
         chatMessages.appendChild(messageElement);
@@ -211,7 +232,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
-    // --- END MODIFIED ---
 
     /**
      * Clears the chat display.
@@ -307,13 +327,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Render loaded history
         chatHistory.forEach(msg => {
-            // --- MODIFIED: Ensure infoData is handled if present in historical messages ---
             // Note: If you want creator info to reappear when loading history,
             // your saved history messages need to store this info.
             // For now, we assume history only stores 'content' and 'role'.
             // The backend will resend 'displayInfo' if the user asks again.
             appendMessage(msg.content, msg.role);
-            // --- END MODIFIED ---
         });
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
@@ -409,13 +427,6 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteButton.classList.add('delete-chat-button');
             deleteButton.textContent = '🗑️'; // Or 'Delete', or '🗑️' (emoji)
             deleteButton.title = `Delete "${chat.title}"`;
-            // <--- REMOVE THESE INLINE STYLES. Move to style.css for better practice ---
-            // deleteButton.style.backgroundColor = 'transparent';
-            // deleteButton.style.border = 'none';
-            // deleteButton.style.color = 'red';
-            // deleteButton.style.cursor = 'pointer';
-            // deleteButton.style.marginLeft = '5px'; // Adjust spacing
-            // --- END REMOVAL ---
             deleteButton.addEventListener('click', (event) => {
                 event.stopPropagation();
                 deleteChat(chat.id, chat.title);
@@ -481,9 +492,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentChatId = mostRecentChatId;
                 chatHistory = history;
                 chatHistory.forEach(msg => {
-                    // --- MODIFIED: Pass null for infoData when loading general history ---
                     appendMessage(msg.content, msg.role, null);
-                    // --- END MODIFIED ---
                 });
                 currentChatNavLink.textContent = mostRecentChatTitle;
                 console.log(`Loaded existing chat: ${mostRecentChatId}`); // DEBUG
@@ -581,17 +590,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             const aiResponseText = data.reply || "No AI response content found.";
-            // --- NEW: Extract displayInfo from backend response ---
             const aiDisplayInfo = data.displayInfo || null;
-            // --- END NEW ---
 
             if (currentTypingIndicator && chatMessages.contains(currentTypingIndicator)) {
                 chatMessages.removeChild(currentTypingIndicator);
                 currentTypingIndicator = null;
             }
-            // --- MODIFIED: Pass aiDisplayInfo to appendMessage ---
             appendMessage(aiResponseText, 'ai', aiDisplayInfo);
-            // --- END MODIFIED ---
             chatHistory.push({ role: "ai", content: aiResponseText });
             saveCurrentChatHistory();
 
