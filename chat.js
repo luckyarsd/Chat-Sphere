@@ -1,188 +1,681 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const sidebar = document.getElementById('sidebar');
-    const hamburgerButton = document.getElementById('hamburgerButton');
-    const overlay = document.getElementById('overlay');
-    const navLinks = document.querySelectorAll('.sidebar nav a');
-    const aiSuggestedNameSpan = document.getElementById('aiSuggestedName');
-
-    const chatMessages = document.getElementById('chatMessages');
-    const messageInput = document.getElementById('messageInput');
-    const sendMessageButton = document.getElementById('sendMessageButton');
-    const welcomeModal = document.getElementById('welcomeModal');
-    const closeModalButton = document.getElementById('closeModalButton');
-
-    // --- API PROXY CONFIGURATION ---
-    // This endpoint will be handled by your Vercel Function (e.g., /api/chat-proxy.js)
-    // which then securely communicates with your chosen AI API (Cohere, GoRQ, etc.).
-    const PROXY_API_ENDPOINT = '/api/chat-proxy';
-
-    // Stores chat history for conversational context
-    const chatHistory = [];
-
-    // --- Theme Toggle Elements ---
-    const themeToggle = document.getElementById('themeToggle');
-    const themeIcon = document.getElementById('themeIcon');
-    // Moon icon for light theme (suggests switching to dark)
-    const moonIconPath = "M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.34 2.42-3.92 2.76-2.5.56-4.92-1.39-5.48-3.89-.56-2.5 1.39-4.92 3.89-5.48 1.34-.3 2.75-.11 4.03.36C16.94 4.14 14.58 3 12 3zm-2.83 2.6c.5-.07 1-.1 1.5-.1 3.87 0 7 3.13 7 7 0 .5-.03 1-.09 1.5-.47-2.12-2.19-3.79-4.38-4.38-2.6-1.12-5.44.89-6.56 3.49-.64 1.46-.86 3.01-.68 4.54-2.13-1.66-3.57-4.27-3.57-7.25 0-3.87 3.13-7 7-7z";
-    // Sun icon for dark theme (suggests switching to light)
-    const sunIconPath = "M6.07 16.5c2.81 2.81 7.15 3.69 10.45 2.51-.76-2.02-2.18-3.72-4.01-4.87-2.6-1.63-5.91-1.55-8.44.2-.42.28-1.07.72-1.46 1.13.06 1.52.27 2.97 1.46 4.03zm12.39-3.73c.78-1.43 1.13-3.05.99-4.68-.42-1.28-1.07-2.43-1.92-3.41-1.03-1.18-2.31-2.06-3.7-2.58-1.57-.57-3.27-.47-4.83.27-.22.11-.44.23-.66.36-1.01-1.6-2.28-2.85-3.81-3.53C6.58 2.07 3.04 4.54 2.15 8.16c-1.33 5.4 2.44 10.4 7.6 11.66 4.31 1.05 8.9-.76 11.39-4.14-.14-1.24-.55-2.45-1.74-3.55z";
-
-    // --- Theme Management Functions ---
-    function setOppositeThemeIcon(currentTheme) {
-        if (currentTheme === 'dark') {
-            themeIcon.innerHTML = `<path d="M0 0h24v24H0V0z" fill="none"/><path d="${sunIconPath}" />`;
-        } else {
-            themeIcon.innerHTML = `<path d="M0 0h24v24H0V0z" fill="none"/><path d="${moonIconPath}" />`;
-        }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChatSphere AI</title>
+  <link rel="icon" href="https://assets-global.website-files.com/64070a27ac02766324ef2898/6474b786ef78efed18255018_favicon.png" type="image/png">
+  <style>
+    /* Theme Variables */
+    :root { /* Light theme defaults */
+      --bg-color: #f0f2f5;
+      --text-color: #333;
+      --header-bg: #1e1e1e;
+      --header-text: white;
+      --sidebar-bg: #1a1a1a;
+      --sidebar-text: #f8f8f8;
+      --sidebar-hover-bg: #333;
+      --sidebar-active-bg: #4a90e2;
+      --main-content-bg: white;
+      --border-color: #ccc;
+      --box-shadow-color: rgba(0, 0, 0, 0.1);
+      --chat-input-bg: #f8f8f8;
+      --chat-input-border: #ddd;
+      --user-message-bg: #007bff;
+      --user-message-text: white;
+      --ai-message-bg: #e2e6ea;
+      --ai-message-text: #333;
+      --timestamp-color: #777;
+      --placeholder-color: #999;
+      --scroll-thumb: #888;
+      --scroll-track: #f1f1f1;
+      --icon-color: currentColor; /* Default icon color for general use */
+      --theme-toggle-icon-color-light: #FFD700; /* Sun icon color for light theme */
+      --theme-toggle-icon-color-dark: #f0f2f5; /* Moon icon color for dark theme */
+      --theme-label-color: #f0f2f5; /* Color for the "Theme ChatSphere AI" text */
     }
 
-    function applyTheme(theme) {
-        document.body.classList.remove('light-theme', 'dark-theme');
-        document.body.classList.add(`${theme}-theme`);
-        localStorage.setItem('theme', theme);
-        setOppositeThemeIcon(theme); // Update icon for the *next* toggle
+    body.dark-theme {
+      --bg-color: #1a1a1a;
+      --text-color: #f0f2f5;
+      --header-bg: #2b2b2b;
+      --header-text: #e0e0e0;
+      --sidebar-bg: #2b2b2b;
+      --sidebar-text: #e0e0e0;
+      --sidebar-hover-bg: #444;
+      --sidebar-active-bg: #4a90e2; /* Keep blue for accent */
+      --main-content-bg: #333333;
+      --border-color: #555;
+      --box-shadow-color: rgba(0, 0, 0, 0.3);
+      --chat-input-bg: #444444;
+      --chat-input-border: #555;
+      --user-message-bg: #4a90e2; /* Keep blue for user message */
+      --user-message-text: white;
+      --ai-message-bg: #555555;
+      --ai-message-text: #f0f2f5;
+      --timestamp-color: #aaaaaa;
+      --placeholder-color: #bbbbbb;
+      --scroll-thumb: #666;
+      --scroll-track: #2b2b2b;
+      --icon-color: #f8f8f8; /* Dark theme general icon color */
+      --theme-label-color: #e0e0e0; /* Color for the "Theme ChatSphere AI" text in dark mode */
     }
 
-    function toggleTheme() {
-        const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        applyTheme(newTheme);
+    /* Basic reset and font settings */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
-    // Initialize theme on load
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-        applyTheme(savedTheme);
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        applyTheme('dark'); // Apply dark theme if system preference is dark
-    } else {
-        applyTheme('light'); // Default to light theme
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    // Event listener for theme toggle button
-    themeToggle.addEventListener('click', toggleTheme);
-
-    // --- Sidebar / Hamburger Menu JS (existing) ---
-    function openSidebar() {
-        sidebar.classList.add('active');
-        overlay.classList.add('active');
-        document.body.style.overflow = 'hidden';
+    /* --- Sidebar Styling --- */
+    .sidebar {
+      width: 250px;
+      background-color: var(--sidebar-bg);
+      color: var(--sidebar-text);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 2px 0 10px var(--box-shadow-color);
+      z-index: 100;
+      flex-shrink: 0;
+      transition: transform 0.3s ease-in-out, background-color 0.3s ease, color 0.3s ease;
     }
 
-    function closeSidebar() {
-        sidebar.classList.remove('active');
-        overlay.classList.remove('active');
-        document.body.style.overflow = '';
+    .sidebar-header {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 30px;
+      text-align: center;
+      color: var(--sidebar-active-bg); /* Use accent color */
     }
 
-    hamburgerButton.addEventListener('click', openSidebar);
-    overlay.addEventListener('click', closeSidebar);
-
-    navLinks.forEach(link => {
-      link.addEventListener('click', (event) => {
-        navLinks.forEach(l => l.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-
-        if (window.innerWidth <= 768) {
-            closeSidebar();
-        }
-      });
-    });
-
-    // --- Active Link Highlight (existing) ---
-    const currentPath = window.location.pathname.split('/').pop();
-    if (aiSuggestedNameSpan) {
-        aiSuggestedNameSpan.textContent = "Aura";
+    .sidebar nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
     }
 
-    navLinks.forEach(link => {
-        const linkHref = link.getAttribute('href');
-        if (linkHref.endsWith(currentPath) || (currentPath === '' && linkHref === 'chat.html')) {
-            link.classList.add('active');
-        } else {
-            link.classList.remove('active');
-        }
-    });
-
-    // --- Chat Functionality (Vercel Proxy Integration) ---
-    sendMessageButton.addEventListener('click', sendMessage);
-    messageInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            sendMessage();
-        }
-    });
-
-    async function sendMessage() {
-        const messageText = messageInput.value.trim();
-        if (messageText === '') return;
-
-        appendMessage(messageText, 'user');
-        chatHistory.push({ role: "user", content: messageText }); // Use 'content' for history based on typical proxy setups
-        messageInput.value = '';
-
-        const typingIndicator = document.createElement('div');
-        typingIndicator.classList.add('typing-indicator');
-        typingIndicator.textContent = 'ChatSphere AI is typing...';
-        chatMessages.appendChild(typingIndicator);
-        chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
-
-        try {
-            const response = await fetch(PROXY_API_ENDPOINT, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: messageText,
-                    chat_history: chatHistory.slice(0, -1) // Send all history except the current user message
-                    // Your Vercel Function can specify the model or other API parameters
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`Proxy error: ${response.status} - ${errorData.message || 'Unknown error from proxy'}`);
-            }
-
-            const data = await response.json();
-            // Assuming your Vercel function returns the AI's response text directly,
-            // or in a field like 'text' or 'response'. Adjust 'data.text' as needed.
-            const aiResponse = data.text || data.response || JSON.stringify(data);
-
-            chatMessages.removeChild(typingIndicator); // Remove typing indicator
-            appendMessage(aiResponse, 'ai');
-            chatHistory.push({ role: "assistant", content: aiResponse }); // Add AI response to history
-
-        } catch (error) {
-            console.error('Error fetching AI response from proxy:', error);
-            chatMessages.removeChild(typingIndicator); // Remove typing indicator
-            appendMessage("Oops! I couldn't get a response from the AI right now. Please check your Vercel proxy setup or try again later.", 'ai');
-        }
+    .sidebar nav li {
+      margin-bottom: 15px;
     }
 
-    function appendMessage(text, sender) {
-        const messageElement = document.createElement('div');
-        messageElement.classList.add('message', sender);
-        messageElement.innerHTML = `<span>${text}</span>`;
-        chatMessages.appendChild(messageElement);
-        chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll to the latest message
+    .sidebar nav a {
+      display: block;
+      color: var(--sidebar-text);
+      text-decoration: none;
+      padding: 12px 15px;
+      border-radius: 8px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    // --- Modal Functionality (existing) ---
-    // Show modal on page load
-    welcomeModal.style.display = 'flex';
+    .sidebar nav a:hover {
+      background-color: var(--sidebar-hover-bg);
+      color: var(--header-text);
+    }
 
-    // Close modal button
-    closeModalButton.addEventListener('click', () => {
-        welcomeModal.style.display = 'none';
-    });
+    .sidebar nav a.active {
+      background-color: var(--sidebar-active-bg);
+      color: white; /* Active link text always white for contrast */
+      font-weight: bold;
+    }
 
-    // Close modal if clicked outside
-    window.addEventListener('click', (event) => {
-        if (event.target === welcomeModal) {
-            welcomeModal.style.display = 'none';
-        }
-    });
+    .sidebar nav a svg {
+        fill: currentColor; /* Use current text color */
+        width: 24px;
+        height: 24px;
+    }
 
-}); // End DOMContentLoaded
+    .sidebar-footer {
+        margin-top: auto;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        text-align: center;
+        color: var(--timestamp-color);
+        font-size: 0.9rem;
+    }
+    .sidebar-footer .logo-text {
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: var(--sidebar-active-bg);
+        margin-bottom: 5px;
+        display: block;
+    }
+    .sidebar-footer .suggested-name {
+        font-style: italic;
+        color: var(--timestamp-color);
+        margin-top: 5px;
+    }
+
+    /* --- Main Content Area Styling --- */
+    .main-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 16px 32px;
+      overflow-y: auto;
+    }
+
+    header {
+      background-color: var(--header-bg);
+      color: var(--header-text);
+      width: 100%;
+      max-width: 550px;
+      text-align: center;
+      padding: 18px;
+      font-size: 1.6rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      border-radius: 10px 10px 0 0;
+      box-shadow: 0 2px 8px var(--box-shadow-color);
+      margin-top: 20px;
+      position: relative;
+      display: flex;
+      justify-content: center; /* Centers the h1 */
+      align-items: center;
+    }
+
+    /* Styles for the new image logo in the header */
+    header h1 {
+        margin: 0;
+        font-size: 0; /* Hide font-size as it's an image now */
+        line-height: 0; /* Remove extra line height */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%; /* Ensure h1 takes full height of header for vertical centering */
+    }
+
+    .header-logo {
+        max-width: 180px; /* Max width for the logo */
+        height: auto; /* Maintain aspect ratio */
+        max-height: 40px; /* Max height for the logo */
+        display: block; /* Remove extra space below image */
+    }
+
+
+    .hamburger-button {
+        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 10px;
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+    }
+    .hamburger-button svg {
+        fill: var(--header-text); /* Use header text color */
+        width: 30px;
+        height: 30px;
+    }
+
+    /* Top Right Controls Group */
+    .top-right-controls {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        gap: 8px; /* Space between text and toggle */
+        flex-wrap: nowrap; /* Prevent wrapping */
+    }
+
+    .theme-label {
+        font-size: 0.9rem;
+        color: var(--theme-label-color);
+        white-space: nowrap; /* Keep text on one line */
+        font-weight: normal;
+    }
+
+    /* Theme Toggle Button */
+    .theme-toggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background-color 0.3s ease;
+    }
+    .theme-toggle:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    .theme-toggle svg {
+        width: 24px;
+        height: 24px;
+    }
+    /* Specific icon colors based on current theme for contrast */
+    body.light-theme .theme-toggle svg {
+      fill: var(--theme-toggle-icon-color-light); /* Sun icon color for light theme */
+    }
+    body.dark-theme .theme-toggle svg {
+      fill: var(--theme-toggle-icon-color-dark); /* Moon icon color for dark theme */
+    }
+
+
+    /* --- Chat Container Styling --- */
+    .chat-container {
+      background-color: var(--main-content-bg);
+      width: 100%;
+      max-width: 550px;
+      height: 600px; /* Fixed height for chat area */
+      display: flex;
+      flex-direction: column;
+      border-radius: 0 0 10px 10px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 16px var(--box-shadow-color);
+      overflow: hidden; /* Hide overflow from chat messages */
+      transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Chat Messages Area */
+    .chat-messages {
+      flex-grow: 1;
+      padding: 20px;
+      overflow-y: auto; /* Enable scrolling for messages */
+      display: flex;
+      flex-direction: column;
+      gap: 15px; /* Space between messages */
+      scrollbar-width: thin;
+      scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+    }
+    /* Custom scrollbar for Webkit browsers */
+    .chat-messages::-webkit-scrollbar {
+      width: 8px;
+    }
+    .chat-messages::-webkit-scrollbar-track {
+      background: var(--scroll-track);
+    }
+    .chat-messages::-webkit-scrollbar-thumb {
+      background-color: var(--scroll-thumb);
+      border-radius: 10px;
+      border: 2px solid var(--scroll-track);
+    }
+
+
+    .message {
+      display: flex;
+      max-width: 85%; /* Limit message width */
+      padding: 10px 15px;
+      border-radius: 15px;
+      word-wrap: break-word; /* Break long words */
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      line-height: 1.4;
+    }
+
+    .message.user {
+      align-self: flex-end; /* Align user messages to the right */
+      background-color: var(--user-message-bg);
+      color: var(--user-message-text);
+      border-bottom-right-radius: 2px; /* Pointy corner for user */
+    }
+
+    .message.ai {
+      align-self: flex-start; /* Align AI messages to the left */
+      background-color: var(--ai-message-bg);
+      color: var(--ai-message-text);
+      border-bottom-left-radius: 2px; /* Pointy corner for AI */
+    }
+
+    .typing-indicator {
+      align-self: flex-start;
+      padding: 10px 15px;
+      border-radius: 15px;
+      background-color: var(--ai-message-bg);
+      color: var(--ai-message-text);
+      font-style: italic;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.7; }
+      50% { opacity: 1; }
+      100% { opacity: 0.7; }
+    }
+
+    /* Chat Input Area */
+    .chat-input {
+      display: flex;
+      border-top: 1px solid var(--border-color);
+      padding: 15px 20px;
+      background-color: var(--main-content-bg);
+      gap: 10px;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .chat-input input[type="text"] {
+      flex-grow: 1;
+      padding: 12px 15px;
+      border: 1px solid var(--chat-input-border);
+      border-radius: 25px;
+      font-size: 1rem;
+      background-color: var(--chat-input-bg);
+      color: var(--text-color);
+      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    }
+
+    .chat-input input[type="text"]::placeholder {
+      color: var(--placeholder-color);
+    }
+
+    .chat-input input[type="text"]:focus {
+      outline: none;
+      border-color: var(--sidebar-active-bg);
+      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.3);
+    }
+
+    .chat-input button {
+      background-color: var(--sidebar-active-bg);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .chat-input button:hover {
+      background-color: #3a7bd5; /* Slightly darker blue */
+      transform: scale(1.05);
+    }
+    .chat-input button:active {
+        transform: scale(0.95);
+    }
+
+    .chat-input button svg {
+        fill: white;
+        width: 24px;
+        height: 24px;
+    }
+
+    /* --- Modal Styling --- */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 200; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .modal-content {
+        background-color: var(--main-content-bg);
+        margin: auto;
+        padding: 30px;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 5px 15px var(--box-shadow-color);
+        position: relative;
+        animation: slideIn 0.3s ease-out;
+        transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+        text-align: center;
+    }
+
+    .modal-content h2 {
+        color: var(--sidebar-active-bg);
+        margin-bottom: 20px;
+        font-size: 1.8rem;
+    }
+
+    .modal-content p {
+        margin-bottom: 20px;
+        line-height: 1.5;
+        font-size: 1.1rem;
+        color: var(--text-color);
+    }
+
+    .close-button {
+        color: var(--timestamp-color);
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .close-button:hover,
+    .close-button:focus {
+        color: #000;
+        text-decoration: none;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+        from { transform: translateY(-30px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* --- Mobile Responsiveness --- */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        transform: translateX(-100%);
+        box-shadow: none;
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .hamburger-button {
+        display: block;
+        position: static; /* Adjust for flex layout */
+        transform: none;
+        margin-right: 10px; /* Space from h1 */
+      }
+
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 90;
+      }
+      .overlay.active {
+        display: block;
+      }
+
+      .main-content {
+        width: 100%;
+        margin-left: 0;
+        padding-top: 0;
+        flex-grow: 1;
+      }
+
+      header {
+        margin-top: 0;
+        border-radius: 0;
+        padding: 12px 10px;
+        font-size: 1.4rem;
+        display: flex; /* Keep flex for hamburger/theme toggle */
+        justify-content: space-between; /* Distribute items */
+        align-items: center;
+        max-width: 100%;
+      }
+      header h1 {
+        flex-grow: 1; /* Allow h1 to take space */
+        text-align: center; /* Center h1 content */
+      }
+      /* Mobile adjustment for image logo */
+      .header-logo {
+          max-width: 140px; /* Smaller on mobile */
+          max-height: 35px;
+      }
+
+      .top-right-controls {
+          position: static; /* Adjust for flex layout */
+          transform: none;
+          margin-left: 10px; /* Space from h1 */
+      }
+
+      .chat-container {
+        max-width: 100%;
+        height: calc(100vh - 60px); /* Adjust height for mobile header */
+        border-radius: 0;
+      }
+
+      .chat-messages {
+        padding: 15px;
+      }
+
+      .message {
+        padding: 8px 12px;
+        font-size: 0.95rem;
+      }
+
+      .chat-input {
+        padding: 10px 15px;
+      }
+      .chat-input input[type="text"] {
+        padding: 10px 12px;
+      }
+      .chat-input button {
+        width: 40px;
+        height: 40px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      header {
+        font-size: 1.2rem;
+      }
+      .hamburger-button svg {
+        width: 25px;
+        height: 25px;
+      }
+      .sidebar {
+        width: 200px;
+      }
+      .chat-input input[type="text"] {
+        font-size: 0.9rem;
+      }
+      .header-logo {
+          max-width: 120px; /* Even smaller on very small screens */
+          max-height: 30px;
+      }
+      .theme-label {
+          display: none; /* Hide text on very small screens to save space */
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">ChatSphere</div>
+    <nav>
+      <ul>
+        <li><a href="chat.html" class="active">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12zM6 9h12v2H6zm8 3H6v-2h8v2zm4-5H6V5h12v2z"/></svg>
+            Chat
+        </a></li>
+        <li><a href="services.html">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM9 13H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg>
+            Our Services
+        </a></li>
+        <li><a href="about.html">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.38 0 2.5 1.12 2.5 2.5S13.38 10 12 10 9.5 8.88 9.5 7.5 10.62 5 12 5zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+            About Us
+        </a></li>
+        <li><a href="contact.html">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            Contact Us
+        </a></li>
+      </ul>
+    </nav>
+    <div class="sidebar-footer">
+        <span class="logo-text">ChatSphere AI</span>
+        <p>Powered by <span class="suggested-name" id="aiSuggestedName">Aura</span></p>
+    </div>
+  </aside>
+
+  <div class="overlay" id="overlay"></div>
+
+  <main class="main-content">
+    <header>
+      <button class="hamburger-button" id="hamburgerButton">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+      </button>
+      <h1><img src="https://via.placeholder.com/180x50.png?text=Your+Logo" alt="ChatSphere AI Logo" class="header-logo"></h1>
+      <div class="top-right-controls">
+        <span class="theme-label">Theme ChatSphere AI</span>
+        <button class="theme-toggle" id="themeToggle">
+          <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="var(--icon-color)"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.34 2.42-3.92 2.76-2.5.56-4.92-1.39-5.48-3.89-.56-2.5 1.39-4.92 3.89-5.48 1.34-.3 2.75-.11 4.03.36C16.94 4.14 14.58 3 12 3zm-2.83 2.6c.5-.07 1-.1 1.5-.1 3.87 0 7 3.13 7 7 0 .5-.03 1-.09 1.5-.47-2.12-2.19-3.79-4.38-4.38-2.6-1.12-5.44.89-6.56 3.49-.64 1.46-.86 3.01-.68 4.54-2.13-1.66-3.57-4.27-3.57-7.25 0-3.87 3.13-7 7-7z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="chat-container">
+      <div class="chat-messages" id="chatMessages">
+        <div class="message ai">
+          Hi there! I'm ChatSphere AI, your general purpose assistant. How can I help you today?
+        </div>
+      </div>
+      <div class="chat-input">
+        <input type="text" id="messageInput" placeholder="Type your message..." />
+        <button id="sendMessageButton">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M2.01 21.01L23 12 2.01 3 2 10l15 2-15 2 .01 7z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="welcomeModal" class="modal">
+      <div class="modal-content">
+        <span class="close-button" id="closeModalButton">&times;</span>
+        <h2>Welcome to ChatSphere AI!</h2>
+        <p>I am your AI assistant. Feel free to ask me anything! I can help with information, creative writing, explanations, and more.</p>
+        <p>Remember, I'm here to assist and provide insights.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="chat.js"></script>
+</body>
+</html>
