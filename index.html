@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Chat sphere— Welcome</title>
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0; padding: 0;
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+  }
+
+  .bg-container {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: url('background.png') no-repeat center center/cover;
+    filter: brightness();
+    z-index: -2;
+  }
+
+  .blur-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    backdrop-filter: blur(8px);
+    background: rgba(0,0,0,0.3);
+    z-index: -1;
+  }
+
+  .content {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    text-align: center;
+    padding: 0 20px;
+    animation: fadeInUp 1s ease forwards;
+  }
+
+  h1 {
+    font-size: 3.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+  }
+
+  p {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    max-width: 450px;
+    line-height: 1.5;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+  }
+
+  .btn-chat {
+    background: linear-gradient(135deg, #4a90e2, #007bff);
+    border: none;
+    padding: 18px 50px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    border-radius: 40px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0,123,255,0.5);
+    transition: all 0.3s ease;
+    user-select: none;
+    outline: none;
+    margin-bottom: 1.5rem;
+  }
+
+  .btn-chat:hover, .btn-chat:focus {
+    background: linear-gradient(135deg, #0056b3, #004080);
+    box-shadow: 0 12px 24px rgba(0,80,179,0.7);
+    transform: translateY(-3px);
+  }
+
+  .btn-chat:active {
+    transform: translateY(-1px);
+  }
+
+  .visitor-counter {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #ddd;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 480px) {
+    h1 {
+      font-size: 2.4rem;
+    }
+    p {
+      font-size: 1rem;
+      max-width: 90vw;
+    }
+    .btn-chat {
+      width: 100%;
+      padding: 16px 0;
+      font-size: 1rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-container"></div>
+<div class="blur-overlay"></div>
+
+<div class="content">
+  <h1>Chat Sphere</h1>
+  <p>Your intelligent companion for curious minds — chat, learn, and explore with cutting-edge AI.</p>
+  <button class="btn-chat" id="startChatBtn">Let’s Chat</button>
+  <div class="visitor-counter">Visitors: <span id="visitorCount">0</span></div>
+</div>
+
+<script>
+  // Redirect on button click
+  document.getElementById('startChatBtn').addEventListener('click', () => {
+    window.location.href = 'chat.html'; // Redirects to your chat interface
+  });
+
+  // Simulate getting the visitor count (replace this with real logic if needed)
+  const finalVisitorCount = Math.floor(Math.random() * 90000 + 10000);
+
+  const visitorCounter = document.getElementById('visitorCount');
+  let current = 0;
+
+  function animateCount() {
+    if (current < finalVisitorCount) {
+      const increment = Math.ceil((finalVisitorCount - current) / 20);
+      current += increment;
+      if (current > finalVisitorCount) current = finalVisitorCount;
+      visitorCounter.textContent = current.toLocaleString();
+      requestAnimationFrame(animateCount);
+    }
+  }
+
+  animateCount();
+</script>
+
+<footer style="position: fixed; bottom: 10px; width: 100%; text-align: center; color: #ccc; font-size: 0.9rem;">
+  &copy; 2025 All rights reserved.
+</footer>
+
+</body>
+</html>
