@@ -175,11 +175,33 @@ document.addEventListener('DOMContentLoaded', () => {
      * Appends a message to the chat display.
      * @param {string} text - The message content.
      * @param {string} sender - 'user' or 'ai'.
+     * @param {Object} [infoData=null] - Optional: Data object for creator info (for AI messages).
      */
-    function appendMessage(text, sender) {
+    // --- MODIFIED: appendMessage function to accept infoData ---
+    function appendMessage(text, sender, infoData = null) {
         const messageElement = document.createElement('div');
         messageElement.classList.add('message', sender);
-        messageElement.innerHTML = `<span>${text}</span>`;
+
+        let contentHTML = `<span>${text}</span>`; // Default text content
+
+        if (sender === 'ai' && infoData) {
+            // If it's an AI message AND infoData is provided, add the special layout
+            contentHTML = `
+                <div class="ai-response-content">
+                    <span>${text}</span>
+                    <div class="creator-info-card">
+                        <img src="${infoData.image}" alt="${infoData.name}" class="creator-logo">
+                        <div class="creator-details">
+                            <h4>${infoData.name}</h4>
+                            <p>${infoData.role}</p>
+                            <p class="creator-bio">${infoData.bio}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        messageElement.innerHTML = contentHTML;
         chatMessages.appendChild(messageElement);
 
         messageElement.classList.add('message-pop-in');
@@ -189,6 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
+    // --- END MODIFIED ---
 
     /**
      * Clears the chat display.
@@ -230,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearChatDisplay();
 
         const initialAIMessage = { role: "ai", content: "Hi there! I'm ChatSphere AI, your general purpose assistant. How can I help you today?" };
-        appendMessage(initialAIMessage.content, initialAIMessage.role);
+        appendMessage(initialAIMessage.content, initialAIMessage.role); // No infoData for initial message
         chatHistory.push(initialAIMessage);
         saveCurrentChatHistory(); // Save initial AI message to its specific chat ID
 
@@ -284,7 +307,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Render loaded history
         chatHistory.forEach(msg => {
+            // --- MODIFIED: Ensure infoData is handled if present in historical messages ---
+            // Note: If you want creator info to reappear when loading history,
+            // your saved history messages need to store this info.
+            // For now, we assume history only stores 'content' and 'role'.
+            // The backend will resend 'displayInfo' if the user asks again.
             appendMessage(msg.content, msg.role);
+            // --- END MODIFIED ---
         });
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
@@ -359,8 +388,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Do not add the currently active "New Chat" (without user messages) to the recent list
             // It will be highlighted by the "New Chat" button
             if (chat.id === currentChatId && chat.title === 'New Chat' && chatHistory.length === 1 && chatHistory[0].role === 'ai') {
-                 console.log("Skipping empty 'New Chat' from recent list rendering:", chat.id); // DEBUG
-                 return;
+                console.log("Skipping empty 'New Chat' from recent list rendering:", chat.id); // DEBUG
+                return;
             }
 
             const li = document.createElement('li');
@@ -375,18 +404,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 switchChat(chat.id, chat.title);
             });
 
-           // Add delete button for recent chats
+            // Add delete button for recent chats
             const deleteButton = document.createElement('button');
             deleteButton.classList.add('delete-chat-button');
             deleteButton.textContent = '🗑️'; // Or 'Delete', or '🗑️' (emoji)
             deleteButton.title = `Delete "${chat.title}"`;
-            // <--- ADD THESE LINES FOR INLINE STYLING
-            deleteButton.style.backgroundColor = 'transparent';
-            deleteButton.style.border = 'none';
-            deleteButton.style.color = 'red';
-            deleteButton.style.cursor = 'pointer';
-            deleteButton.style.marginLeft = '5px'; // Adjust spacing
-            // --- END ADDED LINES ---
+            // <--- REMOVE THESE INLINE STYLES. Move to style.css for better practice ---
+            // deleteButton.style.backgroundColor = 'transparent';
+            // deleteButton.style.border = 'none';
+            // deleteButton.style.color = 'red';
+            // deleteButton.style.cursor = 'pointer';
+            // deleteButton.style.marginLeft = '5px'; // Adjust spacing
+            // --- END REMOVAL ---
             deleteButton.addEventListener('click', (event) => {
                 event.stopPropagation();
                 deleteChat(chat.id, chat.title);
@@ -452,7 +481,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentChatId = mostRecentChatId;
                 chatHistory = history;
                 chatHistory.forEach(msg => {
-                    appendMessage(msg.content, msg.role);
+                    // --- MODIFIED: Pass null for infoData when loading general history ---
+                    appendMessage(msg.content, msg.role, null);
+                    // --- END MODIFIED ---
                 });
                 currentChatNavLink.textContent = mostRecentChatTitle;
                 console.log(`Loaded existing chat: ${mostRecentChatId}`); // DEBUG
@@ -549,14 +580,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const data = await response.json();
-            const aiResponse = data.reply || "No AI response content found.";
+            const aiResponseText = data.reply || "No AI response content found.";
+            // --- NEW: Extract displayInfo from backend response ---
+            const aiDisplayInfo = data.displayInfo || null;
+            // --- END NEW ---
 
             if (currentTypingIndicator && chatMessages.contains(currentTypingIndicator)) {
                 chatMessages.removeChild(currentTypingIndicator);
                 currentTypingIndicator = null;
             }
-            appendMessage(aiResponse, 'ai');
-            chatHistory.push({ role: "ai", content: aiResponse });
+            // --- MODIFIED: Pass aiDisplayInfo to appendMessage ---
+            appendMessage(aiResponseText, 'ai', aiDisplayInfo);
+            // --- END MODIFIED ---
+            chatHistory.push({ role: "ai", content: aiResponseText });
             saveCurrentChatHistory();
 
         } catch (error) {
