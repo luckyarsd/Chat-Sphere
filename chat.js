@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentChatId = null; // Stores the ID of the currently active chat
     let chatHistory = []; // Stores messages of the current chat
-    let currentTypingIndicator = null; // Variable to hold the reference to the currently displayed typing indicator
+    let currentTypingIndicatorElement = null; // Variable to hold the reference to the currently displayed typing indicator
 
     // --- Theme Toggle Elements ---
     const themeToggle = document.getElementById('themeToggle');
@@ -100,6 +100,105 @@ document.addEventListener('DOMContentLoaded', () => {
         aiSuggestedNameSpan.textContent = "Aura";
     }
 
+    // --- Utility Functions for Chat Display ---
+
+    /**
+     * Scrolls the chat messages container to the bottom.
+     */
+    function scrollToBottom() {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    /**
+     * Formats plain text with markdown for display in HTML.
+     * Converts **bold** or *bold* to <strong>bold</strong> and newlines \n to <br>.
+     * @param {string} text - The raw text content.
+     * @returns {string} The HTML formatted string.
+     */
+    function formatMessageText(text) {
+        // Convert bold (both **text** and *text*)
+        let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        formattedText = formattedText.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+
+        // Convert newlines to <br> tags
+        formattedText = formattedText.replace(/\n/g, '<br>');
+
+        return formattedText;
+    }
+
+    /**
+     * Appends a message to the chat display.
+     * @param {string} text - The message content.
+     * @param {string} sender - 'user' or 'ai'.
+     * @param {Object} [infoData=null] - Optional: Data object for creator info (for AI messages).
+     */
+    function appendMessage(text, sender, infoData = null) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', sender);
+
+        let contentHTML = formatMessageText(text); // Format text first
+
+        if (sender === 'ai' && infoData) {
+            // If it's an AI message AND infoData is provided, add the special layout
+            // This wraps the contentHTML (which already contains formatted text)
+            contentHTML = `
+                <div class="ai-response-content">
+                    ${contentHTML}
+                    <div class="creator-info-card">
+                        <img src="${infoData.image}" alt="${infoData.name}" class="creator-logo">
+                        <div class="creator-details">
+                            <h4>${infoData.name}</h4>
+                            <p>${infoData.role}</p>
+                            <p class="creator-bio">${infoData.bio}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        messageElement.innerHTML = contentHTML; // Use innerHTML to render formatted text
+        chatMessages.appendChild(messageElement);
+
+        messageElement.classList.add('message-pop-in');
+        messageElement.addEventListener('animationend', () => {
+            messageElement.classList.remove('message-pop-in');
+        }, { once: true });
+
+        scrollToBottom(); // Scroll after appending message
+    }
+
+    /**
+     * Displays a typing indicator.
+     */
+    function showTypingIndicator() {
+        if (currentTypingIndicatorElement) {
+            removeTypingIndicator(); // Ensure only one indicator is present
+        }
+        currentTypingIndicatorElement = document.createElement('div');
+        currentTypingIndicatorElement.classList.add('typing-indicator');
+        currentTypingIndicatorElement.innerHTML = 'ChatSphere AI is typing<span>.</span><span>.</span><span>.</span>';
+        chatMessages.appendChild(currentTypingIndicatorElement);
+        scrollToBottom();
+    }
+
+    /**
+     * Removes the typing indicator.
+     */
+    function removeTypingIndicator() {
+        if (currentTypingIndicatorElement && chatMessages.contains(currentTypingIndicatorElement)) {
+            chatMessages.removeChild(currentTypingIndicatorElement);
+            currentTypingIndicatorElement = null;
+        }
+    }
+
+    /**
+     * Clears the chat display.
+     */
+    function clearChatDisplay() {
+        chatMessages.innerHTML = '';
+        console.log("Chat display cleared."); // DEBUG
+    }
+
     // --- Chat History Management Functions ---
 
     /**
@@ -169,76 +268,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const title = firstUserMessage ? firstUserMessage.content.substring(0, 30) + (firstUserMessage.content.length > 30 ? '...' : '') : 'New Chat';
         console.log("Generated chat title:", title); // DEBUG
         return title;
-    }
-
-    /**
-     * Appends a message to the chat display.
-     * @param {string} text - The message content.
-     * @param {string} sender - 'user' or 'ai'.
-     * @param {Object} [infoData=null] - Optional: Data object for creator info (for AI messages).
-     */
-    function appendMessage(text, sender, infoData = null) {
-        const messageElement = document.createElement('div');
-        messageElement.classList.add('message', sender);
-
-        let contentHTML = `<span>${text}</span>`; // Default text content
-
-        if (sender === 'ai') {
-            // Check for and format "** text **"
-            if (text.includes('** text **')) {
-                // Use a regex to replace all occurrences globally
-                contentHTML = text.replace(/\*\* text \*\*/g, '<br><strong>text</strong>');
-                // If you want the ENTIRE message to be bolded and on a new line if it contains it,
-                // you might need more complex logic, but this handles just the specific phrase.
-                // For now, this replaces the specific phrase within the existing span.
-            } else {
-                contentHTML = `<span>${text}</span>`;
-            }
-
-            if (infoData) {
-                // If it's an AI message AND infoData is provided, add the special layout
-                // This wraps the contentHTML (which might now contain bolded "text")
-                contentHTML = `
-                    <div class="ai-response-content">
-                        ${contentHTML}
-                        <div class="creator-info-card">
-                            <img src="${infoData.image}" alt="${infoData.name}" class="creator-logo">
-                            <div class="creator-details">
-                                <h4>${infoData.name}</h4>
-                                <p>${infoData.role}</p>
-                                <p class="creator-bio">${infoData.bio}</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                // If no infoData, just use the processed text content
-                contentHTML = `<span>${text}</span>`; // Re-wrap if it's not a special AI response with infoData
-                // This ensures that the ** text ** replacement still works without infoData
-                if (text.includes('** text **')) {
-                    contentHTML = text.replace(/\*\* text \*\*/g, '<br><strong>text</strong>');
-                }
-            }
-        }
-
-
-        messageElement.innerHTML = contentHTML;
-        chatMessages.appendChild(messageElement);
-
-        messageElement.classList.add('message-pop-in');
-        messageElement.addEventListener('animationend', () => {
-            messageElement.classList.remove('message-pop-in');
-        }, { once: true });
-
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    /**
-     * Clears the chat display.
-     */
-    function clearChatDisplay() {
-        chatMessages.innerHTML = '';
-        console.log("Chat display cleared."); // DEBUG
     }
 
     /**
@@ -333,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // The backend will resend 'displayInfo' if the user asks again.
             appendMessage(msg.content, msg.role);
         });
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        scrollToBottom(); // Scroll after loading history
 
         // Update current chat link text and highlight recent chat link
         currentChatNavLink.textContent = chatTitle;
@@ -425,7 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Add delete button for recent chats
             const deleteButton = document.createElement('button');
             deleteButton.classList.add('delete-chat-button');
-            deleteButton.textContent = '🗑️'; // Or 'Delete', or '🗑️' (emoji)
+            deleteButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 0 24 24" width="18px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/></svg>`; // Trash can SVG icon
             deleteButton.title = `Delete "${chat.title}"`;
             deleteButton.addEventListener('click', (event) => {
                 event.stopPropagation();
@@ -509,10 +538,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Call initializeChat when the DOM is ready
     initializeChat();
 
+    // --- Textarea Auto-Resizing ---
+    function autoResizeTextarea() {
+        messageInput.style.height = 'auto'; // Reset height
+        messageInput.style.height = messageInput.scrollHeight + 'px'; // Set to scroll height
+    }
+    messageInput.addEventListener('input', autoResizeTextarea);
+
     // --- Chat Functionality (Groq API via Vercel Function) ---
     sendMessageButton.addEventListener('click', sendMessage);
     messageInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && !e.shiftKey) { // Allow Shift+Enter for new line
+            e.preventDefault(); // Prevent default Enter key behavior (new line)
             sendMessage();
         }
     });
@@ -521,6 +558,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const messageText = messageInput.value.trim();
         if (messageText === '') return;
 
+        // Animate send button
         sendMessageButton.classList.add('send-button-bounce');
         sendMessageButton.addEventListener('animationend', () => {
             sendMessageButton.classList.remove('send-button-bounce');
@@ -550,19 +588,11 @@ document.addEventListener('DOMContentLoaded', () => {
             saveCurrentChatHistory(); // Save after every subsequent user message
         }
 
+        // Clear input and reset its height
         messageInput.value = '';
+        autoResizeTextarea(); // Reset height immediately after clearing
 
-        if (currentTypingIndicator && chatMessages.contains(currentTypingIndicator)) {
-            chatMessages.removeChild(currentTypingIndicator);
-            currentTypingIndicator = null;
-        }
-
-        const typingIndicator = document.createElement('div');
-        typingIndicator.classList.add('typing-indicator');
-        typingIndicator.innerHTML = 'ChatSphere AI is typing<span>.</span><span>.</span><span>.</span>';
-        chatMessages.appendChild(typingIndicator);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        currentTypingIndicator = typingIndicator;
+        showTypingIndicator(); // Show typing indicator
 
         try {
             const response = await fetch(PROXY_API_ENDPOINT, {
@@ -577,10 +607,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error('Backend error:', response.status, errorData);
-                if (currentTypingIndicator && chatMessages.contains(currentTypingIndicator)) {
-                    chatMessages.removeChild(currentTypingIndicator);
-                    currentTypingIndicator = null;
-                }
+                removeTypingIndicator(); // Remove typing indicator on error
                 const errorMessage = `Oops! Backend error: ${errorData.error || 'Failed to get response'}. Please check your Groq API key or Vercel function logs.`;
                 appendMessage(errorMessage, 'ai');
                 chatHistory.push({ role: "ai", content: errorMessage });
@@ -592,20 +619,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const aiResponseText = data.reply || "No AI response content found.";
             const aiDisplayInfo = data.displayInfo || null;
 
-            if (currentTypingIndicator && chatMessages.contains(currentTypingIndicator)) {
-                chatMessages.removeChild(currentTypingIndicator);
-                currentTypingIndicator = null;
-            }
+            removeTypingIndicator(); // Remove typing indicator before showing response
             appendMessage(aiResponseText, 'ai', aiDisplayInfo);
             chatHistory.push({ role: "ai", content: aiResponseText });
             saveCurrentChatHistory();
 
         } catch (error) {
             console.error('Error fetching AI response from Vercel function:', error);
-            if (currentTypingIndicator && chatMessages.contains(currentTypingIndicator)) {
-                chatMessages.removeChild(currentTypingIndicator);
-                currentTypingIndicator = null;
-            }
+            removeTypingIndicator(); // Remove typing indicator on error
             const errorMessage = "Oops! I couldn't get a response from the AI. Please check your Vercel function (`api/ask.js`) setup or try again later.";
             appendMessage(errorMessage, 'ai');
             chatHistory.push({ role: "ai", content: errorMessage });
@@ -645,10 +666,8 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
         // If there's an active chat, simply re-display it and close the sidebar if mobile
         if (currentChatId) {
-            // No need to reload history or clear display if it's the same chat,
-            // just ensure UI is correct and close sidebar if mobile.
-            // However, we should explicitly switch to it to ensure its title is correct
-            // and it's brought to the top of the recent chats list.
+            // If currentChatId is set, ensure we load its content fresh.
+            // This also handles ensuring it's at the top of the recent chats list.
             const currentChatData = getChatList().find(chat => chat.id === currentChatId);
             if (currentChatData) {
                 switchChat(currentChatData.id, currentChatData.title);
