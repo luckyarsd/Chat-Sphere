@@ -378,7 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
            // Add delete button for recent chats
             const deleteButton = document.createElement('button');
             deleteButton.classList.add('delete-chat-button');
-            deleteButton.textContent = 'X'; // Or 'Delete', or '🗑️' (emoji)
+            deleteButton.textContent = '🗑️'; // Or 'Delete', or '🗑️' (emoji)
             deleteButton.title = `Delete "${chat.title}"`;
             // <--- ADD THESE LINES FOR INLINE STYLING
             deleteButton.style.backgroundColor = 'transparent';
