@@ -12,12 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModalButton = document.getElementById('closeModalButton');
 
     // --- API PROXY CONFIGURATION ---
-    // This endpoint now points directly to your api/ask.js Vercel Serverless Function.
     const PROXY_API_ENDPOINT = '/api/ask';
 
-    // chatHistory will be used for displaying messages, but not sent to api/ask.js
-    // because your current backend doesn't support it for conversational memory.
-    const chatHistory = [];
+    // --- Chat History Configuration ---
+    const CHAT_HISTORY_KEY = 'chatSphereChatHistory'; // Key for localStorage
 
     // Variable to hold the reference to the currently displayed typing indicator
     let currentTypingIndicator = null;
@@ -82,14 +80,14 @@ document.addEventListener('DOMContentLoaded', () => {
     overlay.addEventListener('click', closeSidebar);
 
     navLinks.forEach(link => {
-      link.addEventListener('click', (event) => {
-        navLinks.forEach(l => l.classList.remove('active'));
-        event.currentTarget.classList.add('active');
+        link.addEventListener('click', (event) => {
+            navLinks.forEach(l => l.classList.remove('active'));
+            event.currentTarget.classList.add('active');
 
-        if (window.innerWidth <= 768) {
-            closeSidebar();
-        }
-      });
+            if (window.innerWidth <= 768) {
+                closeSidebar();
+            }
+        });
     });
 
     // --- Active Link Highlight (existing) ---
@@ -107,6 +105,47 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- Chat History Loading and Saving Functions ---
+    let chatHistory = []; // Initialize chatHistory as empty array
+
+    function loadChatHistory() {
+        const storedHistory = localStorage.getItem(CHAT_HISTORY_KEY);
+        if (storedHistory) {
+            try {
+                const parsedHistory = JSON.parse(storedHistory);
+                // Append historical messages to the DOM without pop-in animation
+                parsedHistory.forEach(msg => {
+                    const messageElement = document.createElement('div');
+                    messageElement.classList.add('message', msg.role);
+                    messageElement.innerHTML = `<span>${msg.content}</span>`;
+                    chatMessages.appendChild(messageElement);
+                });
+                chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
+                return parsedHistory; // Return the loaded history
+            } catch (e) {
+                console.error("Error parsing chat history from localStorage:", e);
+                localStorage.removeItem(CHAT_HISTORY_KEY); // Clear corrupt history
+                return []; // Return empty array on error
+            }
+        }
+        return []; // Return empty array if no history found
+    }
+
+    function saveChatHistory() {
+        localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(chatHistory));
+    }
+
+    // Initialize chatHistory by loading from localStorage when the page loads
+    chatHistory = loadChatHistory();
+
+    // If no history was loaded, add the initial welcome message
+    if (chatHistory.length === 0) {
+        const initialAIMessage = { role: "ai", content: "Hi there! I'm ChatSphere AI, your general purpose assistant. How can I help you today?" };
+        chatHistory.push(initialAIMessage);
+        appendMessage(initialAIMessage.content, initialAIMessage.role); // Dynamically add the welcome message
+    }
+
+
     // --- Chat Functionality (Groq API via Vercel Function) ---
     sendMessageButton.addEventListener('click', sendMessage);
     messageInput.addEventListener('keypress', (e) => {
@@ -123,10 +162,11 @@ document.addEventListener('DOMContentLoaded', () => {
         sendMessageButton.classList.add('send-button-bounce');
         sendMessageButton.addEventListener('animationend', () => {
             sendMessageButton.classList.remove('send-button-bounce');
-        }, { once: true }); // Remove listener after one animation cycle
+        }, { once: true });
 
         appendMessage(messageText, 'user');
-        chatHistory.push({ role: "user", content: messageText }); // Track for local display if needed
+        chatHistory.push({ role: "user", content: messageText }); // Add user message to history
+        saveChatHistory(); // Save history after user message
         messageInput.value = '';
 
         // --- Typing Indicator Fix: Remove previous indicator if it exists ---
@@ -161,7 +201,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     chatMessages.removeChild(currentTypingIndicator);
                     currentTypingIndicator = null;
                 }
-                appendMessage(`Oops! Backend error: ${errorData.error || 'Failed to get response'}. Please check your Groq API key or Vercel function logs.`, 'ai');
+                const errorMessage = `Oops! Backend error: ${errorData.error || 'Failed to get response'}. Please check your Groq API key or Vercel function logs.`;
+                appendMessage(errorMessage, 'ai');
+                chatHistory.push({ role: "ai", content: errorMessage }); // Add error message to history
+                saveChatHistory(); // Save history after error
                 return; // Exit if response not OK
             }
 
@@ -174,7 +217,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentTypingIndicator = null;
             }
             appendMessage(aiResponse, 'ai');
-            chatHistory.push({ role: "assistant", content: aiResponse }); // Track for local display if needed
+            chatHistory.push({ role: "ai", content: aiResponse }); // Add AI response to history
+            saveChatHistory(); // Save history after AI response
 
         } catch (error) {
             console.error('Error fetching AI response from Vercel function:', error);
@@ -183,7 +227,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 chatMessages.removeChild(currentTypingIndicator);
                 currentTypingIndicator = null;
             }
-            appendMessage("Oops! I couldn't get a response from the AI. Please check your Vercel function (`api/ask.js`) setup or try again later.", 'ai');
+            const errorMessage = "Oops! I couldn't get a response from the AI. Please check your Vercel function (`api/ask.js`) setup or try again later.";
+            appendMessage(errorMessage, 'ai');
+            chatHistory.push({ role: "ai", content: errorMessage }); // Add error message to history
+            saveChatHistory(); // Save history after error
         }
     }
 
@@ -195,9 +242,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Add message pop-in animation
         messageElement.classList.add('message-pop-in');
-        // Removing the class after animation end is good practice, but not strictly necessary for this specific
-        // animation if 'forwards' is used and the default state of .message is the 'to' state.
-        // Keeping it here for consistency and to avoid potential issues if CSS changes.
         messageElement.addEventListener('animationend', () => {
             messageElement.classList.remove('message-pop-in');
         }, { once: true });
