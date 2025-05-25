@@ -31,32 +31,33 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Bad Request - No message content provided.' });
     }
 
-    // --- START OF UPDATED INSTRUCTIONS ---
+    // --- START OF DETAILED FORMATTING INSTRUCTIONS ---
 
-    // Refined formatting instruction for clearer, systematic output
-    // We're explicitly asking for newlines and sub-headings.
+    // Refined formatting instruction to get paragraphs and visually distinct points,
+    // avoiding explicit markdown symbols like ** or *
     const formattingInstruction = `
-        Please provide a detailed and systematic overview.
-        For each main section (e.g., General Information, Geography, Economy, Culture, History), use a bold heading (e.g., **General Information**).
-        Under each heading, present information using clear bullet points.
-        Each bullet point should be on a new line.
-        Bold any important terms within the bullet points.
-        Do not use asterisks as bullet points; instead, ensure each new item starts on a fresh line.
-        Provide a brief concluding sentence at the end.
+        Please provide a detailed overview of the topic.
+        Begin with a short introductory paragraph to set the context.
+        After the introduction, present the main information as a list of distinct points.
+        Each main section (like "General Information", "Geography", "Economy", "Culture", "History") should have its own bolded title on a new line, followed by a colon (e.g., General Information:).
+        Under each section title, list related details. Each detail should start on a new line and be prefixed with a single dash ( - ) followed by a space.
+        Do not use asterisks or any other markdown symbols for bullet points or bolding. Simply format the text so it looks like it's bold (e.g., "General Information:").
+        Ensure there is a blank line between the introductory paragraph and the first section, and between each main section's title and its details.
+        Conclude with a brief, friendly closing sentence.
     `.trim();
 
     // Combine the user's message with the refined formatting instruction
     const formattedMessage = `${message}\n\n${formattingInstruction}`;
 
-    // --- END OF UPDATED INSTRUCTIONS ---
+    // --- END OF DETAILED FORMATTING INSTRUCTIONS ---
 
     // Prepare the payload for the Groq API
     const groqPayload = {
-      model: "llama3-8b-8192", // You can choose other Groq models
+      model: "llama3-8b-8192", // Or your chosen Groq model
       messages: [
         {
           role: "system",
-          content: "You are a helpful AI assistant. Your primary goal is to deliver highly structured, readable, and well-organized information. Always prioritize clarity and proper formatting with newlines."
+          content: "You are a helpful AI assistant. Your responses must be clearly structured, highly readable, and adhere precisely to the user's formatting instructions. Avoid markdown syntax unless explicitly requested."
         },
         { role: "user", content: formattedMessage } // Sending the combined, formatted message
       ],
