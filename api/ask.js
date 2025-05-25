@@ -7,6 +7,7 @@
 export const maxDuration = 60; // Vercel Hobby plan max is 60 seconds
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+// You do NOT need to 'npm install groq' or 'import Groq from "groq-sdk";' with this approach.
 
 export default async function handler(req, res) {
   // Ensure only POST requests are processed
@@ -24,36 +25,22 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { message } = req.body; // 'message' is the user's raw query
+    const { message } = req.body;
 
     // Validate incoming message
     if (!message) {
       return res.status(400).json({ error: 'Bad Request - No message content provided.' });
     }
 
-    // --- REFINED FORMATTING INSTRUCTIONS FOR RELEVANCE + CONCISE POINTS ---
-    const formattingInstruction = `
-        Provide a very short, point-to-point answer to the following request.
-        List only the essential key facts.
-        Each point must start on a new line and be prefixed with a single dash ( - ) followed by a space.
-        Do NOT include any introductory or concluding sentences or paragraphs.
-        Just the list of points, nothing else.
-    `.trim();
-
-    const formattedMessage = `${message}\n\n${formattingInstruction}`;
-
     // Prepare the payload for the Groq API
     const groqPayload = {
-      model: "llama3-8b-8192", // Or your chosen Groq model
+      model: "llama3-8b-8192", // You can choose other Groq models: 'llama3-70b-8192', 'mixtral-8x7b-32768', 'gemma-7b-it'
       messages: [
-        {
-          role: "system",
-          content: "You are an ultra-concise AI assistant focused on delivering only essential facts. Your output must be a simple list of points without any conversational text, introductions, or conclusions. Each point should be on a new line and prefixed with a a single dash."
-        },
-        { role: "user", content: formattedMessage } // Sending the combined, formatted message
+        { role: "system", content: "You are a helpful AI assistant." },
+        { role: "user", content: message }
       ],
-      temperature: 0.5, // Increased temperature slightly for more varied content
-      max_tokens: 512, // Increased max_tokens significantly to allow for diverse answers
+      temperature: 0.7, // Creativity level (0.0 to 1.0)
+      max_tokens: 1024, // Max tokens in the response
     };
 
     // Make the direct fetch call to the Groq API
@@ -61,7 +48,7 @@ export default async function handler(req, res) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${GROQ_API_KEY}`
+        "Authorization": `Bearer ${GROQ_API_KEY}` // Send API key in Authorization header
       },
       body: JSON.stringify(groqPayload)
     });
@@ -72,31 +59,16 @@ export default async function handler(req, res) {
       console.error('Error from Groq API:', groqResponse.status, errorData);
       return res.status(groqResponse.status).json({
         error: `Groq API Error: ${errorData.message || 'Failed to get response'}`,
-        details: errorData
+        details: errorData // Include details for debugging in development
       });
     }
 
     const groqData = await groqResponse.json(); // Parse Groq's response
 
-    let reply = groqData.choices?.[0]?.message?.content || "No AI response content found.";
+    // Extract the AI's reply. Use optional chaining for safety.
+    const reply = groqData.choices?.[0]?.message?.content || "No AI response content found.";
 
-    // --- POST-PROCESSING: THE RELIABLE CLEANUP ---
-    // Remove all instances of double asterisks (**) for bolding
-    reply = reply.replaceAll('**', '');
-
-    // Replace markdown list item asterisks (*) with your preferred dash (-)
-    // This is important because the AI might still use '*' despite instructions
-    reply = reply.replaceAll('* ', '- '); 
-    
-    // Ensure there's a newline between points if the AI mushes them together
-    // This is a more advanced regex to ensure each dash-prefixed item is on its own line
-    // It looks for a dash, then anything not a newline, followed by another dash, and inserts a newline
-    reply = reply.replace(/(- [^\n]+)( - )/g, '$1\n$2');
-
-
-    // --- END OF POST-PROCESSING ---
-
-    // Send the AI's cleaned reply back to the frontend
+    // Send the AI's reply back to the frontend
     res.status(200).json({ reply });
 
   } catch (error) {
