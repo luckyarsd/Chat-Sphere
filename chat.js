@@ -19,6 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // because your current backend doesn't support it for conversational memory.
     const chatHistory = [];
 
+    // Variable to hold the reference to the currently displayed typing indicator
+    let currentTypingIndicator = null;
+
     // --- Theme Toggle Elements ---
     const themeToggle = document.getElementById('themeToggle');
     const themeIcon = document.getElementById('themeIcon');
@@ -126,12 +129,19 @@ document.addEventListener('DOMContentLoaded', () => {
         chatHistory.push({ role: "user", content: messageText }); // Track for local display if needed
         messageInput.value = '';
 
+        // --- Typing Indicator Fix: Remove previous indicator if it exists ---
+        if (currentTypingIndicator && chatMessages.contains(currentTypingIndicator)) {
+            chatMessages.removeChild(currentTypingIndicator);
+            currentTypingIndicator = null;
+        }
+
         const typingIndicator = document.createElement('div');
         typingIndicator.classList.add('typing-indicator');
         // Add animated dots for typing indicator
         typingIndicator.innerHTML = 'ChatSphere AI is typing<span>.</span><span>.</span><span>.</span>';
         chatMessages.appendChild(typingIndicator);
         chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
+        currentTypingIndicator = typingIndicator; // Store reference to the new indicator
 
         try {
             const response = await fetch(PROXY_API_ENDPOINT, {
@@ -140,27 +150,39 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 },
-                // Send ONLY the message as per your api/ask.js implementation.
-                // Chat history is NOT sent here.
                 body: JSON.stringify({ message: messageText })
             });
 
+            // --- Typing Indicator Fix: Ensure indicator is removed on error ---
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(`Backend error: ${response.status} - ${errorData.error || 'Unknown error from serverless function'}`);
+                console.error('Backend error:', response.status, errorData);
+                if (currentTypingIndicator && chatMessages.contains(currentTypingIndicator)) {
+                    chatMessages.removeChild(currentTypingIndicator);
+                    currentTypingIndicator = null;
+                }
+                appendMessage(`Oops! Backend error: ${errorData.error || 'Failed to get response'}. Please check your Groq API key or Vercel function logs.`, 'ai');
+                return; // Exit if response not OK
             }
 
             const data = await response.json();
-            // Your api/ask.js returns the AI's response in the 'reply' field.
             const aiResponse = data.reply || "No AI response content found.";
 
-            chatMessages.removeChild(typingIndicator); // Remove typing indicator
+            // --- Typing Indicator Fix: Remove indicator on successful response ---
+            if (currentTypingIndicator && chatMessages.contains(currentTypingIndicator)) {
+                chatMessages.removeChild(currentTypingIndicator);
+                currentTypingIndicator = null;
+            }
             appendMessage(aiResponse, 'ai');
             chatHistory.push({ role: "assistant", content: aiResponse }); // Track for local display if needed
 
         } catch (error) {
             console.error('Error fetching AI response from Vercel function:', error);
-            chatMessages.removeChild(typingIndicator); // Remove typing indicator
+            // --- Typing Indicator Fix: Remove indicator on fetch error ---
+            if (currentTypingIndicator && chatMessages.contains(currentTypingIndicator)) {
+                chatMessages.removeChild(currentTypingIndicator);
+                currentTypingIndicator = null;
+            }
             appendMessage("Oops! I couldn't get a response from the AI. Please check your Vercel function (`api/ask.js`) setup or try again later.", 'ai');
         }
     }
@@ -173,7 +195,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Add message pop-in animation
         messageElement.classList.add('message-pop-in');
-        // Optional: remove the class after animation to avoid re-triggering on scroll or other events
+        // Removing the class after animation end is good practice, but not strictly necessary for this specific
+        // animation if 'forwards' is used and the default state of .message is the 'to' state.
+        // Keeping it here for consistency and to avoid potential issues if CSS changes.
         messageElement.addEventListener('animationend', () => {
             messageElement.classList.remove('message-pop-in');
         }, { once: true });
