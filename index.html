@@ -1,163 +1,311 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Chat sphere— Welcome</title>
-<style>
-  *, *::before, *::after {
-    box-sizing: border-box;
-  }
-  body, html {
-    margin: 0; padding: 0;
-    height: 100%;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    overflow: hidden;
-  }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ChatSphere AI — Unlock Insights</title>
+    <link rel="icon" href="https://assets-global.website-files.com/64070a27ac02766324ef2898/6474b786ef78efed18255018_favicon.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Basic Reset */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
 
-  .bg-container {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: url('background.png') no-repeat center center/cover;
-    filter: brightness();
-    z-index: -2;
-  }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Poppins', sans-serif; /* Changed font family */
+            overflow: hidden; /* Prevent scrolling */
+            background-color: #1a1a1a; /* Fallback background */
+        }
 
-  .blur-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    backdrop-filter: blur(8px);
-    background: rgba(0,0,0,0.3);
-    z-index: -1;
-  }
+        /* --- Background Styling --- */
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Use a high-quality, abstract background image. Ensure 'background.png' exists. */
+            background: url('background.png') no-repeat center center/cover;
+            filter: brightness(0.6); /* Slightly darker for better text contrast */
+            z-index: -2;
+        }
 
-  .content {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: #fff;
-    text-align: center;
-    padding: 0 20px;
-    animation: fadeInUp 1s ease forwards;
-  }
+        .blur-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(6px); /* Slightly less blur for a clearer background */
+            background: rgba(0, 0, 0, 0.4); /* Darker overlay for contrast */
+            z-index: -1;
+        }
 
-  h1 {
-    font-size: 3.5rem;
-    margin-bottom: 0.5rem;
-    font-weight: 700;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.7);
-  }
+        /* Radial gradient overlay for more depth */
+        .gradient-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.7) 100%);
+            z-index: -0.5; /* Between blur and content */
+        }
 
-  p {
-    font-size: 1.3rem;
-    margin-bottom: 1rem;
-    max-width: 450px;
-    line-height: 1.5;
-    text-shadow: 0 1px 6px rgba(0,0,0,0.6);
-  }
+        /* --- Content Area --- */
+        .hero-section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            text-align: center;
+            padding: 0 20px;
+            position: relative; /* For z-index */
+            z-index: 1; /* Ensure content is above overlays */
+            animation: fadeInUp 1s ease forwards;
+        }
 
-  .btn-chat {
-    background: linear-gradient(135deg, #4a90e2, #007bff);
-    border: none;
-    padding: 18px 50px;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: white;
-    border-radius: 40px;
-    cursor: pointer;
-    box-shadow: 0 8px 20px rgba(0,123,255,0.5);
-    transition: all 0.3s ease;
-    user-select: none;
-    outline: none;
-    margin-bottom: 1.5rem;
-  }
+        /* --- Typography --- */
+        h1 {
+            font-size: 4.2rem; /* Larger and more impactful */
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            letter-spacing: -0.05em; /* Tighter letter spacing */
+            line-height: 1.1;
+            /* Shimmer effect */
+            background: linear-gradient(90deg, #e0e0e0, #ffffff, #e0e0e0);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 4s infinite linear;
+        }
 
-  .btn-chat:hover, .btn-chat:focus {
-    background: linear-gradient(135deg, #0056b3, #004080);
-    box-shadow: 0 12px 24px rgba(0,80,179,0.7);
-    transform: translateY(-3px);
-  }
+        p {
+            font-size: 1.5rem; /* Larger body text */
+            margin-bottom: 2rem;
+            max-width: 600px; /* Wider for more descriptive text */
+            line-height: 1.6;
+            text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+            font-weight: 300; /* Lighter weight for readability */
+        }
 
-  .btn-chat:active {
-    transform: translateY(-1px);
-  }
+        /* --- Buttons --- */
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #4a90e2, #007bff); /* Blue gradient */
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.25rem; /* Larger font size */
+            font-weight: 600;
+            color: white;
+            border-radius: 50px; /* More rounded */
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0, 123, 255, 0.4); /* Enhanced shadow */
+            transition: all 0.3s ease;
+            user-select: none;
+            outline: none;
+            text-decoration: none; /* For link buttons */
+        }
 
-  .visitor-counter {
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: #ddd;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-  }
+        .btn:hover, .btn:focus {
+            background: linear-gradient(135deg, #3a7bd5, #0056b3); /* Darker gradient on hover */
+            box-shadow: 0 14px 30px rgba(0, 80, 179, 0.6);
+            transform: translateY(-5px); /* More pronounced lift */
+        }
 
-  @keyframes fadeInUp {
-    0% {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
+        .btn:active {
+            transform: translateY(-2px);
+        }
 
-  @media (max-width: 480px) {
-    h1 {
-      font-size: 2.4rem;
-    }
-    p {
-      font-size: 1rem;
-      max-width: 90vw;
-    }
-    .btn-chat {
-      width: 100%;
-      padding: 16px 0;
-      font-size: 1rem;
-    }
-  }
-</style>
+        .btn-secondary {
+            background: none;
+            border: 2px solid rgba(255, 255, 255, 0.6); /* White border, slightly transparent */
+            color: rgba(255, 255, 255, 0.9);
+            padding: 14px 40px; /* Slightly smaller */
+            font-size: 1.1rem;
+            box-shadow: none;
+            margin-top: 15px; /* Space between primary and secondary buttons */
+        }
+
+        .btn-secondary:hover, .btn-secondary:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: white;
+            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        /* --- Visitor Counter --- */
+        .visitor-counter {
+            font-size: 1.1rem; /* Slightly smaller for subtlety */
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.7);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+            margin-top: 2rem; /* More space from buttons */
+        }
+
+        /* --- Footer --- */
+        footer {
+            position: fixed;
+            bottom: 15px; /* Slightly higher */
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6); /* Lighter color */
+            font-size: 0.85rem;
+            z-index: 1; /* Ensure it's above overlays */
+            padding: 0 10px; /* Add some padding */
+        }
+
+        /* --- Background Animation (Bubbles) --- */
+        .bubbles {
+            position: absolute;
+            bottom: -150px; /* Start below the viewport */
+            width: 100%;
+            height: 100%;
+            z-index: -0.7; /* Between overlay and blur */
+        }
+
+        .bubble {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: bubble-animation 15s infinite ease-in-out;
+            opacity: 0; /* Start invisible */
+        }
+
+        /* Generate individual bubbles with varied sizes and positions */
+        .bubble:nth-child(1) { width: 40px; height: 40px; left: 10%; animation-delay: 0s; animation-duration: 12s; }
+        .bubble:nth-child(2) { width: 60px; height: 60px; left: 20%; animation-delay: 2s; animation-duration: 15s; }
+        .bubble:nth-child(3) { width: 30px; height: 30px; left: 35%; animation-delay: 1s; animation-duration: 10s; }
+        .bubble:nth-child(4) { width: 70px; height: 70px; left: 50%; animation-delay: 3s; animation-duration: 18s; }
+        .bubble:nth-child(5) { width: 50px; height: 50px; left: 65%; animation-delay: 0.5s; animation-duration: 13s; }
+        .bubble:nth-child(6) { width: 80px; height: 80px; left: 80%; animation-delay: 2.5s; animation-duration: 16s; }
+        .bubble:nth-child(7) { width: 45px; height: 45px; left: 90%; animation-delay: 1.5s; animation-duration: 11s; }
+        .bubble:nth-child(8) { width: 55px; height: 55px; left: 5%; animation-delay: 4s; animation-duration: 14s; }
+        .bubble:nth-child(9) { width: 65px; height: 65px; left: 70%; animation-delay: 3.5s; animation-duration: 17s; }
+        .bubble:nth-child(10) { width: 25px; height: 25px; left: 25%; animation-delay: 0.8s; animation-duration: 9s; }
+
+        /* --- Animations --- */
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes bubble-animation {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-1000px) scale(1.2); opacity: 0; }
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 3rem;
+            }
+            p {
+                font-size: 1.2rem;
+                max-width: 90%;
+            }
+            .btn {
+                padding: 16px 40px;
+                font-size: 1.1rem;
+            }
+            .btn-secondary {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+            .visitor-counter {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2.2rem;
+                letter-spacing: -0.03em;
+            }
+            p {
+                font-size: 1rem;
+                max-width: 90vw;
+            }
+            .btn {
+                width: 90%; /* Make buttons full width on small screens */
+                padding: 14px 0;
+                font-size: 1rem;
+            }
+            .btn-secondary {
+                width: 90%;
+                padding: 10px 0;
+                font-size: 0.9rem;
+            }
+            .visitor-counter {
+                font-size: 0.9rem;
+            }
+            footer {
+                font-size: 0.75rem;
+                bottom: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<div class="bg-container"></div>
-<div class="blur-overlay"></div>
+    <div class="bg-container"></div>
+    <div class="blur-overlay"></div>
+    <div class="gradient-overlay"></div> <div class="bubbles">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
 
-<div class="content">
-  <h1>Chat Sphere</h1>
-  <p>Your intelligent companion for curious minds — chat, learn, and explore with cutting-edge AI.</p>
-  <button class="btn-chat" id="startChatBtn">Let’s Chat</button>
-  <div class="visitor-counter">Visitors: <span id="visitorCount">0</span></div>
-</div>
+    <main class="hero-section">
+        <h1>ChatSphere AI</h1>
+        <p>Your intelligent companion for profound insights. Chat, learn, and explore spiritual wisdom with cutting-edge AI guidance.</p>
+        <a href="chat.html" class="btn" id="startChatBtn">Start Your Journey</a>
+        <a href="services.html" class="btn btn-secondary">Explore Our Services</a> <div class="visitor-counter">Visitors: <span id="visitorCount">0</span></div>
+    </main>
 
-<script>
-  // Redirect on button click
-  document.getElementById('startChatBtn').addEventListener('click', () => {
-    window.location.href = 'chat.html'; // Redirects to your chat interface
-  });
+    <footer>
+        &copy; 2025 ChatSphere AI. All rights reserved.
+    </footer>
 
-  // Simulate getting the visitor count (replace this with real logic if needed)
-  const finalVisitorCount = Math.floor(Math.random() * 90000 + 10000);
+    <script>
+        // --- Visitor Counter Animation ---
+        const finalVisitorCount = Math.floor(Math.random() * 90000 + 10000); // Between 10,000 and 100,000
+        const visitorCounterSpan = document.getElementById('visitorCount');
+        let currentCount = 0;
 
-  const visitorCounter = document.getElementById('visitorCount');
-  let current = 0;
+        function animateCount() {
+            if (currentCount < finalVisitorCount) {
+                const increment = Math.ceil((finalVisitorCount - currentCount) / 30); // Slower animation
+                currentCount += increment;
+                if (currentCount > finalVisitorCount) currentCount = finalVisitorCount; // Cap at final
+                visitorCounterSpan.textContent = currentCount.toLocaleString();
+                requestAnimationFrame(animateCount);
+            }
+        }
 
-  function animateCount() {
-    if (current < finalVisitorCount) {
-      const increment = Math.ceil((finalVisitorCount - current) / 20);
-      current += increment;
-      if (current > finalVisitorCount) current = finalVisitorCount;
-      visitorCounter.textContent = current.toLocaleString();
-      requestAnimationFrame(animateCount);
-    }
-  }
-
-  animateCount();
-</script>
-
-<footer style="position: fixed; bottom: 10px; width: 100%; text-align: center; color: #ccc; font-size: 0.9rem;">
-  &copy; 2025 All rights reserved.
-</footer>
+        // Start animation when page loads
+        document.addEventListener('DOMContentLoaded', animateCount);
+    </script>
 
 </body>
 </html>
