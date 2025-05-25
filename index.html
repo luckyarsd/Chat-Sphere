@@ -3,22 +3,23 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ChatSphere AI — Unlock Insights</title>
+    <title>ChatSphere AI — Evolve Your Mind</title>
     <link rel="icon" href="https://assets-global.website-files.com/64070a27ac02766324ef2898/6474b786ef78efed18255018_favicon.png" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* Basic Reset */
         *, *::before, *::after {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body, html {
-            margin: 0;
-            padding: 0;
             height: 100%;
-            font-family: 'Poppins', sans-serif; /* Changed font family */
+            font-family: 'Poppins', sans-serif;
             overflow: hidden; /* Prevent scrolling */
-            background-color: #1a1a1a; /* Fallback background */
+            background-color: #121826; /* Deeper, more modern dark background */
+            color: #e0e0e0; /* Light grey text */
         }
 
         /* --- Background Styling --- */
@@ -28,10 +29,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            /* Use a high-quality, abstract background image. Ensure 'background.png' exists. */
+            /* Make sure 'background.png' is a high-quality, abstract, or atmospheric image */
             background: url('background.png') no-repeat center center/cover;
-            filter: brightness(0.6); /* Slightly darker for better text contrast */
-            z-index: -2;
+            filter: brightness(0.5) contrast(1.1); /* Adjusted filter for more depth */
+            z-index: -3; /* Lowest z-index */
         }
 
         .blur-overlay {
@@ -40,221 +41,281 @@
             left: 0;
             width: 100%;
             height: 100%;
-            backdrop-filter: blur(6px); /* Slightly less blur for a clearer background */
-            background: rgba(0, 0, 0, 0.4); /* Darker overlay for contrast */
-            z-index: -1;
+            backdrop-filter: blur(8px); /* Slightly more blur for soft look */
+            background: rgba(0, 0, 0, 0.6); /* Stronger overlay for better contrast */
+            z-index: -2;
         }
 
-        /* Radial gradient overlay for more depth */
         .gradient-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at center, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.7) 100%);
-            z-index: -0.5; /* Between blur and content */
+            /* More nuanced radial gradient */
+            background: radial-gradient(circle at center, rgba(18, 24, 38, 0.1) 0%, rgba(18, 24, 38, 0.9) 100%);
+            z-index: -1;
         }
 
-        /* --- Content Area --- */
+        /* --- Particle Flow Overlay (Subtle AI/Digital feel) --- */
+        .particle-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allows clicks to pass through */
+            z-index: -0.5; /* Below content, above overlays */
+            overflow: hidden; /* Contains particles */
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(74, 144, 226, 0.1); /* Subtle blue glow */
+            border-radius: 50%;
+            animation: particle-flow 25s infinite linear; /* Slower, more ethereal */
+            opacity: 0;
+            transform: translate(0, 0) scale(0.5);
+            filter: blur(2px); /* Soft blur for a glowing effect */
+        }
+
+        /* Generate individual particles with varied sizes and positions */
+        .particle:nth-child(1) { width: 10px; height: 10px; top: 10%; left: 15%; animation-delay: 0s; animation-duration: 20s; }
+        .particle:nth-child(2) { width: 8px; height: 8px; top: 30%; left: 40%; animation-delay: 3s; animation-duration: 25s; }
+        .particle:nth-child(3) { width: 12px; height: 12px; top: 60%; left: 70%; animation-delay: 1s; animation-duration: 22s; }
+        .particle:nth-child(4) { width: 9px; height: 9px; top: 80%; left: 25%; animation-delay: 5s; animation-duration: 28s; }
+        .particle:nth-child(5) { width: 11px; height: 11px; top: 5%; left: 85%; animation-delay: 2s; animation-duration: 23s; }
+        .particle:nth-child(6) { width: 7px; height: 7px; top: 45%; left: 5%; animation-delay: 4s; animation-duration: 26s; }
+        .particle:nth-child(7) { width: 9px; height: 9px; top: 70%; left: 90%; animation-delay: 0.5s; animation-duration: 21s; }
+
+        /* --- Hero Section (Main Content) --- */
         .hero-section {
             height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: #fff;
             text-align: center;
-            padding: 0 20px;
-            position: relative; /* For z-index */
-            z-index: 1; /* Ensure content is above overlays */
-            animation: fadeInUp 1s ease forwards;
+            padding: 0 30px;
+            position: relative;
+            z-index: 1; /* Ensure content is on top */
+            animation: fadeInUp 1.5s ease-out forwards; /* Slower fade-in for elegance */
         }
 
         /* --- Typography --- */
         h1 {
-            font-size: 4.2rem; /* Larger and more impactful */
-            margin-bottom: 0.8rem;
+            font-size: 5.2rem; /* Even larger, more dominant */
+            margin-bottom: 0.7rem;
             font-weight: 700;
-            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-            letter-spacing: -0.05em; /* Tighter letter spacing */
-            line-height: 1.1;
-            /* Shimmer effect */
-            background: linear-gradient(90deg, #e0e0e0, #ffffff, #e0e0e0);
-            background-size: 200% 100%;
+            letter-spacing: -0.07em; /* Tighter for impactful look */
+            line-height: 1;
+            text-shadow: 0 8px 25px rgba(0, 0, 0, 0.8); /* Stronger shadow for depth */
+            /* Advanced Shimmer Effect */
+            background: linear-gradient(90deg, #d3eaff, #ffffff, #d3eaff); /* Lighter, cooler tones */
+            background-size: 300% 100%; /* Wider shimmer area */
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: shimmer 4s infinite linear;
+            animation: shimmer 6s infinite linear; /* Slower, more subtle shimmer */
         }
 
         p {
-            font-size: 1.5rem; /* Larger body text */
-            margin-bottom: 2rem;
-            max-width: 600px; /* Wider for more descriptive text */
-            line-height: 1.6;
-            text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
-            font-weight: 300; /* Lighter weight for readability */
+            font-size: 1.7rem; /* More prominent tagline */
+            margin-bottom: 3rem; /* More space to buttons */
+            max-width: 750px; /* Wider for better flow */
+            line-height: 1.8;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+            font-weight: 300; /* Maintains readability */
+            color: #c9d6e2; /* Slightly softer white */
         }
 
         /* --- Buttons --- */
         .btn {
             display: inline-block;
-            background: linear-gradient(135deg, #4a90e2, #007bff); /* Blue gradient */
+            background: linear-gradient(135deg, #4a90e2, #2c6ebd); /* Blue gradient */
             border: none;
-            padding: 18px 50px;
-            font-size: 1.25rem; /* Larger font size */
+            padding: 20px 60px; /* Larger padding */
+            font-size: 1.4rem; /* Larger font */
             font-weight: 600;
             color: white;
-            border-radius: 50px; /* More rounded */
+            border-radius: 60px; /* More pill-shaped */
             cursor: pointer;
-            box-shadow: 0 10px 25px rgba(0, 123, 255, 0.4); /* Enhanced shadow */
-            transition: all 0.3s ease;
+            box-shadow: 0 15px 40px rgba(0, 123, 255, 0.4); /* Stronger, softer shadow */
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smoother, more distinct transition */
             user-select: none;
             outline: none;
-            text-decoration: none; /* For link buttons */
+            text-decoration: none;
+            position: relative;
+            overflow: hidden; /* For subtle button hover effect */
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1); /* Subtle internal highlight */
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn:hover::before {
+            opacity: 1; /* Fade in internal highlight on hover */
         }
 
         .btn:hover, .btn:focus {
-            background: linear-gradient(135deg, #3a7bd5, #0056b3); /* Darker gradient on hover */
-            box-shadow: 0 14px 30px rgba(0, 80, 179, 0.6);
-            transform: translateY(-5px); /* More pronounced lift */
+            background: linear-gradient(135deg, #3a7bd5, #1e5091); /* Darker, richer hover gradient */
+            box-shadow: 0 20px 50px rgba(0, 80, 179, 0.6);
+            transform: translateY(-7px); /* More pronounced lift */
         }
 
         .btn:active {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 80, 179, 0.4);
         }
 
         .btn-secondary {
             background: none;
-            border: 2px solid rgba(255, 255, 255, 0.6); /* White border, slightly transparent */
-            color: rgba(255, 255, 255, 0.9);
-            padding: 14px 40px; /* Slightly smaller */
-            font-size: 1.1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3); /* Softer white border */
+            color: rgba(255, 255, 255, 0.7);
+            padding: 16px 45px; /* Proportional padding */
+            font-size: 1.25rem;
             box-shadow: none;
-            margin-top: 15px; /* Space between primary and secondary buttons */
+            margin-top: 25px; /* More spacing */
         }
 
         .btn-secondary:hover, .btn-secondary:focus {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08); /* More subtle background on hover */
             border-color: white;
-            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.15);
+            transform: translateY(-4px);
         }
 
         /* --- Visitor Counter --- */
         .visitor-counter {
-            font-size: 1.1rem; /* Slightly smaller for subtlety */
+            font-size: 1.2rem;
             font-weight: 400;
-            color: rgba(255, 255, 255, 0.7);
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-            margin-top: 2rem; /* More space from buttons */
+            color: rgba(255, 255, 255, 0.6);
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+            margin-top: 4rem; /* Increased spacing for emphasis */
+            letter-spacing: 0.05em; /* Slightly wider */
         }
 
         /* --- Footer --- */
         footer {
             position: fixed;
-            bottom: 15px; /* Slightly higher */
+            bottom: 25px; /* Higher from bottom */
             width: 100%;
             text-align: center;
-            color: rgba(255, 255, 255, 0.6); /* Lighter color */
+            color: rgba(255, 255, 255, 0.5); /* Softer color */
             font-size: 0.85rem;
-            z-index: 1; /* Ensure it's above overlays */
-            padding: 0 10px; /* Add some padding */
+            z-index: 1;
+            padding: 0 20px;
         }
 
-        /* --- Background Animation (Bubbles) --- */
+        /* --- Background Animation (Bubbles - now more ethereal) --- */
         .bubbles {
             position: absolute;
-            bottom: -150px; /* Start below the viewport */
+            bottom: -150px;
             width: 100%;
-            height: 100%;
-            z-index: -0.7; /* Between overlay and blur */
+            height: 130%; /* Extends higher */
+            z-index: -0.7;
+            overflow: hidden;
         }
 
         .bubble {
             position: absolute;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05); /* Very subtle white */
             border-radius: 50%;
-            animation: bubble-animation 15s infinite ease-in-out;
-            opacity: 0; /* Start invisible */
+            animation: bubble-animation 20s infinite ease-in-out; /* Slower, longer animation */
+            opacity: 0;
+            filter: blur(1px); /* Soft blur */
         }
 
-        /* Generate individual bubbles with varied sizes and positions */
-        .bubble:nth-child(1) { width: 40px; height: 40px; left: 10%; animation-delay: 0s; animation-duration: 12s; }
-        .bubble:nth-child(2) { width: 60px; height: 60px; left: 20%; animation-delay: 2s; animation-duration: 15s; }
-        .bubble:nth-child(3) { width: 30px; height: 30px; left: 35%; animation-delay: 1s; animation-duration: 10s; }
-        .bubble:nth-child(4) { width: 70px; height: 70px; left: 50%; animation-delay: 3s; animation-duration: 18s; }
-        .bubble:nth-child(5) { width: 50px; height: 50px; left: 65%; animation-delay: 0.5s; animation-duration: 13s; }
-        .bubble:nth-child(6) { width: 80px; height: 80px; left: 80%; animation-delay: 2.5s; animation-duration: 16s; }
-        .bubble:nth-child(7) { width: 45px; height: 45px; left: 90%; animation-delay: 1.5s; animation-duration: 11s; }
-        .bubble:nth-child(8) { width: 55px; height: 55px; left: 5%; animation-delay: 4s; animation-duration: 14s; }
-        .bubble:nth-child(9) { width: 65px; height: 65px; left: 70%; animation-delay: 3.5s; animation-duration: 17s; }
-        .bubble:nth-child(10) { width: 25px; height: 25px; left: 25%; animation-delay: 0.8s; animation-duration: 9s; }
+        /* Adjusted bubble properties for more subtle, random movement */
+        .bubble:nth-child(1) { width: 45px; height: 45px; left: 10%; animation-delay: 0s; animation-duration: 18s; }
+        .bubble:nth-child(2) { width: 65px; height: 65px; left: 20%; animation-delay: 2s; animation-duration: 22s; }
+        .bubble:nth-child(3) { width: 35px; height: 35px; left: 35%; animation-delay: 1s; animation-duration: 16s; }
+        .bubble:nth-child(4) { width: 75px; height: 75px; left: 50%; animation-delay: 3s; animation-duration: 25s; }
+        .bubble:nth-child(5) { width: 55px; height: 55px; left: 65%; animation-delay: 0.5s; animation-duration: 19s; }
+        .bubble:nth-child(6) { width: 85px; height: 85px; left: 80%; animation-delay: 2.5s; animation-duration: 23s; }
+        .bubble:nth-child(7) { width: 50px; height: 50px; left: 90%; animation-delay: 1.5s; animation-duration: 17s; }
+        .bubble:nth-child(8) { width: 60px; height: 60px; left: 5%; animation-delay: 4s; animation-duration: 21s; }
+        .bubble:nth-child(9) { width: 70px; height: 70px; left: 70%; animation-delay: 3.5s; animation-duration: 24s; }
+        .bubble:nth-child(10) { width: 30px; height: 30px; left: 25%; animation-delay: 0.8s; animation-duration: 15s; }
 
         /* --- Animations --- */
         @keyframes fadeInUp {
-            0% { opacity: 0; transform: translateY(20px); }
+            0% { opacity: 0; transform: translateY(40px); }
             100% { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
+            0% { background-position: -300% 0; }
+            100% { background-position: 300% 0; }
         }
 
         @keyframes bubble-animation {
-            0% { transform: translateY(0) scale(0.5); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translateY(-1000px) scale(1.2); opacity: 0; }
+            0% { transform: translateY(50px) scale(0.4); opacity: 0; }
+            30% { opacity: 0.6; } /* Peak opacity */
+            100% { transform: translateY(-1300px) scale(1.3); opacity: 0; }
+        }
+
+        @keyframes particle-flow {
+            0% { transform: translate(0, 0) scale(0.5); opacity: 0.5; }
+            50% { opacity: 0.8; }
+            100% { transform: translate(50px, -50px) scale(1.2); opacity: 0; } /* Diagonal flow */
         }
 
         /* --- Responsive Design --- */
         @media (max-width: 768px) {
             h1 {
-                font-size: 3rem;
+                font-size: 3.8rem;
+                letter-spacing: -0.05em;
             }
             p {
-                font-size: 1.2rem;
+                font-size: 1.4rem;
                 max-width: 90%;
             }
             .btn {
-                padding: 16px 40px;
-                font-size: 1.1rem;
+                padding: 18px 50px;
+                font-size: 1.25rem;
             }
             .btn-secondary {
-                padding: 12px 30px;
-                font-size: 1rem;
+                padding: 14px 40px;
+                font-size: 1.1rem;
             }
             .visitor-counter {
-                font-size: 1rem;
+                font-size: 1.1rem;
             }
         }
 
         @media (max-width: 480px) {
             h1 {
-                font-size: 2.2rem;
+                font-size: 2.8rem;
                 letter-spacing: -0.03em;
             }
             p {
-                font-size: 1rem;
+                font-size: 1.15rem;
                 max-width: 90vw;
             }
             .btn {
-                width: 90%; /* Make buttons full width on small screens */
-                padding: 14px 0;
-                font-size: 1rem;
+                width: 90%;
+                padding: 16px 0;
+                font-size: 1.1rem;
             }
             .btn-secondary {
                 width: 90%;
-                padding: 10px 0;
-                font-size: 0.9rem;
+                padding: 12px 0;
+                font-size: 1rem;
             }
             .visitor-counter {
-                font-size: 0.9rem;
+                font-size: 1rem;
             }
             footer {
                 font-size: 0.75rem;
-                bottom: 10px;
+                bottom: 15px;
             }
         }
     </style>
@@ -263,7 +324,17 @@
 
     <div class="bg-container"></div>
     <div class="blur-overlay"></div>
-    <div class="gradient-overlay"></div> <div class="bubbles">
+    <div class="gradient-overlay"></div>
+    <div class="particle-overlay">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+    <div class="bubbles">
         <div class="bubble"></div>
         <div class="bubble"></div>
         <div class="bubble"></div>
@@ -278,27 +349,30 @@
 
     <main class="hero-section">
         <h1>ChatSphere AI</h1>
-        <p>Your intelligent companion for profound insights. Chat, learn, and explore spiritual wisdom with cutting-edge AI guidance.</p>
-        <a href="chat.html" class="btn" id="startChatBtn">Start Your Journey</a>
-        <a href="services.html" class="btn btn-secondary">Explore Our Services</a> <div class="visitor-counter">Visitors: <span id="visitorCount">0</span></div>
+        <p>Unlock **profound insights** and elevate your understanding with ChatSphere AI, your intelligent companion for **knowledge and growth**.</p>
+        <a href="chat.html" class="btn" id="startChatBtn">Begin Your Exploration</a>
+        <a href="services.html" class="btn btn-secondary">Discover Our Capabilities</a>
+        <div class="visitor-counter">Current Explorers: <span id="visitorCount">0</span></div>
     </main>
 
     <footer>
-        &copy; 2025 ChatSphere AI. All rights reserved.
+        &copy; 2025 ChatSphere AI. Crafted with care in Delhi.
     </footer>
 
     <script>
         // --- Visitor Counter Animation ---
-        const finalVisitorCount = Math.floor(Math.random() * 90000 + 10000); // Between 10,000 and 100,000
+        // Simulates a higher, more impressive visitor count for a modern site
+        const finalVisitorCount = Math.floor(Math.random() * 250000 + 50000); // Between 50,000 and 300,000
         const visitorCounterSpan = document.getElementById('visitorCount');
         let currentCount = 0;
 
         function animateCount() {
             if (currentCount < finalVisitorCount) {
-                const increment = Math.ceil((finalVisitorCount - currentCount) / 30); // Slower animation
+                // Adjust increment for smoother, longer animation on higher numbers
+                const increment = Math.ceil((finalVisitorCount - currentCount) / 60);
                 currentCount += increment;
                 if (currentCount > finalVisitorCount) currentCount = finalVisitorCount; // Cap at final
-                visitorCounterSpan.textContent = currentCount.toLocaleString();
+                visitorCounterSpan.textContent = currentCount.toLocaleString(); // Format with commas
                 requestAnimationFrame(animateCount);
             }
         }
